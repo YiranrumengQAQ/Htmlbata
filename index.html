@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>能量收集系统 - PEPC响应界面</title>
+    <title>能量收集系统 PRO - 离线同步版</title>
     <style>
         * {
             margin: 0;
@@ -12,70 +12,89 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景粒子效果 */
+        .bg-particle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 90%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            width: 95%;
             position: relative;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            z-index: 1;
         }
 
         h1 {
             text-align: center;
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 2.8em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 25px;
+        }
+
+        /* 离线计算提示 */
+        .offline-notice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         /* 机器容器 */
         .machine-container {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 400px;
             margin-bottom: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        /* 机器主体 */
-        .machine {
-            position: relative;
-            width: 200px;
-            height: 250px;
-            background: linear-gradient(145deg, #2c3e50, #34495e);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
-                        inset 0 -5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            z-index: 2;
-        }
-
-        /* 机器顶部烟囱 */
-        .chimney {
-            position: absolute;
-            top: -40px;
-            width: 60px;
-            height: 50px;
-            background: linear-gradient(145deg, #34495e, #2c3e50);
-            border-radius: 10px 10px 0 0;
-            box-shadow: inset 0 -3px 10px rgba(0, 0, 0, 0.3);
+            overflow: visible;
         }
 
         /* 烟雾画布 */
@@ -89,80 +108,286 @@
             z-index: 1;
         }
 
-        /* 能量核心显示 */
-        .energy-core {
-            width: 120px;
-            height: 120px;
+        /* 复杂机器主体 */
+        .machine {
+            position: relative;
+            width: 280px;
+            height: 320px;
+            z-index: 2;
+        }
+
+        /* 主机身 */
+        .machine-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 250px;
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4),
+                        inset 0 -8px 20px rgba(0, 0, 0, 0.3),
+                        inset 0 8px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* 顶部控制台 */
+        .control-panel {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 80px;
+            background: linear-gradient(145deg, #1a252f, #253341);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 指示灯 */
+        .indicator-lights {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 8px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: radial-gradient(circle, #3498db, #2980b9);
-            margin: 20px 0;
+            background: #555;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .indicator.active-red {
+            background: #e74c3c;
+            box-shadow: 0 0 15px #e74c3c, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: blink 1s infinite;
+        }
+
+        .indicator.active-green {
+            background: #2ecc71;
+            box-shadow: 0 0 15px #2ecc71, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: blink 1s infinite;
+        }
+
+        .indicator.active-blue {
+            background: #3498db;
+            box-shadow: 0 0 15px #3498db, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 显示屏 */
+        .display-screen {
+            width: 100%;
+            height: 40px;
+            background: #0a0e27;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 0 0 10px #0f0;
+            border: 2px solid #1a1a2e;
+        }
+
+        /* 烟囱 */
+        .chimney {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border-radius: 15px 15px 0 0;
+            box-shadow: inset 0 -5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .chimney::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #1a252f;
+            border-radius: 10px;
+            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 能量核心 */
+        .energy-core {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #3498db, #2980b9, #1a5490);
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 30px rgba(52, 152, 219, 0.6),
-                        inset 0 0 20px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 40px rgba(52, 152, 219, 0.8),
+                        inset 0 0 30px rgba(255, 255, 255, 0.2);
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 30px rgba(52, 152, 219, 0.6);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 50px rgba(52, 152, 219, 0.9);
-            }
+        .energy-core::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: rotate 4s linear infinite;
+        }
+
+        .energy-core::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            animation: rotate 6s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .energy-value {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            z-index: 1;
         }
 
-        /* 能量进度条 */
+        /* 侧面管道 */
+        .pipe {
+            position: absolute;
+            background: linear-gradient(90deg, #34495e, #2c3e50);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .pipe-left {
+            left: -30px;
+            top: 100px;
+            width: 40px;
+            height: 15px;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .pipe-right {
+            right: -30px;
+            top: 100px;
+            width: 40px;
+            height: 15px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* 底部支架 */
+        .support-base {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 20px;
+            background: linear-gradient(145deg, #1a252f, #253341);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 散热孔 */
+        .vent {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 40px;
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vent-line {
+            width: 3px;
+            height: 25px;
+            background: #1a252f;
+            border-radius: 2px;
+        }
+
+        /* 能量条 */
         .energy-bar-container {
             width: 100%;
-            height: 30px;
+            height: 40px;
             background: #ecf0f1;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
 
         .energy-bar {
             height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12);
-            border-radius: 15px;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+            border-radius: 20px;
             transition: width 0.5s ease;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
+            justify-content: center;
             color: white;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            font-size: 1.1em;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* 状态指示器 */
+        .energy-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            to { left: 100%; }
+        }
+
+        /* 状态显示 */
         .status {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-size: 1.3em;
             color: #34495e;
             font-weight: bold;
         }
 
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 10px;
             background: #95a5a6;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .status-indicator.collecting {
@@ -184,25 +409,27 @@
         .controls {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         button {
             flex: 1;
-            padding: 15px 20px;
+            padding: 18px 25px;
             border: none;
-            border-radius: 12px;
-            font-size: 1em;
+            border-radius: 15px;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         button:active {
@@ -242,43 +469,125 @@
             transform: none !important;
         }
 
-        /* 统计信息 */
+        /* 统计面板 */
         .stats {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            margin-bottom: 20px;
         }
 
         .stat-item {
             text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
         .stat-label {
             font-size: 0.9em;
             color: #7f8c8d;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .stat-value {
-            font-size: 1.3em;
+            font-size: 1.5em;
             font-weight: bold;
-            color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 历史记录 */
+        .history {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #555;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
 <body>
+    <div class="bg-particle" id="bgParticle"></div>
+    
     <div class="container">
-        <h1>⚡ 能量收集系统</h1>
+        <h1>⚡ 能量收集系统 PRO</h1>
+        <div class="subtitle">🌐 支持离线时间同步计算</div>
+
+        <div class="offline-notice" id="offlineNotice"></div>
         
         <div class="machine-container">
             <canvas id="smokeCanvas"></canvas>
             <div class="machine">
-                <div class="chimney"></div>
-                <div class="energy-core">
-                    <span class="energy-value" id="energyValue">0</span>
+                <div class="machine-body">
+                    <!-- 顶部控制台 -->
+                    <div class="control-panel">
+                        <div class="indicator-lights">
+                            <div class="indicator" id="led1"></div>
+                            <div class="indicator" id="led2"></div>
+                            <div class="indicator" id="led3"></div>
+                            <div class="indicator" id="led4"></div>
+                        </div>
+                        <div class="display-screen" id="displayScreen">000</div>
+                    </div>
+                    
+                    <!-- 烟囱 -->
+                    <div class="chimney"></div>
+                    
+                    <!-- 能量核心 -->
+                    <div class="energy-core">
+                        <span class="energy-value" id="energyValue">0</span>
+                    </div>
+                    
+                    <!-- 侧面管道 -->
+                    <div class="pipe pipe-left"></div>
+                    <div class="pipe pipe-right"></div>
+                    
+                    <!-- 散热孔 -->
+                    <div class="vent">
+                        <div class="vent-line"></div>
+                        <div class="vent-line"></div>
+                        <div class="vent-line"></div>
+                        <div class="vent-line"></div>
+                        <div class="vent-line"></div>
+                    </div>
+                    
+                    <!-- 底部支架 -->
+                    <div class="support-base"></div>
                 </div>
             </div>
         </div>
@@ -293,12 +602,16 @@
         </div>
 
         <div class="controls">
-            <button id="startBtn">开始收集</button>
-            <button id="stopBtn">停止收集</button>
-            <button id="releaseBtn">释放能量</button>
+            <button id="startBtn">🚀 开始收集</button>
+            <button id="stopBtn">⏸️ 停止收集</button>
+            <button id="releaseBtn">💥 释放能量</button>
         </div>
 
         <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">当前能量</div>
+                <div class="stat-value"><span id="energyDisplay">0</span> / 100</div>
+            </div>
             <div class="stat-item">
                 <div class="stat-label">收集次数</div>
                 <div class="stat-value" id="collectCount">0</div>
@@ -308,14 +621,100 @@
                 <div class="stat-value" id="releaseCount">0</div>
             </div>
             <div class="stat-item">
-                <div class="stat-label">运行时间</div>
+                <div class="stat-label">总运行时间</div>
                 <div class="stat-value" id="runTime">0s</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">离线时长</div>
+                <div class="stat-value" id="offlineTime">0s</div>
+            </div>
+        </div>
+
+        <div class="history">
+            <div class="history-title">
+                📋 操作历史
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="history-item">系统初始化完成</div>
             </div>
         </div>
     </div>
 
     <script>
-        // 能量系统状态
+        // ========== 数据持久化系统 ==========
+        class PersistenceManager {
+            constructor() {
+                this.storageKey = 'energySystemData';
+            }
+
+            saveState(state) {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(state));
+                } catch (e) {
+                    console.error('保存数据失败:', e);
+                }
+            }
+
+            loadState() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.error('加载数据失败:', e);
+                    return null;
+                }
+            }
+
+            clearState() {
+                localStorage.removeItem(this.storageKey);
+            }
+        }
+
+        // ========== 离线时间计算器 ==========
+        class OfflineCalculator {
+            calculateOfflineProgress(lastSaveTime, currentTime, isCollecting, isReleasing, lastEnergy) {
+                const timeDiff = currentTime - lastSaveTime;
+                const seconds = Math.floor(timeDiff / 1000);
+                
+                let newEnergy = lastEnergy;
+                let collectionsAdded = 0;
+                let releasesAdded = 0;
+
+                // 计算收集
+                if (isCollecting && newEnergy < 100) {
+                    const collectCycles = Math.floor(seconds / 5);
+                    for (let i = 0; i < collectCycles; i++) {
+                        if (newEnergy >= 100) break;
+                        // 50% 概率收集
+                        if (Math.random() < 0.5) {
+                            newEnergy++;
+                            collectionsAdded++;
+                        }
+                    }
+                    newEnergy = Math.min(100, newEnergy);
+                }
+
+                // 计算释放
+                if (isReleasing && newEnergy > 0) {
+                    const releaseCycles = Math.floor(seconds / 10);
+                    const actualReleases = Math.min(releaseCycles, newEnergy);
+                    newEnergy -= actualReleases;
+                    releasesAdded = actualReleases;
+                }
+
+                return {
+                    newEnergy,
+                    collectionsAdded,
+                    releasesAdded,
+                    offlineSeconds: seconds
+                };
+            }
+        }
+
+        // ========== 能量系统 ==========
+        const persistence = new PersistenceManager();
+        const offlineCalc = new OfflineCalculator();
+
         let energy = 0;
         let isCollecting = false;
         let isReleasing = false;
@@ -323,22 +722,104 @@
         let releaseInterval = null;
         let collectCount = 0;
         let releaseCount = 0;
+        let totalRunTime = 0;
         let startTime = 0;
         let timeInterval = null;
+        let lastSaveTime = Date.now();
 
         // DOM 元素
         const energyValue = document.getElementById('energyValue');
         const energyBar = document.getElementById('energyBar');
         const statusText = document.getElementById('statusText');
         const statusIndicator = document.getElementById('statusIndicator');
+        const displayScreen = document.getElementById('displayScreen');
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
         const releaseBtn = document.getElementById('releaseBtn');
         const collectCountEl = document.getElementById('collectCount');
         const releaseCountEl = document.getElementById('releaseCount');
         const runTimeEl = document.getElementById('runTime');
+        const offlineTimeEl = document.getElementById('offlineTime');
+        const energyDisplay = document.getElementById('energyDisplay');
+        const offlineNotice = document.getElementById('offlineNotice');
+        const historyList = document.getElementById('historyList');
+        const led1 = document.getElementById('led1');
+        const led2 = document.getElementById('led2');
+        const led3 = document.getElementById('led3');
+        const led4 = document.getElementById('led4');
 
-        // 烟雾粒子系统
+        // ========== 初始化：加载离线数据 ==========
+        function initializeSystem() {
+            const savedState = persistence.loadState();
+            
+            if (savedState) {
+                const currentTime = Date.now();
+                const offlineProgress = offlineCalc.calculateOfflineProgress(
+                    savedState.lastSaveTime,
+                    currentTime,
+                    savedState.isCollecting,
+                    savedState.isReleasing,
+                    savedState.energy
+                );
+
+                // 恢复状态
+                energy = offlineProgress.newEnergy;
+                collectCount = savedState.collectCount + offlineProgress.collectionsAdded;
+                releaseCount = savedState.releaseCount + offlineProgress.releasesAdded;
+                totalRunTime = savedState.totalRunTime;
+                
+                // 显示离线通知
+                if (offlineProgress.offlineSeconds > 10) {
+                    const minutes = Math.floor(offlineProgress.offlineSeconds / 60);
+                    const seconds = offlineProgress.offlineSeconds % 60;
+                    const timeStr = minutes > 0 ? `${minutes}分${seconds}秒` : `${seconds}秒`;
+                    
+                    offlineNotice.textContent = `🎉 离线期间：收集了 ${offlineProgress.collectionsAdded} 点能量，释放了 ${offlineProgress.releasesAdded} 点能量（离线时长：${timeStr}）`;
+                    offlineNotice.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        offlineNotice.style.display = 'none';
+                    }, 8000);
+
+                    addHistory(`离线${timeStr}，自动计算：+${offlineProgress.collectionsAdded}能量，-${offlineProgress.releasesAdded}能量`);
+                }
+
+                offlineTimeEl.textContent = formatTime(offlineProgress.offlineSeconds);
+
+                // 恢复运行状态
+                if (savedState.isCollecting) {
+                    startCollecting(true);
+                }
+                if (savedState.isReleasing) {
+                    startReleasing(true);
+                }
+            }
+
+            updateDisplay();
+            startAutoSave();
+        }
+
+        // ========== 自动保存 ==========
+        function startAutoSave() {
+            setInterval(() => {
+                saveCurrentState();
+            }, 2000); // 每2秒保存一次
+        }
+
+        function saveCurrentState() {
+            const state = {
+                energy,
+                isCollecting,
+                isReleasing,
+                collectCount,
+                releaseCount,
+                totalRunTime,
+                lastSaveTime: Date.now()
+            };
+            persistence.saveState(state);
+        }
+
+        // ========== 烟雾粒子系统 ==========
         const canvas = document.getElementById('smokeCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = canvas.offsetWidth;
@@ -350,20 +831,20 @@
             }
 
             reset() {
-                this.x = canvas.width / 2 + (Math.random() - 0.5) * 30;
-                this.y = canvas.height / 2 - 50;
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = -Math.random() * 2 - 1;
+                this.x = canvas.width / 2 + (Math.random() - 0.5) * 40;
+                this.y = canvas.height / 2 - 80;
+                this.vx = (Math.random() - 0.5) * 2.5;
+                this.vy = -Math.random() * 2.5 - 1.5;
                 this.life = 1;
-                this.size = Math.random() * 30 + 20;
+                this.size = Math.random() * 35 + 25;
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy -= 0.02;
-                this.life -= 0.01;
-                this.size += 0.3;
+                this.vy -= 0.03;
+                this.life -= 0.008;
+                this.size += 0.4;
 
                 if (this.life <= 0) {
                     this.reset();
@@ -372,11 +853,19 @@
 
             draw() {
                 ctx.save();
-                ctx.globalAlpha = this.life * 0.3;
+                ctx.globalAlpha = this.life * 0.35;
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                gradient.addColorStop(0, 'rgba(200, 200, 220, 0.8)');
-                gradient.addColorStop(0.5, 'rgba(150, 150, 180, 0.4)');
-                gradient.addColorStop(1, 'rgba(100, 100, 150, 0)');
+                
+                if (isReleasing) {
+                    gradient.addColorStop(0, 'rgba(231, 76, 60, 0.9)');
+                    gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.5)');
+                    gradient.addColorStop(1, 'rgba(230, 126, 34, 0)');
+                } else {
+                    gradient.addColorStop(0, 'rgba(200, 200, 220, 0.9)');
+                    gradient.addColorStop(0.5, 'rgba(150, 150, 180, 0.5)');
+                    gradient.addColorStop(1, 'rgba(100, 100, 150, 0)');
+                }
+                
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -386,7 +875,7 @@
         }
 
         let particles = [];
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
             particles.push(new Particle());
         }
 
@@ -405,48 +894,95 @@
 
         animateSmoke();
 
-        // 更新显示
+        // ========== 更新显示 ==========
         function updateDisplay() {
             energyValue.textContent = energy;
+            energyDisplay.textContent = energy;
             energyBar.style.width = energy + '%';
             energyBar.textContent = energy + '%';
+            displayScreen.textContent = String(energy).padStart(3, '0');
+            collectCountEl.textContent = collectCount;
+            releaseCountEl.textContent = releaseCount;
+            
+            // 更新指示灯
+            led1.className = 'indicator';
+            led2.className = 'indicator';
+            led3.className = 'indicator';
+            led4.className = 'indicator';
+            
+            if (isCollecting) led2.className = 'indicator active-green';
+            if (isReleasing) led1.className = 'indicator active-red';
+            if (energy > 50) led3.className = 'indicator active-blue';
+            if (energy === 100) led4.className = 'indicator active-green';
         }
 
-        // 更新运行时间
+        // ========== 时间格式化 ==========
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            if (h > 0) return `${h}h ${m}m ${s}s`;
+            if (m > 0) return `${m}m ${s}s`;
+            return `${s}s`;
+        }
+
+        // ========== 添加历史记录 ==========
+        function addHistory(message) {
+            const time = new Date().toLocaleTimeString('zh-CN');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.textContent = `[${time}] ${message}`;
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            
+            // 保持最多10条记录
+            while (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+
+        // ========== 更新运行时间 ==========
         function updateRunTime() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            runTimeEl.textContent = elapsed + 's';
+            totalRunTime++;
+            runTimeEl.textContent = formatTime(totalRunTime);
         }
 
-        // 开始收集
-        startBtn.addEventListener('click', () => {
+        // ========== 开始收集 ==========
+        function startCollecting(isResuming = false) {
             if (isCollecting) return;
             
             isCollecting = true;
             statusText.textContent = '正在收集能量...';
             statusIndicator.className = 'status-indicator collecting';
             
-            if (startTime === 0) {
-                startTime = Date.now();
+            if (!isResuming) {
+                addHistory('开始收集能量');
+            }
+
+            if (!timeInterval) {
                 timeInterval = setInterval(updateRunTime, 1000);
             }
 
             collectInterval = setInterval(() => {
                 if (energy < 100) {
-                    // 50% 概率收集能量
                     if (Math.random() < 0.5) {
                         energy++;
                         collectCount++;
-                        collectCountEl.textContent = collectCount;
                         updateDisplay();
+                        addHistory(`成功收集1点能量 (当前: ${energy})`);
                     }
                 } else {
                     statusText.textContent = '能量已满！';
+                    addHistory('能量已达到上限');
                 }
+                saveCurrentState();
             }, 5000);
+        }
+
+        startBtn.addEventListener('click', () => {
+            startCollecting();
         });
 
-        // 停止收集
+        // ========== 停止收集 ==========
         stopBtn.addEventListener('click', () => {
             if (!isCollecting) return;
             
@@ -458,38 +994,56 @@
                 clearInterval(collectInterval);
                 collectInterval = null;
             }
+            
+            addHistory('停止收集能量');
+            saveCurrentState();
         });
 
-        // 释放能量
-        releaseBtn.addEventListener('click', () => {
+        // ========== 释放能量 ==========
+        function startReleasing(isResuming = false) {
             if (isReleasing) return;
             if (energy === 0) {
-                alert('能量不足，无法释放！');
+                alert('⚠️ 能量不足，无法释放！');
                 return;
             }
             
             isReleasing = true;
             statusText.textContent = '正在释放能量...';
             statusIndicator.className = 'status-indicator releasing';
+            
+            if (!isResuming) {
+                addHistory('开始释放能量');
+            }
 
             releaseInterval = setInterval(() => {
                 if (energy > 0) {
                     energy--;
                     releaseCount++;
-                    releaseCountEl.textContent = releaseCount;
                     updateDisplay();
+                    addHistory(`释放1点能量 (剩余: ${energy})`);
                 } else {
                     isReleasing = false;
                     statusText.textContent = '能量已释放完毕';
                     statusIndicator.className = 'status-indicator';
                     clearInterval(releaseInterval);
                     releaseInterval = null;
+                    addHistory('能量释放完成');
                 }
+                saveCurrentState();
             }, 10000);
+        }
+
+        releaseBtn.addEventListener('click', () => {
+            startReleasing();
         });
 
-        // 初始化显示
-        updateDisplay();
+        // ========== 页面关闭时保存 ==========
+        window.addEventListener('beforeunload', () => {
+            saveCurrentState();
+        });
+
+        // ========== 初始化系统 ==========
+        initializeSystem();
     </script>
 </body>
 </html>
