@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML在线测试工具 - 实时预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .run-btn {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .run-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .clear-btn {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .clear-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .fullscreen-btn {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .fullscreen-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .download-btn {
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .download-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 15px;
+            min-height: 0;
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .split-mode {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .editor-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .html-label {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .css-label {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .js-label {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        textarea {
+            flex: 1;
+            border: none;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        textarea:focus {
+            background: #fff;
+        }
+
+        .preview-panel {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        iframe {
+            flex: 1;
+            border: none;
+            background: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 全屏模式 */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0 !important;
+            margin: 0;
+        }
+
+        .fullscreen-exit {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 10px 20px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .fullscreen-exit:hover {
+            background: rgba(220, 38, 38, 0.9);
+        }
+
+        /* 下载提示 */
+        .download-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 10001;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .mode-selector, .controls {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 HTML在线测试工具</h1>
+            
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="switchMode('split')">分开输入模式</button>
+                <button class="mode-btn" onclick="switchMode('full')">完整HTML模式</button>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn run-btn" onclick="runCode()">▶ 运行代码</button>
+                <button class="control-btn download-btn" onclick="downloadHTML()">⬇ 下载HTML</button>
+                <button class="control-btn clear-btn" onclick="clearAll()">🗑 清空代码</button>
+                <button class="control-btn fullscreen-btn" onclick="toggleFullscreen()">⛶ 全屏预览</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 分开输入模式 -->
+            <div class="editor-panel split-mode" id="splitMode">
+                <div class="editor-section">
+                    <div class="editor-label html-label">HTML</div>
+                    <textarea id="htmlCode" placeholder="在此输入HTML代码...">
+<h1>欢迎使用HTML在线测试工具！</h1>
+<p>这是一个功能强大的在线代码编辑器</p>
+<div class="demo-box">
+    <h2>功能特点</h2>
+    <ul>
+        <li>实时预览</li>
+        <li>分离式编辑</li>
+        <li>全屏模式</li>
+        <li>美观界面</li>
+        <li>一键下载</li>
+    </ul>
+</div></textarea>
+                </div>
+
+                <div class="editor-section">
+                    <div class="editor-label css-label">CSS</div>
+                    <textarea id="cssCode" placeholder="在此输入CSS代码...">
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #fff9c4 100%);
+}
+
+h1 {
+    color: #667eea;
+    text-align: center;
+}
+
+.demo-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 8px;
+    margin: 5px 0;
+    background: #f0f4ff;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+li:hover {
+    transform: translateX(5px);
+    background: #e0e7ff;
+}</textarea>
+                </div>
+
+                <div class="editor-section">
+                    <div class="editor-label js-label">JavaScript</div>
+                    <textarea id="jsCode" placeholder="在此输入JavaScript代码...">
+// 在此编写JavaScript代码
+console.log('HTML在线测试工具已加载！');
+
+// 示例：点击交互
+document.addEventListener('DOMContentLoaded', function() {
+    const items = document.querySelectorAll('li');
+    items.forEach(item => {
+        item.addEventListener('click', function() {
+            this.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 200);
+        });
+    });
+});</textarea>
+                </div>
+            </div>
+
+            <!-- 完整HTML模式 -->
+            <div class="editor-panel hidden" id="fullMode">
+                <div class="editor-section" style="flex: 1;">
+                    <div class="editor-label">完整HTML代码</div>
+                    <textarea id="fullHtmlCode" placeholder="在此输入完整的HTML代码（包含<html>、<head>、<body>等标签）...">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完整HTML示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>完整HTML模式</h1>
+        <p>在这个模式下,您可以编写完整的HTML文档,包含所有标签。</p>
+    </div>
+    
+    <script>
+        console.log('完整HTML模式已加载');
+    </script>
+</body>
+</html></textarea>
+                </div>
+            </div>
+
+            <!-- 预览面板 -->
+            <div class="preview-panel" id="previewPanel">
+                <div class="preview-header">📱 实时预览</div>
+                <iframe id="preview"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'split';
+        let isFullscreen = false;
+
+        // 初始化时运行一次代码
+        window.onload = function() {
+            runCode();
+        };
+
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            const splitMode = document.getElementById('splitMode');
+            const fullMode = document.getElementById('fullMode');
+            const modeBtns = document.querySelectorAll('.mode-btn');
+
+            modeBtns.forEach(btn => btn.classList.remove('active'));
+
+            if (mode === 'split') {
+                splitMode.classList.remove('hidden');
+                fullMode.classList.add('hidden');
+                modeBtns[0].classList.add('active');
+            } else {
+                splitMode.classList.add('hidden');
+                fullMode.classList.remove('hidden');
+                modeBtns[1].classList.add('active');
+            }
+        }
+
+        // 运行代码
+        function runCode() {
+            const preview = document.getElementById('preview');
+            const previewDoc = preview.contentDocument || preview.contentWindow.document;
+
+            let htmlContent;
+
+            if (currentMode === 'split') {
+                const html = document.getElementById('htmlCode').value;
+                const css = document.getElementById('cssCode').value;
+                const js = document.getElementById('jsCode').value;
+
+                htmlContent = `
+                    <!DOCTYPE html>
+                    <html lang="zh-CN">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>${css}</style>
+                    </head>
+                    <body>
+                        ${html}
+                        <script>${js}<\/script>
+                    </body>
+                    </html>
+                `;
+            } else {
+                htmlContent = document.getElementById('fullHtmlCode').value;
+            }
+
+            previewDoc.open();
+            previewDoc.write(htmlContent);
+            previewDoc.close();
+        }
+
+        // 下载HTML文件
+        function downloadHTML() {
+            let htmlContent;
+            let fileName;
+
+            if (currentMode === 'split') {
+                // 分开输入模式：合并HTML、CSS、JavaScript为一个完整文件
+                const html = document.getElementById('htmlCode').value;
+                const css = document.getElementById('cssCode').value;
+                const js = document.getElementById('jsCode').value;
+
+                htmlContent = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网页</title>
+    <style>
+${css}
+    </style>
+</head>
+<body>
+${html}
+    <script>
+${js}
+    </script>
+</body>
+</html>`;
+                fileName = 'my-webpage.html';
+            } else {
+                // 完整HTML模式：直接下载
+                htmlContent = document.getElementById('fullHtmlCode').value;
+                fileName = 'my-webpage.html';
+            }
+
+            // 创建Blob对象
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            
+            // 创建下载链接
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            
+            // 触发下载
+            document.body.appendChild(link);
+            link.click();
+            
+            // 清理
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            // 显示下载成功提示
+            showToast('✅ 文件下载成功！');
+        }
+
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'download-toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 2000);
+        }
+
+        // 清空代码
+        function clearAll() {
+            if (confirm('确定要清空所有代码吗？')) {
+                if (currentMode === 'split') {
+                    document.getElementById('htmlCode').value = '';
+                    document.getElementById('cssCode').value = '';
+                    document.getElementById('jsCode').value = '';
+                } else {
+                    document.getElementById('fullHtmlCode').value = '';
+                }
+                runCode();
+            }
+        }
+
+        // 全屏预览
+        function toggleFullscreen() {
+            const previewPanel = document.getElementById('previewPanel');
+            
+            if (!isFullscreen) {
+                previewPanel.classList.add('fullscreen');
+                
+                const exitBtn = document.createElement('button');
+                exitBtn.className = 'fullscreen-exit';
+                exitBtn.textContent = '✕ 退出全屏';
+                exitBtn.onclick = toggleFullscreen;
+                exitBtn.id = 'exitFullscreenBtn';
+                document.body.appendChild(exitBtn);
+                
+                isFullscreen = true;
+            } else {
+                previewPanel.classList.remove('fullscreen');
+                const exitBtn = document.getElementById('exitFullscreenBtn');
+                if (exitBtn) {
+                    exitBtn.remove();
+                }
+                isFullscreen = false;
+            }
+        }
+
+        // ESC键退出全屏
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isFullscreen) {
+                toggleFullscreen();
+            }
+        });
+
+        // 自动保存功能
+        setInterval(function() {
+            if (currentMode === 'split') {
+                localStorage.setItem('htmlCode', document.getElementById('htmlCode').value);
+                localStorage.setItem('cssCode', document.getElementById('cssCode').value);
+                localStorage.setItem('jsCode', document.getElementById('jsCode').value);
+            } else {
+                localStorage.setItem('fullHtmlCode', document.getElementById('fullHtmlCode').value);
+            }
+        }, 5000);
+
+        // 加载保存的代码
+        window.addEventListener('load', function() {
+            const savedHtml = localStorage.getItem('htmlCode');
+            const savedCss = localStorage.getItem('cssCode');
+            const savedJs = localStorage.getItem('jsCode');
+            const savedFull = localStorage.getItem('fullHtmlCode');
+
+            if (savedHtml) {
+                document.getElementById('htmlCode').value = savedHtml;
+            }
+            if (savedCss) {
+                document.getElementById('cssCode').value = savedCss;
+            }
+            if (savedJs) {
+                document.getElementById('jsCode').value = savedJs;
+            }
+            if (savedFull) {
+                document.getElementById('fullHtmlCode').value = savedFull;
+            }
+        });
+    </script>
+</body>
+</html>
