@@ -14,21 +14,10 @@
         body {
             font-family: 'Arial', 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* 背景粒子效果 */
-        .bg-particle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
+            padding: 20px 0;
+            overflow-y: auto; /* 允许垂直滚动 */
+            overflow-x: hidden;
         }
 
         .container {
@@ -38,9 +27,9 @@
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             max-width: 800px;
             width: 95%;
+            margin: 0 auto;
             position: relative;
             backdrop-filter: blur(15px);
-            z-index: 1;
         }
 
         h1 {
@@ -238,6 +227,17 @@
             animation: pulse 2s infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+                box-shadow: 0 0 40px rgba(52, 152, 219, 0.8);
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+                box-shadow: 0 0 60px rgba(52, 152, 219, 1);
+            }
+        }
+
         .energy-core::before {
             content: '';
             position: absolute;
@@ -405,7 +405,7 @@
             50% { opacity: 0.3; }
         }
 
-        /* 按钮组 */
+        /* 按钮组 - 增强可见性 */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -415,58 +415,90 @@
 
         button {
             flex: 1;
-            padding: 18px 25px;
+            padding: 20px 25px;
             border: none;
             border-radius: 15px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 按钮悬停效果增强 */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
         }
 
         button:active {
-            transform: translateY(0);
+            transform: translateY(-2px) scale(0.98);
         }
 
         #startBtn {
             background: linear-gradient(145deg, #2ecc71, #27ae60);
             color: white;
+            border: 3px solid #27ae60;
         }
 
         #startBtn:hover {
             background: linear-gradient(145deg, #27ae60, #229954);
+            border-color: #229954;
         }
 
         #stopBtn {
             background: linear-gradient(145deg, #e74c3c, #c0392b);
             color: white;
+            border: 3px solid #c0392b;
         }
 
         #stopBtn:hover {
             background: linear-gradient(145deg, #c0392b, #a93226);
+            border-color: #a93226;
         }
 
         #releaseBtn {
             background: linear-gradient(145deg, #f39c12, #e67e22);
             color: white;
+            border: 3px solid #e67e22;
         }
 
         #releaseBtn:hover {
             background: linear-gradient(145deg, #e67e22, #d35400);
+            border-color: #d35400;
         }
 
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
+        }
+
+        button span {
+            position: relative;
+            z-index: 1;
         }
 
         /* 统计面板 */
@@ -509,6 +541,7 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .history-title {
@@ -526,6 +559,25 @@
             overflow-y: auto;
         }
 
+        /* 自定义滚动条样式 */
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
         .history-item {
             padding: 10px;
             margin-bottom: 8px;
@@ -539,11 +591,33 @@
         .history-item:last-child {
             margin-bottom: 0;
         }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 18px 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="bg-particle" id="bgParticle"></div>
-    
     <div class="container">
         <h1>⚡ 能量收集系统 PRO</h1>
         <div class="subtitle">🌐 支持离线时间同步计算</div>
@@ -602,9 +676,9 @@
         </div>
 
         <div class="controls">
-            <button id="startBtn">🚀 开始收集</button>
-            <button id="stopBtn">⏸️ 停止收集</button>
-            <button id="releaseBtn">💥 释放能量</button>
+            <button id="startBtn"><span>🚀 开始收集</span></button>
+            <button id="stopBtn"><span>⏸️ 停止收集</span></button>
+            <button id="releaseBtn"><span>💥 释放能量</span></button>
         </div>
 
         <div class="stats">
@@ -635,7 +709,7 @@
                 📋 操作历史
             </div>
             <div class="history-list" id="historyList">
-                <div class="history-item">系统初始化完成</div>
+                <div class="history-item">✅ 系统初始化完成，可以开始操作</div>
             </div>
         </div>
     </div>
@@ -822,8 +896,14 @@
         // ========== 烟雾粒子系统 ==========
         const canvas = document.getElementById('smokeCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         class Particle {
             constructor() {
@@ -955,7 +1035,7 @@
             statusIndicator.className = 'status-indicator collecting';
             
             if (!isResuming) {
-                addHistory('开始收集能量');
+                addHistory('✅ 开始收集能量');
             }
 
             if (!timeInterval) {
@@ -968,11 +1048,13 @@
                         energy++;
                         collectCount++;
                         updateDisplay();
-                        addHistory(`成功收集1点能量 (当前: ${energy})`);
+                        addHistory(`⚡ 成功收集1点能量 (当前: ${energy})`);
+                    } else {
+                        addHistory(`❌ 收集失败 (概率未触发)`);
                     }
                 } else {
                     statusText.textContent = '能量已满！';
-                    addHistory('能量已达到上限');
+                    addHistory('⚠️ 能量已达到上限');
                 }
                 saveCurrentState();
             }, 5000);
@@ -995,7 +1077,7 @@
                 collectInterval = null;
             }
             
-            addHistory('停止收集能量');
+            addHistory('⏸️ 停止收集能量');
             saveCurrentState();
         });
 
@@ -1004,6 +1086,7 @@
             if (isReleasing) return;
             if (energy === 0) {
                 alert('⚠️ 能量不足，无法释放！');
+                addHistory('❌ 释放失败：能量不足');
                 return;
             }
             
@@ -1012,7 +1095,7 @@
             statusIndicator.className = 'status-indicator releasing';
             
             if (!isResuming) {
-                addHistory('开始释放能量');
+                addHistory('💥 开始释放能量');
             }
 
             releaseInterval = setInterval(() => {
@@ -1020,14 +1103,14 @@
                     energy--;
                     releaseCount++;
                     updateDisplay();
-                    addHistory(`释放1点能量 (剩余: ${energy})`);
+                    addHistory(`🔥 释放1点能量 (剩余: ${energy})`);
                 } else {
                     isReleasing = false;
                     statusText.textContent = '能量已释放完毕';
                     statusIndicator.className = 'status-indicator';
                     clearInterval(releaseInterval);
                     releaseInterval = null;
-                    addHistory('能量释放完成');
+                    addHistory('✅ 能量释放完成');
                 }
                 saveCurrentState();
             }, 10000);
@@ -1042,8 +1125,17 @@
             saveCurrentState();
         });
 
+        // ========== 页面可见性变化监听 ==========
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                saveCurrentState();
+            }
+        });
+
         // ========== 初始化系统 ==========
+        console.log('🚀 能量收集系统初始化中...');
         initializeSystem();
+        console.log('✅ 系统初始化完成！');
     </script>
 </body>
 </html>
