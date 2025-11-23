@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>能量收集系统 PRO - 离线同步版</title>
+    <title>能量收集系统 ULTIMATE - 多能量池版</title>
     <style>
         * {
             margin: 0;
@@ -16,7 +16,7 @@
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             min-height: 100vh;
             padding: 20px 0;
-            overflow-y: auto; /* 允许垂直滚动 */
+            overflow-y: auto;
             overflow-x: hidden;
         }
 
@@ -25,9 +25,9 @@
             border-radius: 30px;
             padding: 40px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-            max-width: 800px;
+            max-width: 900px;
             width: 95%;
-            margin: 0 auto;
+            margin: 0 auto 30px;
             position: relative;
             backdrop-filter: blur(15px);
         }
@@ -40,7 +40,6 @@
             background-clip: text;
             margin-bottom: 10px;
             font-size: 2.8em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .subtitle {
@@ -50,28 +49,116 @@
             margin-bottom: 25px;
         }
 
-        /* 离线计算提示 */
-        .offline-notice {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* 故障警告 */
+        .malfunction-warning {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             text-align: center;
             font-weight: bold;
             display: none;
-            animation: slideDown 0.5s ease;
+            animation: shake 0.5s infinite, blink 0.8s infinite;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);
         }
 
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-1deg); }
+            75% { transform: translateX(5px) rotate(1deg); }
+        }
+
+        .repair-btn {
+            margin-top: 10px;
+            padding: 12px 30px;
+            background: #f39c12;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .repair-btn:hover {
+            background: #e67e22;
+            transform: scale(1.05);
+        }
+
+        /* 能量池选择器 */
+        .pool-selector {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .pool-selector-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .pool-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .pool-option {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pool-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .pool-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .pool-option.active::before {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .pool-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .pool-stats {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .pool-probability {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 5px;
         }
 
         /* 机器容器 */
@@ -86,7 +173,17 @@
             overflow: visible;
         }
 
-        /* 烟雾画布 */
+        /* 故障效果 */
+        .machine-container.malfunction {
+            animation: machineShake 0.3s infinite;
+        }
+
+        @keyframes machineShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
+        }
+
         #smokeCanvas {
             position: absolute;
             top: 0;
@@ -97,15 +194,19 @@
             z-index: 1;
         }
 
-        /* 复杂机器主体 */
         .machine {
             position: relative;
             width: 280px;
             height: 320px;
             z-index: 2;
+            filter: brightness(1);
+            transition: filter 0.3s;
         }
 
-        /* 主机身 */
+        .machine.broken {
+            filter: brightness(0.5) grayscale(0.8);
+        }
+
         .machine-body {
             position: absolute;
             bottom: 0;
@@ -120,7 +221,6 @@
                         inset 0 8px 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* 顶部控制台 */
         .control-panel {
             position: absolute;
             top: 15px;
@@ -134,7 +234,6 @@
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        /* 指示灯 */
         .indicator-lights {
             display: flex;
             justify-content: space-around;
@@ -147,26 +246,37 @@
             border-radius: 50%;
             background: #555;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
         }
 
         .indicator.active-red {
             background: #e74c3c;
-            box-shadow: 0 0 15px #e74c3c, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px #e74c3c;
             animation: blink 1s infinite;
         }
 
         .indicator.active-green {
             background: #2ecc71;
-            box-shadow: 0 0 15px #2ecc71, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px #2ecc71;
             animation: blink 1s infinite;
         }
 
         .indicator.active-blue {
             background: #3498db;
-            box-shadow: 0 0 15px #3498db, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px #3498db;
         }
 
-        /* 显示屏 */
+        .indicator.active-yellow {
+            background: #f39c12;
+            box-shadow: 0 0 15px #f39c12;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
         .display-screen {
             width: 100%;
             height: 40px;
@@ -183,7 +293,12 @@
             border: 2px solid #1a1a2e;
         }
 
-        /* 烟囱 */
+        .display-screen.error {
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+            animation: blink 0.5s infinite;
+        }
+
         .chimney {
             position: absolute;
             top: -60px;
@@ -209,7 +324,6 @@
             box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.6);
         }
 
-        /* 能量核心 */
         .energy-core {
             position: absolute;
             bottom: 80px;
@@ -271,7 +385,6 @@
             z-index: 1;
         }
 
-        /* 侧面管道 */
         .pipe {
             position: absolute;
             background: linear-gradient(90deg, #34495e, #2c3e50);
@@ -294,7 +407,6 @@
             border-radius: 0 10px 10px 0;
         }
 
-        /* 底部支架 */
         .support-base {
             position: absolute;
             bottom: -15px;
@@ -307,7 +419,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* 散热孔 */
         .vent {
             position: absolute;
             bottom: 30px;
@@ -328,7 +439,6 @@
             border-radius: 2px;
         }
 
-        /* 能量条 */
         .energy-bar-container {
             width: 100%;
             height: 40px;
@@ -337,7 +447,6 @@
             overflow: hidden;
             margin-bottom: 25px;
             box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.2);
-            position: relative;
         }
 
         .energy-bar {
@@ -371,7 +480,6 @@
             to { left: 100%; }
         }
 
-        /* 状态显示 */
         .status {
             text-align: center;
             margin-bottom: 25px;
@@ -400,12 +508,11 @@
             animation: blink 1s infinite;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .status-indicator.malfunction {
+            background: #f39c12;
+            animation: blink 0.5s infinite;
         }
 
-        /* 按钮组 - 增强可见性 */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -429,7 +536,6 @@
             overflow: hidden;
         }
 
-        /* 按钮悬停效果增强 */
         button::before {
             content: '';
             position: absolute;
@@ -463,31 +569,16 @@
             border: 3px solid #27ae60;
         }
 
-        #startBtn:hover {
-            background: linear-gradient(145deg, #27ae60, #229954);
-            border-color: #229954;
-        }
-
         #stopBtn {
             background: linear-gradient(145deg, #e74c3c, #c0392b);
             color: white;
             border: 3px solid #c0392b;
         }
 
-        #stopBtn:hover {
-            background: linear-gradient(145deg, #c0392b, #a93226);
-            border-color: #a93226;
-        }
-
         #releaseBtn {
             background: linear-gradient(145deg, #f39c12, #e67e22);
             color: white;
             border: 3px solid #e67e22;
-        }
-
-        #releaseBtn:hover {
-            background: linear-gradient(145deg, #e67e22, #d35400);
-            border-color: #d35400;
         }
 
         button:disabled {
@@ -501,7 +592,6 @@
             z-index: 1;
         }
 
-        /* 统计面板 */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -535,7 +625,6 @@
             background-clip: text;
         }
 
-        /* 历史记录 */
         .history {
             background: white;
             padding: 20px;
@@ -549,17 +638,13 @@
             font-weight: bold;
             color: #34495e;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .history-list {
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
         }
 
-        /* 自定义滚动条样式 */
         .history-list::-webkit-scrollbar {
             width: 8px;
         }
@@ -574,10 +659,6 @@
             border-radius: 10px;
         }
 
-        .history-list::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #764ba2, #667eea);
-        }
-
         .history-item {
             padding: 10px;
             margin-bottom: 8px;
@@ -588,29 +669,13 @@
             border-left: 4px solid #667eea;
         }
 
-        .history-item:last-child {
-            margin-bottom: 0;
-        }
-
-        /* 响应式设计 */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            .pool-options {
+                grid-template-columns: 1fr;
             }
-
-            h1 {
-                font-size: 2em;
-            }
-
             .controls {
                 flex-direction: column;
             }
-
-            button {
-                width: 100%;
-                padding: 18px 20px;
-            }
-
             .stats {
                 grid-template-columns: 1fr 1fr;
             }
@@ -619,16 +684,74 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚡ 能量收集系统 PRO</h1>
-        <div class="subtitle">🌐 支持离线时间同步计算</div>
+        <h1>⚡ 能量收集系统 ULTIMATE</h1>
+        <div class="subtitle">🎮 多能量池 | 故障系统 | 离线同步</div>
 
-        <div class="offline-notice" id="offlineNotice"></div>
+        <div class="malfunction-warning" id="malfunctionWarning">
+            ⚠️ 系统故障！机器已停止工作！
+            <br>
+            <button class="repair-btn" id="repairBtn" onclick="repairMachine()">🔧 立即修理</button>
+        </div>
+
+        <!-- 能量池选择器 -->
+        <div class="pool-selector">
+            <div class="pool-selector-title">🎯 选择能量池类型</div>
+            <div class="pool-options">
+                <div class="pool-option active" data-pool="0">
+                    <div class="pool-name">🟢 稳定池</div>
+                    <div class="pool-stats">
+                        收集间隔: 5秒<br>
+                        每次收集: +1 能量
+                    </div>
+                    <div class="pool-probability">成功率: 100%</div>
+                </div>
+                <div class="pool-option" data-pool="1">
+                    <div class="pool-name">🔵 均衡池</div>
+                    <div class="pool-stats">
+                        收集间隔: 5秒<br>
+                        每次收集: +2 能量
+                    </div>
+                    <div class="pool-probability">成功率: 50%</div>
+                </div>
+                <div class="pool-option" data-pool="2">
+                    <div class="pool-name">🟣 冒险池</div>
+                    <div class="pool-stats">
+                        收集间隔: 5秒<br>
+                        每次收集: +5 能量
+                    </div>
+                    <div class="pool-probability">成功率: 20%</div>
+                </div>
+                <div class="pool-option" data-pool="3">
+                    <div class="pool-name">🟡 高效池</div>
+                    <div class="pool-stats">
+                        收集间隔: 3秒<br>
+                        每次收集: +1 能量
+                    </div>
+                    <div class="pool-probability">成功率: 70%</div>
+                </div>
+                <div class="pool-option" data-pool="4">
+                    <div class="pool-name">🔴 极限池</div>
+                    <div class="pool-stats">
+                        收集间隔: 8秒<br>
+                        每次收集: +10 能量
+                    </div>
+                    <div class="pool-probability">成功率: 10%</div>
+                </div>
+                <div class="pool-option" data-pool="5">
+                    <div class="pool-name">🟠 爆发池</div>
+                    <div class="pool-stats">
+                        收集间隔: 10秒<br>
+                        每次收集: +3 能量
+                    </div>
+                    <div class="pool-probability">成功率: 80%</div>
+                </div>
+            </div>
+        </div>
         
-        <div class="machine-container">
+        <div class="machine-container" id="machineContainer">
             <canvas id="smokeCanvas"></canvas>
-            <div class="machine">
+            <div class="machine" id="machine">
                 <div class="machine-body">
-                    <!-- 顶部控制台 -->
                     <div class="control-panel">
                         <div class="indicator-lights">
                             <div class="indicator" id="led1"></div>
@@ -639,19 +762,15 @@
                         <div class="display-screen" id="displayScreen">000</div>
                     </div>
                     
-                    <!-- 烟囱 -->
                     <div class="chimney"></div>
                     
-                    <!-- 能量核心 -->
                     <div class="energy-core">
                         <span class="energy-value" id="energyValue">0</span>
                     </div>
                     
-                    <!-- 侧面管道 -->
                     <div class="pipe pipe-left"></div>
                     <div class="pipe pipe-right"></div>
                     
-                    <!-- 散热孔 -->
                     <div class="vent">
                         <div class="vent-line"></div>
                         <div class="vent-line"></div>
@@ -660,7 +779,6 @@
                         <div class="vent-line"></div>
                     </div>
                     
-                    <!-- 底部支架 -->
                     <div class="support-base"></div>
                 </div>
             </div>
@@ -695,113 +813,80 @@
                 <div class="stat-value" id="releaseCount">0</div>
             </div>
             <div class="stat-item">
-                <div class="stat-label">总运行时间</div>
-                <div class="stat-value" id="runTime">0s</div>
+                <div class="stat-label">故障次数</div>
+                <div class="stat-value" id="malfunctionCount">0</div>
             </div>
             <div class="stat-item">
-                <div class="stat-label">离线时长</div>
-                <div class="stat-value" id="offlineTime">0s</div>
+                <div class="stat-label">修理次数</div>
+                <div class="stat-value" id="repairCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总运行时间</div>
+                <div class="stat-value" id="runTime">0s</div>
             </div>
         </div>
 
         <div class="history">
-            <div class="history-title">
-                📋 操作历史
-            </div>
+            <div class="history-title">📋 操作历史</div>
             <div class="history-list" id="historyList">
-                <div class="history-item">✅ 系统初始化完成，可以开始操作</div>
+                <div class="history-item">✅ 系统初始化完成</div>
             </div>
         </div>
     </div>
 
     <script>
-        // ========== 数据持久化系统 ==========
+        // ========== 能量池配置 ==========
+        const ENERGY_POOLS = [
+            { name: '稳定池', interval: 5000, amount: 1, probability: 1.0 },      // 100%
+            { name: '均衡池', interval: 5000, amount: 2, probability: 0.5 },      // 50%
+            { name: '冒险池', interval: 5000, amount: 5, probability: 0.2 },      // 20%
+            { name: '高效池', interval: 3000, amount: 1, probability: 0.7 },      // 70%
+            { name: '极限池', interval: 8000, amount: 10, probability: 0.1 },     // 10%
+            { name: '爆发池', interval: 10000, amount: 3, probability: 0.8 }      // 80%
+        ];
+
+        const MALFUNCTION_PROBABILITY = 0.05; // 5%故障概率
+
+        // ========== 数据持久化 ==========
         class PersistenceManager {
             constructor() {
-                this.storageKey = 'energySystemData';
+                this.storageKey = 'energySystemUltimate';
             }
-
             saveState(state) {
                 try {
                     localStorage.setItem(this.storageKey, JSON.stringify(state));
                 } catch (e) {
-                    console.error('保存数据失败:', e);
+                    console.error('保存失败:', e);
                 }
             }
-
             loadState() {
                 try {
                     const data = localStorage.getItem(this.storageKey);
                     return data ? JSON.parse(data) : null;
                 } catch (e) {
-                    console.error('加载数据失败:', e);
                     return null;
                 }
             }
-
-            clearState() {
-                localStorage.removeItem(this.storageKey);
-            }
         }
 
-        // ========== 离线时间计算器 ==========
-        class OfflineCalculator {
-            calculateOfflineProgress(lastSaveTime, currentTime, isCollecting, isReleasing, lastEnergy) {
-                const timeDiff = currentTime - lastSaveTime;
-                const seconds = Math.floor(timeDiff / 1000);
-                
-                let newEnergy = lastEnergy;
-                let collectionsAdded = 0;
-                let releasesAdded = 0;
-
-                // 计算收集
-                if (isCollecting && newEnergy < 100) {
-                    const collectCycles = Math.floor(seconds / 5);
-                    for (let i = 0; i < collectCycles; i++) {
-                        if (newEnergy >= 100) break;
-                        // 50% 概率收集
-                        if (Math.random() < 0.5) {
-                            newEnergy++;
-                            collectionsAdded++;
-                        }
-                    }
-                    newEnergy = Math.min(100, newEnergy);
-                }
-
-                // 计算释放
-                if (isReleasing && newEnergy > 0) {
-                    const releaseCycles = Math.floor(seconds / 10);
-                    const actualReleases = Math.min(releaseCycles, newEnergy);
-                    newEnergy -= actualReleases;
-                    releasesAdded = actualReleases;
-                }
-
-                return {
-                    newEnergy,
-                    collectionsAdded,
-                    releasesAdded,
-                    offlineSeconds: seconds
-                };
-            }
-        }
-
-        // ========== 能量系统 ==========
+        // ========== 系统状态 ==========
         const persistence = new PersistenceManager();
-        const offlineCalc = new OfflineCalculator();
-
         let energy = 0;
         let isCollecting = false;
         let isReleasing = false;
+        let isMalfunction = false;
         let collectInterval = null;
         let releaseInterval = null;
+        let malfunctionCheckInterval = null;
+        let timeInterval = null;
         let collectCount = 0;
         let releaseCount = 0;
+        let malfunctionCount = 0;
+        let repairCount = 0;
         let totalRunTime = 0;
-        let startTime = 0;
-        let timeInterval = null;
-        let lastSaveTime = Date.now();
+        let currentPoolIndex = 0;
 
-        // DOM 元素
+        // ========== DOM 元素 ==========
         const energyValue = document.getElementById('energyValue');
         const energyBar = document.getElementById('energyBar');
         const statusText = document.getElementById('statusText');
@@ -812,88 +897,35 @@
         const releaseBtn = document.getElementById('releaseBtn');
         const collectCountEl = document.getElementById('collectCount');
         const releaseCountEl = document.getElementById('releaseCount');
+        const malfunctionCountEl = document.getElementById('malfunctionCount');
+        const repairCountEl = document.getElementById('repairCount');
         const runTimeEl = document.getElementById('runTime');
-        const offlineTimeEl = document.getElementById('offlineTime');
         const energyDisplay = document.getElementById('energyDisplay');
-        const offlineNotice = document.getElementById('offlineNotice');
         const historyList = document.getElementById('historyList');
+        const malfunctionWarning = document.getElementById('malfunctionWarning');
+        const machineContainer = document.getElementById('machineContainer');
+        const machine = document.getElementById('machine');
         const led1 = document.getElementById('led1');
         const led2 = document.getElementById('led2');
         const led3 = document.getElementById('led3');
         const led4 = document.getElementById('led4');
 
-        // ========== 初始化：加载离线数据 ==========
-        function initializeSystem() {
-            const savedState = persistence.loadState();
-            
-            if (savedState) {
-                const currentTime = Date.now();
-                const offlineProgress = offlineCalc.calculateOfflineProgress(
-                    savedState.lastSaveTime,
-                    currentTime,
-                    savedState.isCollecting,
-                    savedState.isReleasing,
-                    savedState.energy
-                );
-
-                // 恢复状态
-                energy = offlineProgress.newEnergy;
-                collectCount = savedState.collectCount + offlineProgress.collectionsAdded;
-                releaseCount = savedState.releaseCount + offlineProgress.releasesAdded;
-                totalRunTime = savedState.totalRunTime;
-                
-                // 显示离线通知
-                if (offlineProgress.offlineSeconds > 10) {
-                    const minutes = Math.floor(offlineProgress.offlineSeconds / 60);
-                    const seconds = offlineProgress.offlineSeconds % 60;
-                    const timeStr = minutes > 0 ? `${minutes}分${seconds}秒` : `${seconds}秒`;
-                    
-                    offlineNotice.textContent = `🎉 离线期间：收集了 ${offlineProgress.collectionsAdded} 点能量，释放了 ${offlineProgress.releasesAdded} 点能量（离线时长：${timeStr}）`;
-                    offlineNotice.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        offlineNotice.style.display = 'none';
-                    }, 8000);
-
-                    addHistory(`离线${timeStr}，自动计算：+${offlineProgress.collectionsAdded}能量，-${offlineProgress.releasesAdded}能量`);
+        // ========== 能量池选择 ==========
+        document.querySelectorAll('.pool-option').forEach((option, index) => {
+            option.addEventListener('click', () => {
+                if (isCollecting) {
+                    alert('⚠️ 请先停止收集再切换能量池！');
+                    return;
                 }
-
-                offlineTimeEl.textContent = formatTime(offlineProgress.offlineSeconds);
-
-                // 恢复运行状态
-                if (savedState.isCollecting) {
-                    startCollecting(true);
-                }
-                if (savedState.isReleasing) {
-                    startReleasing(true);
-                }
-            }
-
-            updateDisplay();
-            startAutoSave();
-        }
-
-        // ========== 自动保存 ==========
-        function startAutoSave() {
-            setInterval(() => {
+                document.querySelectorAll('.pool-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                currentPoolIndex = index;
+                addHistory(`🎯 切换到${ENERGY_POOLS[index].name} (成功率${(ENERGY_POOLS[index].probability * 100).toFixed(0)}%)`);
                 saveCurrentState();
-            }, 2000); // 每2秒保存一次
-        }
+            });
+        });
 
-        function saveCurrentState() {
-            const state = {
-                energy,
-                isCollecting,
-                isReleasing,
-                collectCount,
-                releaseCount,
-                totalRunTime,
-                lastSaveTime: Date.now()
-            };
-            persistence.saveState(state);
-        }
-
-        // ========== 烟雾粒子系统 ==========
+        // ========== 烟雾效果 ==========
         const canvas = document.getElementById('smokeCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -901,7 +933,6 @@
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
         }
-        
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
@@ -909,7 +940,6 @@
             constructor() {
                 this.reset();
             }
-
             reset() {
                 this.x = canvas.width / 2 + (Math.random() - 0.5) * 40;
                 this.y = canvas.height / 2 - 80;
@@ -918,25 +948,23 @@
                 this.life = 1;
                 this.size = Math.random() * 35 + 25;
             }
-
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
                 this.vy -= 0.03;
                 this.life -= 0.008;
                 this.size += 0.4;
-
-                if (this.life <= 0) {
-                    this.reset();
-                }
+                if (this.life <= 0) this.reset();
             }
-
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.life * 0.35;
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                
-                if (isReleasing) {
+                if (isMalfunction) {
+                    gradient.addColorStop(0, 'rgba(50, 50, 50, 0.9)');
+                    gradient.addColorStop(0.5, 'rgba(80, 80, 80, 0.5)');
+                    gradient.addColorStop(1, 'rgba(100, 100, 100, 0)');
+                } else if (isReleasing) {
                     gradient.addColorStop(0, 'rgba(231, 76, 60, 0.9)');
                     gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.5)');
                     gradient.addColorStop(1, 'rgba(230, 126, 34, 0)');
@@ -945,7 +973,6 @@
                     gradient.addColorStop(0.5, 'rgba(150, 150, 180, 0.5)');
                     gradient.addColorStop(1, 'rgba(100, 100, 150, 0)');
                 }
-                
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -961,17 +988,14 @@
 
         function animateSmoke() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (isCollecting || isReleasing) {
+            if ((isCollecting || isReleasing) && !isMalfunction) {
                 particles.forEach(particle => {
                     particle.update();
                     particle.draw();
                 });
             }
-
             requestAnimationFrame(animateSmoke);
         }
-
         animateSmoke();
 
         // ========== 更新显示 ==========
@@ -980,20 +1004,84 @@
             energyDisplay.textContent = energy;
             energyBar.style.width = energy + '%';
             energyBar.textContent = energy + '%';
-            displayScreen.textContent = String(energy).padStart(3, '0');
+            displayScreen.textContent = isMalfunction ? 'ERR' : String(energy).padStart(3, '0');
+            displayScreen.className = isMalfunction ? 'display-screen error' : 'display-screen';
             collectCountEl.textContent = collectCount;
             releaseCountEl.textContent = releaseCount;
+            malfunctionCountEl.textContent = malfunctionCount;
+            repairCountEl.textContent = repairCount;
             
-            // 更新指示灯
             led1.className = 'indicator';
             led2.className = 'indicator';
             led3.className = 'indicator';
             led4.className = 'indicator';
             
-            if (isCollecting) led2.className = 'indicator active-green';
-            if (isReleasing) led1.className = 'indicator active-red';
-            if (energy > 50) led3.className = 'indicator active-blue';
-            if (energy === 100) led4.className = 'indicator active-green';
+            if (isMalfunction) {
+                led1.className = 'indicator active-yellow';
+                led2.className = 'indicator active-yellow';
+                led3.className = 'indicator active-yellow';
+                led4.className = 'indicator active-yellow';
+            } else {
+                if (isCollecting) led2.className = 'indicator active-green';
+                if (isReleasing) led1.className = 'indicator active-red';
+                if (energy > 50) led3.className = 'indicator active-blue';
+                if (energy === 100) led4.className = 'indicator active-green';
+            }
+        }
+
+        // ========== 故障系统 ==========
+        function checkMalfunction() {
+            if (!isMalfunction && isCollecting && Math.random() < MALFUNCTION_PROBABILITY) {
+                triggerMalfunction();
+            }
+        }
+
+        function triggerMalfunction() {
+            isMalfunction = true;
+            malfunctionCount++;
+            isCollecting = false;
+            
+            if (collectInterval) {
+                clearInterval(collectInterval);
+                collectInterval = null;
+            }
+            
+            malfunctionWarning.style.display = 'block';
+            machineContainer.classList.add('malfunction');
+            machine.classList.add('broken');
+            statusText.textContent = '⚠️ 系统故障！';
+            statusIndicator.className = 'status-indicator malfunction';
+            
+            addHistory(`❌ 机器发生故障！已停止运行 (故障率5%)`);
+            updateDisplay();
+            saveCurrentState();
+        }
+
+        function repairMachine() {
+            isMalfunction = false;
+            repairCount++;
+            
+            malfunctionWarning.style.display = 'none';
+            machineContainer.classList.remove('malfunction');
+            machine.classList.remove('broken');
+            statusText.textContent = '系统待机中';
+            statusIndicator.className = 'status-indicator';
+            
+            addHistory(`🔧 机器修理完成！可以继续使用`);
+            updateDisplay();
+            saveCurrentState();
+        }
+
+        // ========== 历史记录 ==========
+        function addHistory(message) {
+            const time = new Date().toLocaleTimeString('zh-CN');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.textContent = `[${time}] ${message}`;
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            while (historyList.children.length > 15) {
+                historyList.removeChild(historyList.lastChild);
+            }
         }
 
         // ========== 时间格式化 ==========
@@ -1006,61 +1094,75 @@
             return `${s}s`;
         }
 
-        // ========== 添加历史记录 ==========
-        function addHistory(message) {
-            const time = new Date().toLocaleTimeString('zh-CN');
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.textContent = `[${time}] ${message}`;
-            historyList.insertBefore(historyItem, historyList.firstChild);
-            
-            // 保持最多10条记录
-            while (historyList.children.length > 10) {
-                historyList.removeChild(historyList.lastChild);
-            }
-        }
-
-        // ========== 更新运行时间 ==========
         function updateRunTime() {
             totalRunTime++;
             runTimeEl.textContent = formatTime(totalRunTime);
         }
 
+        // ========== 保存状态 ==========
+        function saveCurrentState() {
+            persistence.saveState({
+                energy, isCollecting, isReleasing, isMalfunction,
+                collectCount, releaseCount, malfunctionCount, repairCount,
+                totalRunTime, currentPoolIndex, lastSaveTime: Date.now()
+            });
+        }
+
+        function startAutoSave() {
+            setInterval(saveCurrentState, 2000);
+        }
+
         // ========== 开始收集 ==========
         function startCollecting(isResuming = false) {
-            if (isCollecting) return;
+            if (isCollecting || isMalfunction) return;
             
             isCollecting = true;
-            statusText.textContent = '正在收集能量...';
+            statusText.textContent = `正在从${ENERGY_POOLS[currentPoolIndex].name}收集能量...`;
             statusIndicator.className = 'status-indicator collecting';
             
             if (!isResuming) {
-                addHistory('✅ 开始收集能量');
+                addHistory(`✅ 开始收集 - ${ENERGY_POOLS[currentPoolIndex].name}`);
             }
 
             if (!timeInterval) {
                 timeInterval = setInterval(updateRunTime, 1000);
             }
 
+            if (!malfunctionCheckInterval) {
+                malfunctionCheckInterval = setInterval(checkMalfunction, 5000);
+            }
+
+            const pool = ENERGY_POOLS[currentPoolIndex];
             collectInterval = setInterval(() => {
+                if (isMalfunction) {
+                    clearInterval(collectInterval);
+                    collectInterval = null;
+                    return;
+                }
+                
                 if (energy < 100) {
-                    if (Math.random() < 0.5) {
-                        energy++;
+                    if (Math.random() < pool.probability) {
+                        const gainedEnergy = Math.min(pool.amount, 100 - energy);
+                        energy += gainedEnergy;
                         collectCount++;
                         updateDisplay();
-                        addHistory(`⚡ 成功收集1点能量 (当前: ${energy})`);
+                        addHistory(`⚡ 收集成功 +${gainedEnergy} (当前:${energy}) - ${pool.name}`);
                     } else {
-                        addHistory(`❌ 收集失败 (概率未触发)`);
+                        addHistory(`❌ 收集失败 (概率:${(pool.probability*100).toFixed(0)}%)`);
                     }
                 } else {
                     statusText.textContent = '能量已满！';
-                    addHistory('⚠️ 能量已达到上限');
+                    addHistory('⚠️ 能量已达上限');
                 }
                 saveCurrentState();
-            }, 5000);
+            }, pool.interval);
         }
 
         startBtn.addEventListener('click', () => {
+            if (isMalfunction) {
+                alert('⚠️ 机器故障中，请先修理！');
+                return;
+            }
             startCollecting();
         });
 
@@ -1076,17 +1178,20 @@
                 clearInterval(collectInterval);
                 collectInterval = null;
             }
+            if (malfunctionCheckInterval) {
+                clearInterval(malfunctionCheckInterval);
+                malfunctionCheckInterval = null;
+            }
             
-            addHistory('⏸️ 停止收集能量');
+            addHistory('⏸️ 停止收集');
             saveCurrentState();
         });
 
         // ========== 释放能量 ==========
         function startReleasing(isResuming = false) {
-            if (isReleasing) return;
+            if (isReleasing || isMalfunction) return;
             if (energy === 0) {
-                alert('⚠️ 能量不足，无法释放！');
-                addHistory('❌ 释放失败：能量不足');
+                alert('⚠️ 能量不足！');
                 return;
             }
             
@@ -1094,48 +1199,64 @@
             statusText.textContent = '正在释放能量...';
             statusIndicator.className = 'status-indicator releasing';
             
-            if (!isResuming) {
-                addHistory('💥 开始释放能量');
-            }
+            if (!isResuming) addHistory('💥 开始释放能量');
 
             releaseInterval = setInterval(() => {
                 if (energy > 0) {
                     energy--;
                     releaseCount++;
                     updateDisplay();
-                    addHistory(`🔥 释放1点能量 (剩余: ${energy})`);
+                    addHistory(`🔥 释放 -1 (剩余:${energy})`);
                 } else {
                     isReleasing = false;
-                    statusText.textContent = '能量已释放完毕';
+                    statusText.textContent = '能量释放完毕';
                     statusIndicator.className = 'status-indicator';
                     clearInterval(releaseInterval);
                     releaseInterval = null;
-                    addHistory('✅ 能量释放完成');
+                    addHistory('✅ 释放完成');
                 }
                 saveCurrentState();
             }, 10000);
         }
 
         releaseBtn.addEventListener('click', () => {
+            if (isMalfunction) {
+                alert('⚠️ 机器故障中，请先修理！');
+                return;
+            }
             startReleasing();
         });
 
-        // ========== 页面关闭时保存 ==========
-        window.addEventListener('beforeunload', () => {
-            saveCurrentState();
-        });
-
-        // ========== 页面可见性变化监听 ==========
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                saveCurrentState();
+        // ========== 初始化 ==========
+        function initializeSystem() {
+            const savedState = persistence.loadState();
+            if (savedState) {
+                energy = savedState.energy;
+                collectCount = savedState.collectCount;
+                releaseCount = savedState.releaseCount;
+                malfunctionCount = savedState.malfunctionCount;
+                repairCount = savedState.repairCount;
+                totalRunTime = savedState.totalRunTime;
+                currentPoolIndex = savedState.currentPoolIndex;
+                isMalfunction = savedState.isMalfunction;
+                
+                document.querySelectorAll('.pool-option').forEach((opt, idx) => {
+                    opt.classList.toggle('active', idx === currentPoolIndex);
+                });
+                
+                if (isMalfunction) {
+                    malfunctionWarning.style.display = 'block';
+                    machineContainer.classList.add('malfunction');
+                    machine.classList.add('broken');
+                    statusIndicator.className = 'status-indicator malfunction';
+                }
             }
-        });
+            updateDisplay();
+            startAutoSave();
+        }
 
-        // ========== 初始化系统 ==========
-        console.log('🚀 能量收集系统初始化中...');
+        window.addEventListener('beforeunload', saveCurrentState);
         initializeSystem();
-        console.log('✅ 系统初始化完成！');
     </script>
 </body>
 </html>
