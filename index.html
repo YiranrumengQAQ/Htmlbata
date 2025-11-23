@@ -1,121 +1,495 @@
-<!-- 1. Telegram风格基础UI和房间创建/加入界面 -->
-<!-- 2. 简化peer连接和安全加密，消息全加密 -->
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>局域网加密聊天</title>
-<style>
-body {background:#17212b;color:#fff;font-family:'Segoe UI',Roboto,Arial,sans-serif;margin:0;}
-.main {max-width:450px; margin:36px auto;}
-.header { background:#1c92d2;padding:12px;border-radius:18px 18px 0 0;text-align:center;}
-.header span {font-size:28px;}
-.room-set,.input-set { padding:20px;background:#25364a; border-radius:0 0 14px 14px;}
-input,textarea {padding:8px;font-size:16px;width:100%;border:none;background:#1e2a39;color:#fff;margin:8px 0;border-radius:8px;}
-input:disabled,textarea:disabled {background:#474c52;}
-.btn {background:#0088cc;color:#fff;padding:8px 22px;border-radius:18px;font-size:15px;float:right;margin-left:12px;cursor:pointer;border:none;}
-.status {margin:8px 0;color:#abdfff;}
-.msgbox {background:#101825;min-height:150px;padding:14px;border-radius:10px;overflow-y:auto;max-height:320px;}
-.msg {max-width:74%;margin:10px 0;padding:10px 16px;border-radius:14px 14px 2px 14px;background:#2b5278;}
-.msg.in {border-radius:14px 14px 14px 2px;background:#182533;align-self:flex-start;}
-.msg.out {align-self:flex-end;}
-.flex {display:flex; flex-direction:column;gap:4px;}
-.time {font-size:10px;color:#8b98a5;text-align:right;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>能量收集系统 - PEPC响应界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 机器容器 */
+        .machine-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 机器主体 */
+        .machine {
+            position: relative;
+            width: 200px;
+            height: 250px;
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+                        inset 0 -5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            z-index: 2;
+        }
+
+        /* 机器顶部烟囱 */
+        .chimney {
+            position: absolute;
+            top: -40px;
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border-radius: 10px 10px 0 0;
+            box-shadow: inset 0 -3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 烟雾画布 */
+        #smokeCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 能量核心显示 */
+        .energy-core {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #3498db, #2980b9);
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.6),
+                        inset 0 0 20px rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(52, 152, 219, 0.6);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 50px rgba(52, 152, 219, 0.9);
+            }
+        }
+
+        .energy-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 能量进度条 */
+        .energy-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .energy-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        /* 状态指示器 */
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #95a5a6;
+        }
+
+        .status-indicator.collecting {
+            background: #2ecc71;
+            animation: blink 1s infinite;
+        }
+
+        .status-indicator.releasing {
+            background: #e74c3c;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 按钮组 */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #startBtn {
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: linear-gradient(145deg, #27ae60, #229954);
+        }
+
+        #stopBtn {
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        #stopBtn:hover {
+            background: linear-gradient(145deg, #c0392b, #a93226);
+        }
+
+        #releaseBtn {
+            background: linear-gradient(145deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        #releaseBtn:hover {
+            background: linear-gradient(145deg, #e67e22, #d35400);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* 统计信息 */
+        .stats {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
 </head>
 <body>
-<div class="main">
-<div class="header"><span>🔒 局域网加密聊天</span></div>
-<div class="room-set" id="roomBox">
-  <div><b>创建/加入房间</b></div>
-  <button class="btn" onclick="createRoom()">创建房间</button>
-  <div>或</div>
-  <textarea id="remoteSDP" rows="3" placeholder="输入对方分享的房间信息..."></textarea>
-  <button class="btn" onclick="joinRoom()">加入房间</button>
-  <div class="status" id="roomStatus"></div>
-  <textarea id="mySDP" rows="3" readonly style="margin-top:9px;display:none"></textarea>
-</div>
-<div class="input-set" style="display:none" id="chatUI">
-  <div class="msgbox flex" id="msgList"></div>
-  <input type="text" id="msgIn" placeholder="输入消息..." disabled>
-  <button class="btn" id="sendBtn" disabled>发送</button>
-</div>
-</div>
-<script>
-// 简单对称密钥加密
-let secretKey,ckey,iv;
-async function genKey(){ ckey = await window.crypto.subtle.generateKey({name:'AES-GCM',length:256},!0,['encrypt','decrypt']); }
-async function exportKey(){ return btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey('raw',ckey)))); }
-async function importKey(base64){ let raw = Uint8Array.from(atob(base64),c=>c.charCodeAt(0)); ckey = await crypto.subtle.importKey('raw',raw,'AES-GCM',!0,['encrypt','decrypt']); }
+    <div class="container">
+        <h1>⚡ 能量收集系统</h1>
+        
+        <div class="machine-container">
+            <canvas id="smokeCanvas"></canvas>
+            <div class="machine">
+                <div class="chimney"></div>
+                <div class="energy-core">
+                    <span class="energy-value" id="energyValue">0</span>
+                </div>
+            </div>
+        </div>
 
-// WebRTC信令与P2P数据通道
-let pc, dc, role;
-function createRoom() {
-  role="host";
-  document.getElementById('roomStatus').textContent="正在创建房间...";
-  genKey().then(async ()=>{
-    iv = crypto.getRandomValues(new Uint8Array(12));
-    pc = new RTCPeerConnection();
-    dc = pc.createDataChannel('msg');
-    setChat();
-    let offer = await pc.createOffer(); await pc.setLocalDescription(offer);
-    showSDP(await exportKey(), iv, offer.sdp);
-    pc.onicecandidate=e=>{
-      if(e.candidate) return;
-      showSDP(await exportKey(), iv, offer.sdp);
-    };
-    pc.ondatachannel = e => bindDC(e.channel);
-  });
-}
-function showSDP(key, iv, sdp){
-  document.getElementById('mySDP').style.display='block';
-  document.getElementById('mySDP').value = JSON.stringify({k:key,v:Array.from(iv),s:sdp});
-  document.getElementById('roomStatus').textContent="复制以下信息让对方加入";
-}
-function joinRoom() {
-  role="join";
-  let obj;
-  try { obj = JSON.parse(document.getElementById('remoteSDP').value); } catch{alert('无效或未输入房间信息');return;}
-  iv = new Uint8Array(obj.v);
-  importKey(obj.k).then(()=>{
-    pc = new RTCPeerConnection();
-    pc.ondatachannel=e=>{dc=e.channel;bindDC(dc);}
-    pc.setRemoteDescription({type:'offer',sdp:obj.s});
-    pc.createAnswer().then(ans=>{
-      pc.setLocalDescription(ans);
-      pc.onicecandidate = e=>{
-        if(!e.candidate){
-          document.getElementById('mySDP').style.display='block';
-          document.getElementById('mySDP').value=JSON.stringify({s:ans.sdp});
-          document.getElementById('roomStatus').textContent="复制下方信息回复给对方";
+        <div class="energy-bar-container">
+            <div class="energy-bar" id="energyBar" style="width: 0%">0%</div>
+        </div>
+
+        <div class="status">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span id="statusText">系统待机中</span>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">开始收集</button>
+            <button id="stopBtn">停止收集</button>
+            <button id="releaseBtn">释放能量</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">收集次数</div>
+                <div class="stat-value" id="collectCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">释放次数</div>
+                <div class="stat-value" id="releaseCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">运行时间</div>
+                <div class="stat-value" id="runTime">0s</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 能量系统状态
+        let energy = 0;
+        let isCollecting = false;
+        let isReleasing = false;
+        let collectInterval = null;
+        let releaseInterval = null;
+        let collectCount = 0;
+        let releaseCount = 0;
+        let startTime = 0;
+        let timeInterval = null;
+
+        // DOM 元素
+        const energyValue = document.getElementById('energyValue');
+        const energyBar = document.getElementById('energyBar');
+        const statusText = document.getElementById('statusText');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const releaseBtn = document.getElementById('releaseBtn');
+        const collectCountEl = document.getElementById('collectCount');
+        const releaseCountEl = document.getElementById('releaseCount');
+        const runTimeEl = document.getElementById('runTime');
+
+        // 烟雾粒子系统
+        const canvas = document.getElementById('smokeCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = canvas.width / 2 + (Math.random() - 0.5) * 30;
+                this.y = canvas.height / 2 - 50;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = -Math.random() * 2 - 1;
+                this.life = 1;
+                this.size = Math.random() * 30 + 20;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy -= 0.02;
+                this.life -= 0.01;
+                this.size += 0.3;
+
+                if (this.life <= 0) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life * 0.3;
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                gradient.addColorStop(0, 'rgba(200, 200, 220, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(150, 150, 180, 0.4)');
+                gradient.addColorStop(1, 'rgba(100, 100, 150, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
         }
-      };
-    });
-  });
-}
-function bindDC(channel){
-  dc = channel;
-  dc.onopen = ()=>{ document.getElementById('msgIn').disabled=0; document.getElementById('sendBtn').disabled=0; setChat(); msgAdd('连接已建立，现在可以聊天','in'); };
-  dc.onmessage=async e=>{
-    let {m,t} = JSON.parse(e.data);
-    let d = await crypto.subtle.decrypt({name:'AES-GCM',iv}, ckey,new Uint8Array(m));
-    msgAdd(new TextDecoder().decode(d),'in',t);
-  };
-}
-function setChat(){ document.getElementById('chatUI').style.display="block"; }
-function msgAdd(text, type, t){ let e=document.createElement('div');e.className='msg '+type;
-  e.innerHTML=`<div>${text.replace(/</g,'&lt;')}</div><div class="time">${t||new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}</div>`;
-  document.getElementById('msgList').appendChild(e); document.getElementById('msgList').scrollTop=1e9;
-}
-document.getElementById('sendBtn').onclick=async ()=>{
-  let text=document.getElementById('msgIn').value.trim();
-  if(!text) return;
-  let e=await crypto.subtle.encrypt({name:'AES-GCM',iv},ckey,new TextEncoder().encode(text));
-  dc.send( JSON.stringify({m:Array.from(new Uint8Array(e)), t:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}) );
-  msgAdd(text, 'out');
-  document.getElementById('msgIn').value='';
-};
-</script>
+
+        let particles = [];
+        for (let i = 0; i < 15; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateSmoke() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (isCollecting || isReleasing) {
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+            }
+
+            requestAnimationFrame(animateSmoke);
+        }
+
+        animateSmoke();
+
+        // 更新显示
+        function updateDisplay() {
+            energyValue.textContent = energy;
+            energyBar.style.width = energy + '%';
+            energyBar.textContent = energy + '%';
+        }
+
+        // 更新运行时间
+        function updateRunTime() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            runTimeEl.textContent = elapsed + 's';
+        }
+
+        // 开始收集
+        startBtn.addEventListener('click', () => {
+            if (isCollecting) return;
+            
+            isCollecting = true;
+            statusText.textContent = '正在收集能量...';
+            statusIndicator.className = 'status-indicator collecting';
+            
+            if (startTime === 0) {
+                startTime = Date.now();
+                timeInterval = setInterval(updateRunTime, 1000);
+            }
+
+            collectInterval = setInterval(() => {
+                if (energy < 100) {
+                    // 50% 概率收集能量
+                    if (Math.random() < 0.5) {
+                        energy++;
+                        collectCount++;
+                        collectCountEl.textContent = collectCount;
+                        updateDisplay();
+                    }
+                } else {
+                    statusText.textContent = '能量已满！';
+                }
+            }, 5000);
+        });
+
+        // 停止收集
+        stopBtn.addEventListener('click', () => {
+            if (!isCollecting) return;
+            
+            isCollecting = false;
+            statusText.textContent = '收集已停止';
+            statusIndicator.className = 'status-indicator';
+            
+            if (collectInterval) {
+                clearInterval(collectInterval);
+                collectInterval = null;
+            }
+        });
+
+        // 释放能量
+        releaseBtn.addEventListener('click', () => {
+            if (isReleasing) return;
+            if (energy === 0) {
+                alert('能量不足，无法释放！');
+                return;
+            }
+            
+            isReleasing = true;
+            statusText.textContent = '正在释放能量...';
+            statusIndicator.className = 'status-indicator releasing';
+
+            releaseInterval = setInterval(() => {
+                if (energy > 0) {
+                    energy--;
+                    releaseCount++;
+                    releaseCountEl.textContent = releaseCount;
+                    updateDisplay();
+                } else {
+                    isReleasing = false;
+                    statusText.textContent = '能量已释放完毕';
+                    statusIndicator.className = 'status-indicator';
+                    clearInterval(releaseInterval);
+                    releaseInterval = null;
+                }
+            }, 10000);
+        });
+
+        // 初始化显示
+        updateDisplay();
+    </script>
 </body>
 </html>
