@@ -72,16 +72,50 @@
             background: var(--fluent-surface);
             border-bottom: 1px solid var(--fluent-border);
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .app-title {
             font-size: 24px;
             font-weight: 600;
             color: var(--fluent-text);
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        .add-contact-btn {
+            background: var(--fluent-blue);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: var(--fluent-shadow);
+        }
+
+        .add-contact-btn:hover {
+            background: var(--fluent-blue-hover);
+            transform: scale(1.05);
+        }
+
+        .add-contact-btn:active {
+            transform: scale(0.95);
+        }
+
+        .status-row {
+            padding: 12px 20px;
+            background: var(--fluent-surface);
+            border-bottom: 1px solid var(--fluent-border);
+            flex-shrink: 0;
         }
 
         .status-bar {
@@ -711,6 +745,107 @@
             box-shadow: var(--fluent-shadow-hover);
         }
 
+        /* 添加联系人对话框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--fluent-surface);
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--fluent-shadow-hover);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--fluent-text);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--fluent-border);
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--fluent-blue);
+            box-shadow: 0 0 0 1px var(--fluent-blue);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--fluent-border);
+        }
+
+        .modal-btn-cancel {
+            background: var(--fluent-surface);
+            color: var(--fluent-text);
+        }
+
+        .modal-btn-cancel:hover {
+            background: var(--fluent-surface-hover);
+        }
+
+        .modal-btn-confirm {
+            background: var(--fluent-blue);
+            color: white;
+            border-color: var(--fluent-blue);
+        }
+
+        .modal-btn-confirm:hover {
+            background: var(--fluent-blue-hover);
+        }
+
         @media (max-width: 768px) {
             .mobile-toggle {
                 display: flex;
@@ -724,8 +859,8 @@
                 top: 0;
                 height: 100vh;
                 height: -webkit-fill-available;
-                width: 85%;
-                max-width: 340px;
+                width: 100%;
+                max-width: 100%;
                 z-index: 99;
                 transition: left 0.3s ease;
             }
@@ -794,12 +929,33 @@
     <button class="mobile-toggle" onclick="app.toggleSidebar()">☰</button>
     <div id="toast"></div>
 
+    <!-- 添加联系人对话框 -->
+    <div class="modal-overlay" id="addContactModal">
+        <div class="modal">
+            <div class="modal-title">添加联系人</div>
+            <div class="modal-body">
+                <input type="text" class="modal-input" id="contactId" placeholder="输入用户ID或用户名">
+                <input type="text" class="modal-input" id="contactName" placeholder="备注名称（可选）">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="app.closeAddContactModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="app.confirmAddContact()">添加</button>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="app-title">
                     💬 Telegram Bot
                 </div>
+                <button class="add-contact-btn" onclick="app.openAddContactModal()" title="添加联系人">
+                    +
+                </button>
+            </div>
+
+            <div class="status-row">
                 <div class="status-bar">
                     <div class="status-indicator">
                         <span class="status-dot" id="statusDot"></span>
@@ -920,6 +1076,49 @@
                     this.updateStatus('初始化失败', 'offline');
                     this.toast('❌ 初始化失败，正在重试...');
                     setTimeout(() => this.init(), 3000);
+                }
+            },
+
+            openAddContactModal() {
+                document.getElementById('addContactModal').classList.add('show');
+            },
+
+            closeAddContactModal() {
+                document.getElementById('addContactModal').classList.remove('show');
+                document.getElementById('contactId').value = '';
+                document.getElementById('contactName').value = '';
+            },
+
+            async confirmAddContact() {
+                const contactId = document.getElementById('contactId').value.trim();
+                const contactName = document.getElementById('contactName').value.trim();
+
+                if (!contactId) {
+                    this.toast('⚠️ 请输入用户ID或用户名');
+                    return;
+                }
+
+                try {
+                    const chatIdNum = parseInt(contactId);
+                    if (!isNaN(chatIdNum)) {
+                        this.contacts.set(chatIdNum, {
+                            id: chatIdNum,
+                            name: contactName || `用户 ${chatIdNum}`,
+                            username: '',
+                            type: 'private',
+                            isAdmin: chatIdNum === ADMIN_ID,
+                            lastMessage: '点击开始对话',
+                            lastTime: Date.now() / 1000
+                        });
+                        this.messages.set(chatIdNum, []);
+                        this.renderContacts();
+                        this.closeAddContactModal();
+                        this.toast('✅ 联系人已添加');
+                    } else {
+                        this.toast('⚠️ 请输入有效的数字ID');
+                    }
+                } catch (e) {
+                    this.toast('❌ 添加失败: ' + e.message);
                 }
             },
 
@@ -1096,7 +1295,6 @@
                 this.renderContacts();
             },
 
-            // 获取文件URL
             async getFileUrl(fileId) {
                 if (this.fileCache.has(fileId)) {
                     return this.fileCache.get(fileId);
