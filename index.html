@@ -3,427 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureVPN - 安全快速的VPN服务</title>
+    <title>Telegram Bot 控制面板</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
-            overflow-x: hidden;
         }
-
-        .iphone-container {
-            width: 375px;
-            height: 812px;
-            background: #000;
-            border-radius: 50px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             overflow: hidden;
-            position: relative;
-            border: 12px solid #1f1f1f;
         }
-
-        /* 刘海屏 */
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 180px;
-            height: 30px;
-            background: #000;
-            border-radius: 0 0 20px 20px;
-            z-index: 100;
-        }
-
-        /* 状态栏 */
-        .status-bar {
-            height: 44px;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-bottom: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            position: relative;
-            z-index: 10;
-        }
-
-        .time {
-            flex: 1;
-            text-align: left;
-            padding-left: 10px;
-        }
-
-        .signal-icons {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            padding-right: 10px;
-        }
-
-        /* 主内容区域 */
-        .content {
-            height: calc(100% - 44px);
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        /* 玻璃态卡片效果 */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .header {
+            background: #0088cc;
+            color: white;
             padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Logo 区域 */
-        .logo-section {
             text-align: center;
-            margin-bottom: 25px;
         }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        h1 {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 15px;
-            font-weight: 400;
-        }
-
-        /* 连接状态 */
-        .connection-status {
-            text-align: center;
-            padding: 30px 0;
-        }
-
-        .status-circle {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 15px 40px rgba(56, 239, 125, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 15px 40px rgba(56, 239, 125, 0.3);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 20px 50px rgba(56, 239, 125, 0.5);
-            }
-        }
-
-        .shield-icon {
-            font-size: 50px;
-        }
-
-        .status-text {
-            color: #fff;
-            font-size: 18px;
-            font-weight: 600;
+        .header h1 {
+            font-size: 24px;
             margin-bottom: 5px;
         }
-
-        .status-detail {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
+        .section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
         }
-
-        /* 连接按钮 */
-        .connect-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 15px;
-            padding: 18px;
-            font-size: 17px;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+        .section:last-child {
+            border-bottom: none;
         }
-
-        .connect-button:active {
-            transform: scale(0.98);
-        }
-
-        /* 功能列表 */
-        .feature-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            color: #fff;
-            font-size: 15px;
-            padding: 12px 0;
-        }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 20px;
-        }
-
-        .feature-text {
-            flex: 1;
-        }
-
-        .feature-title {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .feature-desc {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* 价格卡片 */
-        .price-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-            border: 2px solid rgba(102, 126, 234, 0.4);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #38ef7d;
-            color: #000;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .price {
-            color: #fff;
-            font-size: 40px;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-
-        .price-detail {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
+        .section h2 {
+            color: #333;
+            font-size: 18px;
             margin-bottom: 15px;
         }
-
-        .guarantee {
-            color: #38ef7d;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 10px;
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
         }
-
-        /* 底部导航 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 12px;
-            right: 12px;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 25px 25px 0 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 10px;
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #0088cc;
         }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 10px;
-            gap: 5px;
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            font-size: 14px;
+            width: 100%;
+            transition: background 0.3s;
         }
-
-        .nav-item.active {
-            color: #667eea;
+        button:hover {
+            background: #006699;
         }
-
-        .nav-icon {
-            font-size: 24px;
+        button:active {
+            transform: scale(0.98);
         }
-
-        /* 滚动条样式 */
-        .content::-webkit-scrollbar {
-            width: 0;
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .response.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .response.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0088cc;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
-    <div class="iphone-container">
-        <!-- 刘海屏 -->
-        <div class="notch"></div>
-        
-        <!-- 状态栏 -->
-        <div class="status-bar">
-            <div class="time">9:41</div>
-            <div class="signal-icons">
-                <span>📶</span>
-                <span>📡</span>
-                <span>🔋</span>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Telegram Bot 控制台</h1>
+            <p>使用浏览器直接控制你的 Bot</p>
         </div>
-        
-        <!-- 主内容 -->
-        <div class="content">
-            <!-- Logo 区域 -->
-            <div class="logo-section">
-                <div class="logo">🛡️</div>
-                <h1>SecureVPN</h1>
-                <p class="subtitle">安全、快速、值得信赖</p>
+
+        <div class="section">
+            <h2>🤖 Bot 信息</h2>
+            <div class="info-box">
+                Bot Token 已配置,点击下方按钮获取 Bot 信息
             </div>
-            
-            <!-- 连接状态卡片 -->
-            <div class="glass-card">
-                <div class="connection-status">
-                    <div class="status-circle">
-                        <span class="shield-icon">✓</span>
-                    </div>
-                    <div class="status-text">已受保护</div>
-                    <div class="status-detail">您的连接是安全的</div>
-                </div>
-                <button class="connect-button">立即连接 VPN</button>
-            </div>
-            
-            <!-- 功能特点 -->
-            <div class="glass-card">
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <div class="feature-icon">⚡</div>
-                        <div class="feature-text">
-                            <div class="feature-title">超快速度</div>
-                            <div class="feature-desc">无限带宽，极速连接</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🌍</div>
-                        <div class="feature-text">
-                            <div class="feature-title">全球服务器</div>
-                            <div class="feature-desc">60+ 国家，500+ 服务器</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🔒</div>
-                        <div class="feature-text">
-                            <div class="feature-title">军事级加密</div>
-                            <div class="feature-desc">AES-256 加密保护</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🚫</div>
-                        <div class="feature-text">
-                            <div class="feature-title">零日志政策</div>
-                            <div class="feature-desc">完全匿名，不记录任何数据</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 价格卡片 -->
-            <div class="glass-card price-card">
-                <span class="badge">省70%</span>
-                <h2 style="color: #fff; font-size: 20px; margin-bottom: 5px;">特惠套餐</h2>
-                <div class="price">¥19.9<span style="font-size: 20px;">/月</span></div>
-                <div class="price-detail">2年计划 - 最超值选择</div>
-                <button class="connect-button">获取优惠</button>
-                <div class="guarantee">✓ 30天无理由退款保证</div>
-            </div>
-            
-            <div style="height: 100px;"></div>
+            <button onclick="getBotInfo()">获取 Bot 信息</button>
+            <div id="botInfoResponse" class="response"></div>
         </div>
-        
-        <!-- 底部导航 -->
-        <div class="bottom-nav">
-            <div class="nav-item active">
-                <div class="nav-icon">🏠</div>
-                <div>首页</div>
+
+        <div class="section">
+            <h2>💬 发送消息</h2>
+            <input type="text" id="chatId" placeholder="输入 Chat ID (例如: 123456789)">
+            <textarea id="messageText" placeholder="输入要发送的消息内容..."></textarea>
+            <button onclick="sendMessage()">发送消息</button>
+            <div id="sendResponse" class="response"></div>
+        </div>
+
+        <div class="section">
+            <h2>📨 获取更新</h2>
+            <div class="info-box">
+                获取最近的消息更新,可以从中找到你的 Chat ID
             </div>
-            <div class="nav-item">
-                <div class="nav-icon">📍</div>
-                <div>位置</div>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">⚙️</div>
-                <div>设置</div>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">👤</div>
-                <div>账户</div>
-            </div>
+            <button onclick="getUpdates()">获取更新</button>
+            <div id="updatesResponse" class="response"></div>
         </div>
     </div>
+
+    <script>
+        // 你的 Bot Token
+        const BOT_TOKEN = '8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc';
+        const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+        // 显示响应结果
+        function showResponse(elementId, data, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = isSuccess ? 'response success' : 'response error';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        // 获取 Bot 信息
+        async function getBotInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/getMe`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showResponse('botInfoResponse', {
+                        username: data.result.username,
+                        name: data.result.first_name,
+                        id: data.result.id,
+                        can_join_groups: data.result.can_join_groups,
+                        can_read_all_group_messages: data.result.can_read_all_group_messages
+                    }, true);
+                } else {
+                    showResponse('botInfoResponse', data, false);
+                }
+            } catch (error) {
+                showResponse('botInfoResponse', {error: error.message}, false);
+            }
+        }
+
+        // 发送消息
+        async function sendMessage() {
+            const chatId = document.getElementById('chatId').value;
+            const text = document.getElementById('messageText').value;
+
+            if (!chatId || !text) {
+                alert('请填写 Chat ID 和消息内容');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: text
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showResponse('sendResponse', {
+                        status: '✅ 消息发送成功!',
+                        message_id: data.result.message_id,
+                        date: new Date(data.result.date * 1000).toLocaleString()
+                    }, true);
+                } else {
+                    showResponse('sendResponse', data, false);
+                }
+            } catch (error) {
+                showResponse('sendResponse', {error: error.message}, false);
+            }
+        }
+
+        // 获取更新
+        async function getUpdates() {
+            try {
+                const response = await fetch(`${API_BASE}/getUpdates`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    if (data.result.length > 0) {
+                        // 提取有用的信息
+                        const updates = data.result.map(update => ({
+                            update_id: update.update_id,
+                            chat_id: update.message?.chat?.id,
+                            username: update.message?.from?.username,
+                            text: update.message?.text,
+                            date: new Date(update.message?.date * 1000).toLocaleString()
+                        }));
+                        showResponse('updatesResponse', updates, true);
+                    } else {
+                        showResponse('updatesResponse', {message: '暂无新消息'}, true);
+                    }
+                } else {
+                    showResponse('updatesResponse', data, false);
+                }
+            } catch (error) {
+                showResponse('updatesResponse', {error: error.message}, false);
+            }
+        }
+    </script>
 </body>
 </html>
