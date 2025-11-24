@@ -989,6 +989,84 @@
             background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             color: white;
         }
+
+        .conversation-item-wrapper {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .conversation-item {
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 0;
+        }
+
+        .conversation-item.swiping {
+            transition: none;
+        }
+
+        .delete-action {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .conversation-item-wrapper.swiped .delete-action {
+            opacity: 1;
+        }
+
+        .conversation-item.deleting {
+            animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .message-sticker {
+            max-width: 150px;
+            max-height: 150px;
+            width: auto;
+            height: auto;
+            cursor: pointer;
+            display: block;
+        }
+
+        .message-animation {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+        }
+
+        .message.sticker-only .message-content,
+        .message.animation-only .message-content {
+            background: transparent !important;
+            box-shadow: none;
+            padding: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1470,17 +1548,14 @@
         }
 
         async function processMessage(message) {
-            // 支持群组消息
             let chatId, fullName, username, chatType;
 
             if (message.chat.type === 'group' || message.chat.type === 'supergroup') {
-                // 群组消息
                 chatId = message.chat.id.toString();
                 fullName = message.chat.title;
                 username = message.chat.username ? '@' + message.chat.username : '';
                 chatType = 'group';
             } else {
-                // 私聊消息
                 chatId = message.from.id.toString();
                 fullName = message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : '');
                 username = message.from.username ? '@' + message.from.username : '';
@@ -1500,7 +1575,6 @@
                     chatType: chatType
                 };
             } else {
-                // 更新联系人名字（如果变了）
                 conversations[chatId].name = fullName;
                 if (username) {
                     conversations[chatId].username = username;
@@ -1508,11 +1582,9 @@
                 conversations[chatId].chatType = chatType;
             }
 
-            // 每次收到消息都刷新头像（包括群组头像）
             const avatarUrl = await getUserAvatar(chatId);
             if (avatarUrl) {
                 conversations[chatId].avatarUrl = avatarUrl;
-                console.log('✅ 已刷新头像:', fullName, '类型:', chatType);
             }
 
             const msgData = {
@@ -1522,14 +1594,12 @@
                 from: 'received'
             };
 
-            // 群组消息需要保存发送者信息
             if (chatType === 'group') {
                 msgData.sender = {
                     id: message.from.id,
                     name: message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : ''),
                     username: message.from.username ? '@' + message.from.username : ''
                 };
-                // 获取发送者头像
                 const senderAvatarUrl = await getUserAvatar(message.from.id);
                 if (senderAvatarUrl) {
                     msgData.sender.avatarUrl = senderAvatarUrl;
@@ -1549,6 +1619,17 @@
                 msgData.document = message.document.file_id;
                 msgData.documentName = message.document.file_name || 'document';
                 msgData.documentSize = message.document.file_size || 0;
+            }
+            if (message.sticker) {
+                msgData.sticker = message.sticker.file_id;
+                msgData.stickerEmoji = message.sticker.emoji || '';
+                msgData.isAnimatedSticker = message.sticker.is_animated || false;
+                msgData.isVideoSticker = message.sticker.is_video || false;
+            }
+            if (message.animation) {
+                msgData.animation = message.animation.file_id;
+                msgData.animationWidth = message.animation.width;
+                msgData.animationHeight = message.animation.height;
             }
 
             conversations[chatId].messages.push(msgData);
@@ -1584,34 +1665,36 @@
         function renderConversations() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
             const conversationsList = document.getElementById('conversationsList');
-            
+
             const sortedConversations = Object.values(conversations)
                 .filter(conv => {
                     const name = (conv.note || conv.name).toLowerCase();
                     return name.includes(searchTerm);
                 })
                 .sort((a, b) => b.lastMessageTime - a.lastMessageTime);
-            
+
             conversationsList.innerHTML = '';
-            
+
             sortedConversations.forEach(conv => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'conversation-item-wrapper';
+                wrapper.dataset.chatId = conv.id;
+
                 const div = document.createElement('div');
                 div.className = 'conversation-item' + (currentChatId === conv.id ? ' active' : '');
                 div.onclick = () => selectConversation(conv.id);
-                
+
                 const avatarLetter = (conv.note || conv.name).charAt(0).toUpperCase();
                 const displayName = conv.note || conv.name;
                 const time = new Date(conv.lastMessageTime).toLocaleTimeString('zh-CN', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-                
-                // 根据是否有头像显示不同内容
+
                 const avatarHtml = conv.avatarUrl 
                     ? `<img src="${conv.avatarUrl}" alt="${displayName}">`
                     : avatarLetter;
-                
-                // 聊天类型标签
+
                 let chatTypeBadge = '';
                 if (conv.chatType === 'group') {
                     chatTypeBadge = '<span class="chat-type-badge group">群组</span>';
@@ -1630,9 +1713,77 @@
                         <div class="conversation-time">${time}</div>
                     </div>
                 `;
-                
-                conversationsList.appendChild(div);
+
+                const deleteAction = document.createElement('div');
+                deleteAction.className = 'delete-action';
+                deleteAction.textContent = '删除';
+                deleteAction.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteConversation(conv.id);
+                };
+
+                wrapper.appendChild(deleteAction);
+                wrapper.appendChild(div);
+
+                let startX = 0;
+                let currentX = 0;
+                let isSwiping = false;
+
+                div.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    currentX = startX;
+                    isSwiping = true;
+                    div.classList.add('swiping');
+                });
+
+                div.addEventListener('touchmove', (e) => {
+                    if (!isSwiping) return;
+                    currentX = e.touches[0].clientX;
+                    const diff = currentX - startX;
+
+                    if (diff < 0 && diff > -100) {
+                        div.style.transform = `translateX(${diff}px)`;
+                    }
+                });
+
+                div.addEventListener('touchend', () => {
+                    if (!isSwiping) return;
+                    isSwiping = false;
+                    div.classList.remove('swiping');
+
+                    const diff = currentX - startX;
+                    if (diff < -50) {
+                        div.style.transform = 'translateX(-80px)';
+                        wrapper.classList.add('swiped');
+                    } else {
+                        div.style.transform = 'translateX(0)';
+                        wrapper.classList.remove('swiped');
+                    }
+                });
+
+                conversationsList.appendChild(wrapper);
             });
+        }
+
+                function deleteConversation(chatId) {
+            const wrapper = document.querySelector(`[data-chat-id="${chatId}"]`);
+            if (wrapper) {
+                const item = wrapper.querySelector('.conversation-item');
+                item.classList.add('deleting');
+
+                setTimeout(() => {
+                    delete conversations[chatId];
+                    if (currentChatId === chatId) {
+                        currentChatId = null;
+                        document.getElementById('clearChatBtn').style.display = 'none';
+                        if (isMobile) {
+                            backToConversations();
+                        }
+                    }
+                    renderConversations();
+                    saveToStorage();
+                }, 300);
+            }
         }
 
         function selectConversation(chatId) {
@@ -1732,25 +1883,8 @@
                     `;
                 }
                 
-                // 群组消息显示发送者信息
-                let senderInfoHtml = '';
-                if (msg.from === 'received' && msg.sender) {
-                    const senderAvatarHtml = msg.sender.avatarUrl 
-                        ? `<img src="${msg.sender.avatarUrl}" alt="${msg.sender.name}">`
-                        : msg.sender.name.charAt(0).toUpperCase();
-
-                    senderInfoHtml = `
-                        <div class="group-sender-info">
-                            <div class="group-sender-avatar">${senderAvatarHtml}</div>
-                            <div class="group-sender-name">${escapeHtml(msg.sender.name)}</div>
-                        </div>
-                    `;
-                    div.classList.add('group-message');
-                }
-
                 div.innerHTML = `
                     <div class="message-content">
-                        ${senderInfoHtml}
                         ${msg.text ? `<div class="message-text">${escapeHtml(msg.text)}</div>` : ''}
                         ${mediaHtml}
                         <div class="message-time">${time}</div>
