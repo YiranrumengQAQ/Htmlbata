@@ -17,12 +17,15 @@
             color: #1f1f1f;
             overflow: hidden;
             height: 100vh;
+            position: fixed;
+            width: 100%;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
+            width: 100%;
         }
 
         /* 顶部导航栏 */
@@ -105,6 +108,7 @@
             flex: 1;
             overflow: hidden;
             position: relative;
+            min-height: 0;
         }
 
         /* 左侧边栏 */
@@ -116,6 +120,7 @@
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+            height: 100%;
         }
 
         .sidebar-header {
@@ -164,6 +169,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 8px;
+            min-height: 0;
         }
 
         .conversation-item {
@@ -228,6 +234,8 @@
             flex-direction: column;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
+            height: 100%;
+            min-height: 0;
         }
 
         .chat-header {
@@ -268,10 +276,12 @@
         .messages-container {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 15px 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            min-height: 0;
         }
 
         .message {
@@ -394,9 +404,10 @@
             opacity: 0.7;
         }
 
-        /* 输入区域 */
+        /* 输入区域 - 关键修复 */
         .input-area {
             padding: 15px 20px;
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
             background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
@@ -447,6 +458,7 @@
             justify-content: center;
             font-size: 18px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
         }
 
         .media-btn:active {
@@ -676,7 +688,7 @@
                 border-radius: 50%;
             }
 
-            /* 移动端布局 - 关键修复 */
+            /* 移动端布局 */
             .sidebar {
                 position: absolute;
                 left: 0;
@@ -726,11 +738,17 @@
 
             .input-area {
                 padding: 12px 15px;
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
             }
 
-            .media-buttons .media-btn:nth-child(3),
-            .media-buttons .media-btn:nth-child(4) {
-                display: none;
+            .media-buttons {
+                gap: 4px;
+            }
+
+            .media-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
             }
 
             .message-input {
@@ -753,6 +771,10 @@
             .modal-content {
                 width: 95%;
                 padding: 20px;
+            }
+
+            .media-buttons .media-btn:nth-child(n+3) {
+                display: none;
             }
         }
     </style>
@@ -851,6 +873,9 @@
         // 全局变量
         const botToken = '8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc';
         const adminId = '6389066995';
+        const STORAGE_KEY = 'telegram_bot_conversations';
+        const OFFSET_KEY = 'telegram_bot_update_offset';
+        
         let currentChatId = null;
         let conversations = {};
         let updateOffset = 0;
@@ -863,7 +888,55 @@
         });
 
         // 页面加载时自动初始化
-        window.addEventListener('DOMContentLoaded', initializeBot);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            initializeBot();
+        });
+
+        // 页面关闭前保存数据
+        window.addEventListener('beforeunload', () => {
+            saveToStorage();
+        });
+
+        // 定期自动保存（每30秒）
+        setInterval(() => {
+            saveToStorage();
+        }, 30000);
+
+        // 从 localStorage 加载数据
+        function loadFromStorage() {
+            try {
+                const savedConversations = localStorage.getItem(STORAGE_KEY);
+                const savedOffset = localStorage.getItem(OFFSET_KEY);
+                
+                if (savedConversations) {
+                    conversations = JSON.parse(savedConversations);
+                    console.log('已从缓存加载', Object.keys(conversations).length, '个对话');
+                }
+                
+                if (savedOffset) {
+                    updateOffset = parseInt(savedOffset);
+                    console.log('已加载消息偏移量:', updateOffset);
+                }
+            } catch (error) {
+                console.error('加载缓存失败:', error);
+            }
+        }
+
+        // 保存到 localStorage
+        function saveToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+                localStorage.setItem(OFFSET_KEY, updateOffset.toString());
+                console.log('已保存', Object.keys(conversations).length, '个对话到缓存');
+            } catch (error) {
+                console.error('保存缓存失败:', error);
+                // 如果存储空间不足，清理旧数据
+                if (error.name === 'QuotaExceededError') {
+                    alert('存储空间不足，请清理浏览器缓存');
+                }
+            }
+        }
 
         // 初始化机器人
         async function initializeBot() {
@@ -894,14 +967,16 @@
 
         // 添加内置管理员
         function addBuiltInAdmin() {
-            conversations[adminId] = {
-                id: adminId,
-                name: '管理员',
-                note: '',
-                isAdmin: true,
-                lastMessageTime: Date.now(),
-                messages: []
-            };
+            if (!conversations[adminId]) {
+                conversations[adminId] = {
+                    id: adminId,
+                    name: '管理员',
+                    note: '',
+                    isAdmin: true,
+                    lastMessageTime: Date.now(),
+                    messages: []
+                };
+            }
             renderConversations();
         }
 
@@ -932,6 +1007,7 @@
                         }
                         updateOffset = update.update_id + 1;
                     });
+                    saveToStorage(); // 收到新消息后立即保存
                 }
                 
                 document.getElementById('networkStatus').textContent = '已连接';
@@ -1191,6 +1267,7 @@
                     input.value = '';
                     input.style.height = 'auto';
                     renderMessages();
+                    saveToStorage(); // 发送消息后立即保存
                 } else {
                     alert('发送失败: ' + data.description);
                 }
@@ -1262,6 +1339,7 @@
                     
                     conversations[currentChatId].messages.push(msgData);
                     renderMessages();
+                    saveToStorage(); // 发送媒体后立即保存
                 } else {
                     alert('发送失败: ' + data.description);
                 }
@@ -1300,6 +1378,7 @@
             };
             
             renderConversations();
+            saveToStorage();
             closeAddContactModal();
         }
 
