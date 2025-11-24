@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Bot 控制面板</title>
+    <title>Telegram Bot 管理面板</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -34,6 +34,30 @@
             font-size: 24px;
             margin-bottom: 5px;
         }
+        .bot-info-bar {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bot-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
         .section {
             padding: 25px;
             border-bottom: 1px solid #eee;
@@ -45,6 +69,56 @@
             color: #333;
             font-size: 18px;
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .contact-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .contact-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .contact-item:hover {
+            background: #e9ecef;
+            border-color: #0088cc;
+        }
+        .contact-info {
+            flex: 1;
+        }
+        .contact-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .contact-detail {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-small {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-small:hover {
+            background: #006699;
         }
         input[type="text"], textarea {
             width: 100%;
@@ -108,46 +182,134 @@
             border-radius: 4px;
             font-size: 13px;
         }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .message-preview {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .message-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .message-item:last-child {
+            border-bottom: none;
+        }
+        .message-sender {
+            font-weight: bold;
+            color: #0088cc;
+            margin-bottom: 5px;
+        }
+        .message-text {
+            color: #333;
+            font-size: 14px;
+        }
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📱 Telegram Bot 控制台</h1>
-            <p>使用浏览器直接控制你的 Bot</p>
+            <h1>📱 Telegram Bot 管理面板</h1>
+            <p>实时管理你的 Bot 和联系人</p>
         </div>
 
-        <div class="section">
-            <h2>🤖 Bot 信息</h2>
-            <div class="info-box">
-                Bot Token 已配置,点击下方按钮获取 Bot 信息
+        <div class="bot-info-bar">
+            <div class="bot-status">
+                <div class="status-dot"></div>
+                <span id="botUsername">加载中...</span>
             </div>
-            <button onclick="getBotInfo()">获取 Bot 信息</button>
-            <div id="botInfoResponse" class="response"></div>
+            <button class="btn-small" onclick="refreshAll()">🔄 刷新全部</button>
         </div>
 
         <div class="section">
-            <h2>💬 发送消息</h2>
-            <input type="text" id="chatId" placeholder="输入 Chat ID (例如: 123456789)">
+            <h2>📊 统计概览</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalContacts">0</div>
+                    <div class="stat-label">联系人总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMessages">0</div>
+                    <div class="stat-label">消息总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="groupChats">0</div>
+                    <div class="stat-label">群组对话</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>👥 联系人列表</h2>
+            <div class="info-box">
+                显示所有与 Bot 交互过的用户和群组
+            </div>
+            <button onclick="loadContacts()">加载联系人</button>
+            <div id="contactList" class="contact-list"></div>
+        </div>
+
+        <div class="section">
+            <h2>💬 最近消息</h2>
+            <button onclick="loadRecentMessages()">加载最近消息</button>
+            <div id="messagePreview" class="message-preview" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>📤 发送消息</h2>
+            <input type="text" id="chatId" placeholder="输入 Chat ID 或从上方联系人中选择">
             <textarea id="messageText" placeholder="输入要发送的消息内容..."></textarea>
             <button onclick="sendMessage()">发送消息</button>
             <div id="sendResponse" class="response"></div>
         </div>
-
-        <div class="section">
-            <h2>📨 获取更新</h2>
-            <div class="info-box">
-                获取最近的消息更新,可以从中找到你的 Chat ID
-            </div>
-            <button onclick="getUpdates()">获取更新</button>
-            <div id="updatesResponse" class="response"></div>
-        </div>
     </div>
 
     <script>
-        // 你的 Bot Token
         const BOT_TOKEN = '8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc';
         const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
+        
+        let contactsData = new Map();
+        let messagesData = [];
+
+        // 页面加载时初始化
+        window.onload = function() {
+            loadBotInfo();
+            loadContacts();
+        };
 
         // 显示响应结果
         function showResponse(elementId, data, isSuccess) {
@@ -157,26 +319,166 @@
             element.textContent = JSON.stringify(data, null, 2);
         }
 
-        // 获取 Bot 信息
-        async function getBotInfo() {
+        // 加载 Bot 信息
+        async function loadBotInfo() {
             try {
                 const response = await fetch(`${API_BASE}/getMe`);
                 const data = await response.json();
                 
                 if (data.ok) {
-                    showResponse('botInfoResponse', {
-                        username: data.result.username,
-                        name: data.result.first_name,
-                        id: data.result.id,
-                        can_join_groups: data.result.can_join_groups,
-                        can_read_all_group_messages: data.result.can_read_all_group_messages
-                    }, true);
-                } else {
-                    showResponse('botInfoResponse', data, false);
+                    document.getElementById('botUsername').textContent = 
+                        `@${data.result.username} (${data.result.first_name})`;
                 }
             } catch (error) {
-                showResponse('botInfoResponse', {error: error.message}, false);
+                document.getElementById('botUsername').textContent = '加载失败';
             }
+        }
+
+        // 加载联系人
+        async function loadContacts() {
+            const contactListDiv = document.getElementById('contactList');
+            contactListDiv.innerHTML = '<div class="loading">正在加载联系人...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/getUpdates`);
+                const data = await response.json();
+                
+                if (data.ok && data.result.length > 0) {
+                    contactsData.clear();
+                    messagesData = data.result;
+                    
+                    // 提取所有唯一的联系人
+                    data.result.forEach(update => {
+                        if (update.message) {
+                            const chat = update.message.chat;
+                            const from = update.message.from;
+                            const chatId = chat.id;
+                            
+                            if (!contactsData.has(chatId)) {
+                                contactsData.set(chatId, {
+                                    id: chatId,
+                                    type: chat.type,
+                                    title: chat.title || `${from.first_name || ''} ${from.last_name || ''}`.trim(),
+                                    username: chat.username || from.username,
+                                    firstName: from.first_name,
+                                    lastName: from.last_name,
+                                    lastMessage: update.message.text || '[媒体消息]',
+                                    lastMessageDate: new Date(update.message.date * 1000)
+                                });
+                            }
+                        }
+                    });
+                    
+                    displayContacts();
+                    updateStats();
+                } else {
+                    contactListDiv.innerHTML = '<div class="info-box">暂无联系人。请先向你的 Bot 发送消息。</div>';
+                }
+            } catch (error) {
+                contactListDiv.innerHTML = `<div class="response error">加载失败: ${error.message}</div>`;
+            }
+        }
+
+        // 显示联系人列表
+        function displayContacts() {
+            const contactListDiv = document.getElementById('contactList');
+            
+            if (contactsData.size === 0) {
+                contactListDiv.innerHTML = '<div class="info-box">暂无联系人</div>';
+                return;
+            }
+            
+            let html = '';
+            contactsData.forEach((contact, chatId) => {
+                const typeIcon = contact.type === 'group' ? '👥' : 
+                               contact.type === 'channel' ? '📢' : '👤';
+                const displayName = contact.title || contact.username || `User ${chatId}`;
+                
+                html += `
+                    <div class="contact-item">
+                        <div class="contact-info">
+                            <div class="contact-name">${typeIcon} ${displayName}</div>
+                            <div class="contact-detail">
+                                Chat ID: ${chatId} | 
+                                ${contact.username ? '@' + contact.username : '无用户名'} | 
+                                类型: ${contact.type}
+                            </div>
+                            <div class="contact-detail" style="margin-top: 5px;">
+                                最后消息: ${contact.lastMessage.substring(0, 50)}${contact.lastMessage.length > 50 ? '...' : ''}
+                            </div>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="btn-small" onclick="selectChat('${chatId}')">选择</button>
+                            <button class="btn-small" onclick="quickSend('${chatId}')">快速发送</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            contactListDiv.innerHTML = html;
+        }
+
+        // 选择聊天
+        function selectChat(chatId) {
+            document.getElementById('chatId').value = chatId;
+            document.getElementById('messageText').focus();
+        }
+
+        // 快速发送
+        function quickSend(chatId) {
+            const message = prompt('输入要发送的消息:');
+            if (message) {
+                document.getElementById('chatId').value = chatId;
+                document.getElementById('messageText').value = message;
+                sendMessage();
+            }
+        }
+
+        // 加载最近消息
+        function loadRecentMessages() {
+            const messagePreviewDiv = document.getElementById('messagePreview');
+            messagePreviewDiv.style.display = 'block';
+            
+            if (messagesData.length === 0) {
+                messagePreviewDiv.innerHTML = '<div class="info-box">暂无消息</div>';
+                return;
+            }
+            
+            let html = '';
+            messagesData.slice().reverse().slice(0, 20).forEach(update => {
+                if (update.message) {
+                    const msg = update.message;
+                    const from = msg.from;
+                    const date = new Date(msg.date * 1000);
+                    
+                    html += `
+                        <div class="message-item">
+                            <div class="message-sender">
+                                ${from.first_name || ''} ${from.last_name || ''} 
+                                ${from.username ? '@' + from.username : ''}
+                            </div>
+                            <div class="message-text">${msg.text || '[媒体消息]'}</div>
+                            <div class="message-time">${date.toLocaleString('zh-CN')}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            messagePreviewDiv.innerHTML = html || '<div class="info-box">无可显示的消息</div>';
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            document.getElementById('totalContacts').textContent = contactsData.size;
+            document.getElementById('totalMessages').textContent = messagesData.length;
+            
+            let groupCount = 0;
+            contactsData.forEach(contact => {
+                if (contact.type === 'group' || contact.type === 'supergroup') {
+                    groupCount++;
+                }
+            });
+            document.getElementById('groupChats').textContent = groupCount;
         }
 
         // 发送消息
@@ -209,6 +511,7 @@
                         message_id: data.result.message_id,
                         date: new Date(data.result.date * 1000).toLocaleString()
                     }, true);
+                    document.getElementById('messageText').value = '';
                 } else {
                     showResponse('sendResponse', data, false);
                 }
@@ -217,32 +520,10 @@
             }
         }
 
-        // 获取更新
-        async function getUpdates() {
-            try {
-                const response = await fetch(`${API_BASE}/getUpdates`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    if (data.result.length > 0) {
-                        // 提取有用的信息
-                        const updates = data.result.map(update => ({
-                            update_id: update.update_id,
-                            chat_id: update.message?.chat?.id,
-                            username: update.message?.from?.username,
-                            text: update.message?.text,
-                            date: new Date(update.message?.date * 1000).toLocaleString()
-                        }));
-                        showResponse('updatesResponse', updates, true);
-                    } else {
-                        showResponse('updatesResponse', {message: '暂无新消息'}, true);
-                    }
-                } else {
-                    showResponse('updatesResponse', data, false);
-                }
-            } catch (error) {
-                showResponse('updatesResponse', {error: error.message}, false);
-            }
+        // 刷新全部
+        function refreshAll() {
+            loadBotInfo();
+            loadContacts();
         }
     </script>
 </body>
