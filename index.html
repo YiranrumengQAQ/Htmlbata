@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Telegram Bot 管理系统</title>
     <style>
         * {
@@ -19,7 +19,6 @@
             height: 100vh;
         }
 
-        /* Fluent Design Light 样式 */
         .container {
             display: flex;
             flex-direction: column;
@@ -30,7 +29,7 @@
         /* 顶部导航栏 */
         .navbar {
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px 30px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -38,17 +37,18 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 100;
+            min-height: 60px;
         }
 
         .bot-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .bot-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -57,28 +57,40 @@
             color: white;
             font-weight: bold;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            font-size: 16px;
+        }
+
+        .bot-username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .bot-subtitle {
+            font-size: 11px;
+            color: #6b7280;
         }
 
         .network-status {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            gap: 6px;
+            padding: 6px 12px;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 20px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 12px;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #10b981;
             animation: pulse 2s infinite;
@@ -105,20 +117,21 @@
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sidebar-header {
-            padding: 20px;
+            padding: 15px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .search-box {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: 2px solid rgba(102, 126, 234, 0.2);
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
@@ -130,14 +143,14 @@
         }
 
         .add-contact-btn {
-            margin-top: 15px;
+            margin-top: 12px;
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -152,19 +165,19 @@
         .conversations-list {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 8px;
         }
 
         .conversation-item {
-            padding: 15px;
-            margin-bottom: 8px;
+            padding: 12px;
+            margin-bottom: 6px;
             background: rgba(255, 255, 255, 0.6);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
 
@@ -180,8 +193,8 @@
         }
 
         .user-avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -191,6 +204,7 @@
             font-weight: bold;
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+            font-size: 16px;
         }
 
         .conversation-info {
@@ -202,10 +216,11 @@
             font-weight: 600;
             margin-bottom: 4px;
             color: #1f1f1f;
+            font-size: 14px;
         }
 
         .conversation-time {
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
         }
 
@@ -219,14 +234,33 @@
         }
 
         .chat-header {
-            padding: 20px 30px;
+            padding: 15px 20px;
             background: rgba(255, 255, 255, 0.9);
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:active {
+            background: rgba(102, 126, 234, 0.2);
         }
 
         .chat-user-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #1f1f1f;
         }
@@ -234,15 +268,15 @@
         .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 30px;
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .message {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             animation: messageSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -262,8 +296,8 @@
         }
 
         .message-content {
-            max-width: 60%;
-            padding: 12px 18px;
+            max-width: 70%;
+            padding: 10px 16px;
             border-radius: 16px;
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -278,10 +312,12 @@
         .message-text {
             margin-bottom: 4px;
             word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         .message-time {
-            font-size: 11px;
+            font-size: 10px;
             color: #9ca3af;
             text-align: right;
         }
@@ -292,13 +328,14 @@
 
         .message-media {
             max-width: 100%;
+            max-height: 300px;
             border-radius: 12px;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         /* 输入区域 */
         .input-area {
-            padding: 20px 30px;
+            padding: 15px 20px;
             background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
@@ -306,20 +343,20 @@
 
         .input-container {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: flex-end;
         }
 
         .message-input {
             flex: 1;
-            padding: 12px 18px;
+            padding: 10px 16px;
             border: 2px solid rgba(102, 126, 234, 0.2);
             border-radius: 16px;
             background: rgba(255, 255, 255, 0.9);
             font-size: 14px;
             resize: none;
-            min-height: 45px;
-            max-height: 120px;
+            min-height: 40px;
+            max-height: 100px;
             font-family: inherit;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -332,12 +369,12 @@
 
         .media-buttons {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .media-btn {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border: none;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.9);
@@ -346,33 +383,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .media-btn:hover {
+        .media-btn:active {
             background: #667eea;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transform: scale(0.95);
         }
 
         .send-btn {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border: none;
             border-radius: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 20px;
+            font-size: 18px;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .send-btn:active {
+            transform: scale(0.95);
         }
 
         /* 模态框 */
@@ -396,10 +431,10 @@
 
         .modal-content {
             background: rgba(255, 255, 255, 0.98);
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             width: 90%;
-            max-width: 450px;
+            max-width: 420px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -416,9 +451,9 @@
         }
 
         .modal-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             color: #1f1f1f;
         }
 
@@ -428,7 +463,7 @@
             border: 2px solid rgba(102, 126, 234, 0.2);
             border-radius: 12px;
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -440,8 +475,8 @@
 
         .modal-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 18px;
         }
 
         .modal-btn {
@@ -461,9 +496,8 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .modal-btn-primary:active {
+            transform: scale(0.98);
         }
 
         .modal-btn-secondary {
@@ -472,22 +506,21 @@
             border: 2px solid rgba(0, 0, 0, 0.1);
         }
 
-        .modal-btn-secondary:hover {
+        .modal-btn-secondary:active {
             background: rgba(243, 244, 246, 0.9);
         }
 
-        /* 加载状态 */
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #6b7280;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            margin: 20px auto;
+            width: 36px;
+            height: 36px;
+            margin: 15px auto;
             border: 4px solid rgba(102, 126, 234, 0.2);
             border-top-color: #667eea;
             border-radius: 50%;
@@ -498,14 +531,12 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 隐藏文件输入 */
         .file-input {
             display: none;
         }
 
-        /* 滚动条样式 */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -524,13 +555,217 @@
 
         .admin-badge {
             display: inline-block;
-            padding: 2px 8px;
+            padding: 2px 6px;
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
-            border-radius: 8px;
-            font-size: 11px;
+            border-radius: 6px;
+            font-size: 10px;
             font-weight: 600;
-            margin-left: 8px;
+            margin-left: 6px;
+        }
+
+        /* ==================== 响应式设计 - 平板 ==================== */
+        @media screen and (max-width: 1024px) {
+            .sidebar {
+                width: 280px;
+            }
+
+            .navbar {
+                padding: 10px 15px;
+            }
+
+            .network-status {
+                gap: 8px;
+            }
+
+            .status-indicator {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+        }
+
+        /* ==================== 响应式设计 - 移动端 ==================== */
+        @media screen and (max-width: 768px) {
+            .navbar {
+                padding: 10px 15px;
+            }
+
+            .bot-info {
+                gap: 10px;
+            }
+
+            .bot-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .bot-username {
+                font-size: 13px;
+            }
+
+            .bot-subtitle {
+                display: none;
+            }
+
+            .network-status {
+                gap: 6px;
+            }
+
+            .status-indicator span {
+                display: none;
+            }
+
+            .status-indicator {
+                padding: 8px;
+                border-radius: 50%;
+            }
+
+            /* 移动端布局切换 */
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 60px;
+                bottom: 0;
+                width: 100%;
+                max-width: 100%;
+                z-index: 99;
+                transform: translateX(-100%);
+                border-right: none;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .chat-area {
+                width: 100%;
+            }
+
+            .chat-area.hidden {
+                display: none;
+            }
+
+            .back-btn {
+                display: block;
+            }
+
+            .chat-header {
+                padding: 12px 15px;
+            }
+
+            .chat-user-name {
+                font-size: 15px;
+            }
+
+            .messages-container {
+                padding: 12px 15px;
+            }
+
+            .message-content {
+                max-width: 80%;
+                padding: 8px 14px;
+            }
+
+            .message-text {
+                font-size: 13px;
+            }
+
+            .input-area {
+                padding: 12px 15px;
+            }
+
+            .media-buttons {
+                display: none;
+            }
+
+            .message-input {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .send-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            .sidebar-header {
+                padding: 12px;
+            }
+
+            .conversations-list {
+                padding: 6px;
+            }
+
+            .conversation-item {
+                padding: 10px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .conversation-name {
+                font-size: 13px;
+            }
+        }
+
+        /* ==================== 超小屏幕 ==================== */
+        @media screen and (max-width: 480px) {
+            .navbar {
+                padding: 8px 12px;
+                min-height: 56px;
+            }
+
+            .bot-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .bot-username {
+                font-size: 12px;
+            }
+
+            .status-dot {
+                width: 6px;
+                height: 6px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                width: 92%;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .modal-input {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+        }
+
+        /* ==================== 大屏幕优化 ==================== */
+        @media screen and (min-width: 1440px) {
+            .sidebar {
+                width: 360px;
+            }
+
+            .navbar {
+                padding: 15px 40px;
+            }
+
+            .messages-container {
+                padding: 20px 40px;
+            }
+
+            .input-area {
+                padding: 20px 40px;
+            }
         }
     </style>
 </head>
@@ -541,8 +776,8 @@
             <div class="bot-info">
                 <div class="bot-avatar" id="botAvatar">🤖</div>
                 <div>
-                    <div style="font-weight: 600;" id="botUsername">初始化中...</div>
-                    <div style="font-size: 12px; color: #6b7280;">Telegram Bot</div>
+                    <div class="bot-username" id="botUsername">初始化中...</div>
+                    <div class="bot-subtitle">Telegram Bot</div>
                 </div>
             </div>
             <div class="network-status">
@@ -559,7 +794,7 @@
         <!-- 主内容区 -->
         <div class="main-content">
             <!-- 左侧边栏 -->
-            <div class="sidebar">
+            <div class="sidebar active" id="sidebar">
                 <div class="sidebar-header">
                     <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜索对话...">
                     <button class="add-contact-btn" onclick="openAddContactModal()">➕ 添加联系人</button>
@@ -573,8 +808,9 @@
             </div>
 
             <!-- 聊天区域 -->
-            <div class="chat-area">
+            <div class="chat-area hidden" id="chatArea">
                 <div class="chat-header">
+                    <button class="back-btn" onclick="backToConversations()">◀</button>
                     <div class="chat-user-name" id="chatUserName">选择一个对话开始聊天</div>
                 </div>
                 <div class="messages-container" id="messagesContainer">
@@ -585,7 +821,7 @@
                         <textarea 
                             class="message-input" 
                             id="messageInput" 
-                            placeholder="输入消息... (Enter 发送)"
+                            placeholder="输入消息..."
                             rows="1"
                         ></textarea>
                         <div class="media-buttons">
@@ -614,17 +850,6 @@
         </div>
     </div>
 
-    <!-- Token 输入模态框 -->
-    <div class="modal active" id="tokenModal">
-        <div class="modal-content">
-            <div class="modal-title">🔐 Bot Token 验证</div>
-            <input type="text" class="modal-input" id="tokenInput" placeholder="输入您的 Bot Token" value="8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc">
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" onclick="initializeBot()">连接</button>
-            </div>
-        </div>
-    </div>
-
     <!-- 隐藏的文件输入 -->
     <input type="file" class="file-input" id="photoInput" accept="image/*">
     <input type="file" class="file-input" id="videoInput" accept="video/*">
@@ -632,46 +857,60 @@
     <input type="file" class="file-input" id="documentInput">
 
     <script>
-        // 全局变量
-        let botToken = '';
+        // 全局变量 - 使用内置配置
+        const botToken = '8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc';
+        const adminId = '6389066995';
         let currentChatId = null;
         let conversations = {};
         let updateOffset = 0;
         let pollingInterval = null;
-        let adminId = '6389066995'; // 内置管理员 ID
+        let isMobile = window.innerWidth <= 768;
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            const wasMobile = isMobile;
+            isMobile = window.innerWidth <= 768;
+            
+            if (wasMobile !== isMobile) {
+                if (!isMobile) {
+                    document.getElementById('sidebar').classList.add('active');
+                    document.getElementById('chatArea').classList.remove('hidden');
+                } else if (!currentChatId) {
+                    document.getElementById('sidebar').classList.add('active');
+                    document.getElementById('chatArea').classList.add('hidden');
+                }
+            }
+        });
+
+        // 页面加载时自动初始化
+        window.addEventListener('DOMContentLoaded', initializeBot);
 
         // 初始化机器人
         async function initializeBot() {
-            botToken = document.getElementById('tokenInput').value.trim();
-            if (!botToken) {
-                alert('请输入有效的 Bot Token');
-                return;
-            }
-
             try {
                 const startTime = Date.now();
                 const response = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
                 const latency = Date.now() - startTime;
                 
-                if (!response.ok) throw new Error('Token 无效');
+                if (!response.ok) throw new Error('连接失败');
                 
                 const data = await response.json();
                 if (data.ok) {
                     document.getElementById('botUsername').textContent = '@' + data.result.username;
                     document.getElementById('botAvatar').textContent = data.result.first_name.charAt(0);
                     document.getElementById('latency').textContent = latency + 'ms';
-                    document.getElementById('tokenModal').classList.remove('active');
                     
-                    // 添加内置管理员到对话列表
                     addBuiltInAdmin();
-                    
-                    // 开始轮询
                     startPolling();
                 } else {
                     throw new Error('Token 验证失败');
                 }
             } catch (error) {
-                alert('连接失败: ' + error.message);
+                console.error('初始化失败:', error);
+                document.getElementById('networkStatus').textContent = '连接失败';
+                document.getElementById('botUsername').textContent = '连接失败';
+                
+                setTimeout(initializeBot, 5000);
             }
         }
 
@@ -804,8 +1043,23 @@
             currentChatId = chatId;
             const conv = conversations[chatId];
             document.getElementById('chatUserName').textContent = conv.note || conv.name;
+            
+            if (isMobile) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('chatArea').classList.remove('hidden');
+            }
+            
             renderConversations();
             renderMessages();
+        }
+
+        // 返回对话列表（移动端）
+        function backToConversations() {
+            if (isMobile) {
+                document.getElementById('sidebar').classList.add('active');
+                document.getElementById('chatArea').classList.add('hidden');
+                currentChatId = null;
+            }
         }
 
         // 渲染消息
@@ -830,7 +1084,7 @@
                 });
                 
                 let mediaHtml = '';
-                if (msg.photo) mediaHtml = `<img src="https://via.placeholder.com/300x200?text=Photo" class="message-media">`;
+                if (msg.photo) mediaHtml = `<img src="https://via.placeholder.com/300x200?text=Photo" class="message-media" alt="图片">`;
                 if (msg.video) mediaHtml = `<video controls class="message-media"><source src=""></video>`;
                 if (msg.audio) mediaHtml = `<audio controls class="message-media"><source src=""></audio>`;
                 if (msg.document) mediaHtml = `<div class="message-media">📎 文件</div>`;
@@ -879,6 +1133,7 @@
                     });
                     
                     input.value = '';
+                    input.style.height = 'auto';
                     renderMessages();
                 } else {
                     alert('发送失败: ' + data.description);
@@ -902,6 +1157,7 @@
             document.getElementById(type + 'Input').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) sendMediaFile(type, file);
+                e.target.value = '';
             });
         });
 
@@ -974,9 +1230,9 @@
         // 搜索功能
         document.getElementById('searchBox').addEventListener('input', renderConversations);
 
-        // Enter 键发送
+        // Enter 键发送（PC端）
         document.getElementById('messageInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
                 e.preventDefault();
                 sendMessage();
             }
@@ -985,7 +1241,14 @@
         // 自动调整输入框高度
         document.getElementById('messageInput').addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            this.style.height = Math.min(this.scrollHeight, isMobile ? 100 : 120) + 'px';
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('addContactModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddContactModal();
+            }
         });
     </script>
 </body>
