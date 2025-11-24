@@ -41,7 +41,6 @@
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
             background: var(--fluent-bg);
             color: var(--fluent-text);
-            /* 移动端安全区域 */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -160,16 +159,14 @@
             box-shadow: 0 0 0 1px var(--fluent-blue);
         }
 
-        /* 联系人列表 - 强制滚动 */
+        /* 联系人列表 */
         .contacts-list {
             flex: 1;
-            overflow-y: scroll !important;
+            overflow-y: scroll;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch !important;
+            -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
             scroll-behavior: smooth;
-            position: relative;
-            /* 添加额外的内边距 */
             padding-bottom: 20px;
         }
 
@@ -338,18 +335,15 @@
             background: var(--fluent-blue-active);
         }
 
-        /* 聊天消息区 - 强制滚动 */
+        /* 聊天消息区 */
         .chat-messages {
             flex: 1;
-            overflow-y: scroll !important;
+            overflow-y: scroll;
             overflow-x: hidden;
-            padding: 24px;
-            padding-top: 30px;
-            padding-bottom: 30px;
-            -webkit-overflow-scrolling: touch !important;
+            padding: 30px 24px;
+            -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
             scroll-behavior: smooth;
-            position: relative;
         }
 
         .date-divider {
@@ -457,18 +451,41 @@
             white-space: pre-wrap;
         }
 
+        /* 媒体预览优化 */
         .message-media {
             margin-top: 10px;
             max-width: 100%;
             border-radius: 6px;
+            overflow: hidden;
         }
 
-        .message-media img,
-        .message-media video {
+        .message-media img {
             max-width: 100%;
+            height: auto;
             max-height: 400px;
+            display: block;
             border-radius: 6px;
             box-shadow: var(--fluent-shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .message-media img:hover {
+            transform: scale(1.02);
+        }
+
+        .message-media video {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            display: block;
+            border-radius: 6px;
+            box-shadow: var(--fluent-shadow);
+        }
+
+        .message-media audio {
+            width: 100%;
+            height: 40px;
         }
 
         .message-file {
@@ -479,6 +496,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .message-file:hover {
+            background: #E8E8E8;
         }
 
         .message-time {
@@ -491,50 +514,33 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* 输入区 - 添加底部安全区域 */
+        /* 输入区 - 简化移动端布局 */
         .chat-input-area {
-            padding: 20px 24px;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
             background: var(--fluent-surface);
             border-top: 1px solid var(--fluent-border);
             flex-shrink: 0;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
         }
 
-        .input-toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .toolbar-btn {
-            padding: 8px 14px;
-            background: var(--fluent-surface);
-            border: 1px solid var(--fluent-border);
-            border-radius: 4px;
-            color: var(--fluent-text);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.15s ease;
-        }
-
-        .toolbar-btn:hover {
-            background: var(--fluent-surface-hover);
-            border-color: var(--fluent-blue);
-        }
-
         .input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: flex-end;
         }
 
-        .fluent-textarea {
+        .input-box {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fluent-textarea {
+            width: 100%;
             min-height: 44px;
-            max-height: 120px;
+            max-height: 100px;
             padding: 12px 16px;
             background: var(--fluent-surface);
             border: 1px solid var(--fluent-border);
@@ -557,6 +563,34 @@
             outline: none;
             border-color: var(--fluent-blue);
             box-shadow: 0 0 0 1px var(--fluent-blue);
+        }
+
+        /* 文件按钮 - 横向布局 */
+        .file-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .file-btn {
+            flex: 1;
+            padding: 8px;
+            background: var(--fluent-surface);
+            border: 1px solid var(--fluent-border);
+            border-radius: 4px;
+            color: var(--fluent-text);
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .file-btn:hover {
+            background: var(--fluent-surface-hover);
+            border-color: var(--fluent-blue);
+        }
+
+        .file-btn:active {
+            transform: scale(0.95);
         }
 
         /* 空状态 */
@@ -604,24 +638,25 @@
             position: fixed;
             top: 24px;
             top: calc(24px + env(safe-area-inset-top));
-            right: 24px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--fluent-surface);
             border: 1px solid var(--fluent-border);
             border-radius: 4px;
-            padding: 16px 20px;
+            padding: 12px 20px;
             box-shadow: var(--fluent-shadow-hover);
             z-index: 1000;
-            min-width: 280px;
-            animation: slideInRight 0.3s ease;
+            max-width: 90%;
+            animation: slideDown 0.3s ease;
         }
 
-        @keyframes slideInRight {
+        @keyframes slideDown {
             from {
-                transform: translateX(400px);
+                transform: translateX(-50%) translateY(-100px);
                 opacity: 0;
             }
             to {
-                transform: translateX(0);
+                transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
         }
@@ -676,70 +711,52 @@
                 padding-left: 72px;
             }
 
+            .chat-actions {
+                display: none;
+            }
+
             .message-content {
                 max-width: 75%;
             }
 
+            .chat-input-area {
+                padding: 12px;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+            }
+
             .input-wrapper {
                 flex-direction: column;
+                gap: 8px;
             }
 
             .fluent-btn-primary {
                 width: 100%;
                 justify-content: center;
-            }
-
-            /* 移动端额外的滚动优化 */
-            .contacts-list,
-            .chat-messages {
-                -webkit-overflow-scrolling: touch !important;
-                overflow-y: scroll !important;
-                touch-action: pan-y !important;
-            }
-
-            /* 移动端安全区域 */
-            .chat-input-area {
-                padding-bottom: calc(20px + max(env(safe-area-inset-bottom), 20px));
+                padding: 12px;
             }
         }
 
-        /* 强制滚动条样式 */
-        .contacts-list::-webkit-scrollbar,
-        .chat-messages::-webkit-scrollbar,
-        .fluent-textarea::-webkit-scrollbar {
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
 
-        .contacts-list::-webkit-scrollbar-track,
-        .chat-messages::-webkit-scrollbar-track,
-        .fluent-textarea::-webkit-scrollbar-track {
+        ::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .contacts-list::-webkit-scrollbar-thumb,
-        .chat-messages::-webkit-scrollbar-thumb,
-        .fluent-textarea::-webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: #C8C6C4;
             border-radius: 4px;
         }
 
-        .contacts-list::-webkit-scrollbar-thumb:hover,
-        .chat-messages::-webkit-scrollbar-thumb:hover,
-        .fluent-textarea::-webkit-scrollbar-thumb:hover {
+        ::-webkit-scrollbar-thumb:hover {
             background: #A19F9D;
         }
 
         .file-input {
             display: none;
-        }
-
-        /* 额外的移动端滚动修复 */
-        @supports (-webkit-touch-callout: none) {
-            .contacts-list,
-            .chat-messages {
-                -webkit-overflow-scrolling: touch !important;
-            }
         }
     </style>
 </head>
@@ -790,12 +807,8 @@
                     </div>
                 </div>
                 <div class="chat-actions">
-                    <button class="fluent-btn" onclick="app.refreshMessages()">
-                        🔄 刷新
-                    </button>
-                    <button class="fluent-btn" onclick="app.scrollToBottom()">
-                        ⬇ 底部
-                    </button>
+                    <button class="fluent-btn" onclick="app.refreshMessages()">🔄</button>
+                    <button class="fluent-btn" onclick="app.scrollToBottom()">⬇</button>
                 </div>
             </div>
 
@@ -807,28 +820,30 @@
             </div>
 
             <div class="chat-input-area">
-                <div class="input-toolbar">
-                    <label class="toolbar-btn">
-                        📷 图片
-                        <input type="file" class="file-input" accept="image/*" onchange="app.sendFile(this, 'photo')">
-                    </label>
-                    <label class="toolbar-btn">
-                        🎥 视频
-                        <input type="file" class="file-input" accept="video/*" onchange="app.sendFile(this, 'video')">
-                    </label>
-                    <label class="toolbar-btn">
-                        🎵 音频
-                        <input type="file" class="file-input" accept="audio/*" onchange="app.sendFile(this, 'audio')">
-                    </label>
-                    <label class="toolbar-btn">
-                        📎 文件
-                        <input type="file" class="file-input" onchange="app.sendFile(this, 'document')">
-                    </label>
-                </div>
                 <div class="input-wrapper">
-                    <textarea class="fluent-textarea" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+                    <div class="input-box">
+                        <textarea class="fluent-textarea" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+                        <div class="file-buttons">
+                            <label class="file-btn" title="图片">
+                                📷
+                                <input type="file" class="file-input" accept="image/*" onchange="app.sendFile(this, 'photo')">
+                            </label>
+                            <label class="file-btn" title="视频">
+                                🎥
+                                <input type="file" class="file-input" accept="video/*" onchange="app.sendFile(this, 'video')">
+                            </label>
+                            <label class="file-btn" title="音频">
+                                🎵
+                                <input type="file" class="file-input" accept="audio/*" onchange="app.sendFile(this, 'audio')">
+                            </label>
+                            <label class="file-btn" title="文件">
+                                📎
+                                <input type="file" class="file-input" onchange="app.sendFile(this, 'document')">
+                            </label>
+                        </div>
+                    </div>
                     <button class="fluent-btn fluent-btn-primary" id="sendBtn" onclick="app.sendMessage()">
-                        ✉ 发送
+                        发送
                     </button>
                 </div>
             </div>
@@ -850,9 +865,6 @@
 
             async init() {
                 try {
-                    // 强制启用滚动
-                    this.enableScrolling();
-                    
                     await this.getBotInfo();
                     await this.initAdmin();
                     await this.loadMessages();
@@ -862,28 +874,6 @@
                 } catch (e) {
                     this.toast('❌ 初始化失败: ' + e.message);
                 }
-            },
-
-            enableScrolling() {
-                // 强制启用滚动
-                const contactsList = document.getElementById('contactsList');
-                const chatMessages = document.getElementById('chatMessages');
-                
-                contactsList.style.overflowY = 'scroll';
-                chatMessages.style.overflowY = 'scroll';
-                
-                // 添加触摸事件监听
-                [contactsList, chatMessages].forEach(el => {
-                    el.addEventListener('touchstart', function(e) {
-                        this.allowScrolling = true;
-                    }, { passive: true });
-                    
-                    el.addEventListener('touchmove', function(e) {
-                        if (this.allowScrolling) {
-                            e.stopPropagation();
-                        }
-                    }, { passive: true });
-                });
             },
 
             async apiCall(method, params = {}) {
@@ -1020,6 +1010,10 @@
                 }
             },
 
+            async getFileUrl(filePath) {
+                return `https://api.telegram.org/file/bot${getTk()}/${filePath}`;
+            },
+
             renderMessages() {
                 const container = document.getElementById('chatMessages');
                 const msgs = this.messages.get(this.currentChat) || [];
@@ -1050,14 +1044,15 @@
 
                     let media = '';
                     if (msg.photo) {
-                        media = `<div class="message-media"><img src="https://api.telegram.org/file/bot${getTk()}/${msg.photo[msg.photo.length-1].file_path}"></div>`;
+                        const photo = msg.photo[msg.photo.length - 1];
+                        media = `<div class="message-media"><img src="https://api.telegram.org/file/bot${getTk()}/${photo.file_path}" onclick="window.open(this.src)" alt="图片" loading="lazy"></div>`;
                     } else if (msg.video) {
-                        media = `<div class="message-media"><video controls><source src="https://api.telegram.org/file/bot${getTk()}/${msg.video.file_path}"></video></div>`;
+                        media = `<div class="message-media"><video controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${msg.video.file_path}" type="video/mp4">您的浏览器不支持视频播放</video></div>`;
                     } else if (msg.audio || msg.voice) {
                         const audio = msg.audio || msg.voice;
-                        media = `<div class="message-media"><audio controls><source src="https://api.telegram.org/file/bot${getTk()}/${audio.file_path}"></audio></div>`;
+                        media = `<div class="message-media"><audio controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${audio.file_path}">您的浏览器不支持音频播放</audio></div>`;
                     } else if (msg.document) {
-                        media = `<div class="message-file"><span>📄</span><span>${this.esc(msg.document.file_name)}</span></div>`;
+                        media = `<div class="message-file" onclick="window.open('https://api.telegram.org/file/bot${getTk()}/${msg.document.file_path}')"><span>📄</span><span>${this.esc(msg.document.file_name)}</span></div>`;
                     }
 
                     html += `
@@ -1113,7 +1108,7 @@
                     this.toast('❌ ' + e.message);
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = '✉ 发送';
+                    btn.textContent = '发送';
                 }
             },
 
@@ -1176,7 +1171,7 @@
                 });
                 input.addEventListener('input', () => {
                     input.style.height = 'auto';
-                    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+                    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
                 });
             },
 
