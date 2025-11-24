@@ -78,6 +78,14 @@
             font-weight: bold;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             font-size: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bot-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .bot-username {
@@ -653,7 +661,7 @@
         }
 
         .file-input {
-            display: none;
+            display: none !important;
         }
 
         ::-webkit-scrollbar {
@@ -709,6 +717,51 @@
             color: #6b7280;
             margin-bottom: 6px;
             font-weight: 500;
+        }
+
+        .avatar-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 32px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-avatar-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .upload-avatar-btn:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
         }
 
         /* ==================== 响应式设计 - 移动端 ==================== */
@@ -864,7 +917,7 @@
                         <div class="empty-state-text">请从左侧选择一个对话</div>
                     </div>
                 </div>
-                <!-- 输入区域 -->
+                <!-- 输入区域 - 只保留3个按钮 -->
                 <div class="input-area">
                     <div class="input-container">
                         <textarea 
@@ -874,10 +927,9 @@
                             rows="1"
                         ></textarea>
                         <div class="input-actions">
-                            <button class="media-btn" onclick="selectFile('photo')" title="图片">📷</button>
-                            <button class="media-btn" onclick="selectFile('video')" title="视频">🎥</button>
-                            <button class="media-btn" onclick="selectFile('audio')" title="音频">🎵</button>
-                            <button class="media-btn" onclick="selectFile('document')" title="文件">📎</button>
+                            <button class="media-btn" id="photoBtn" title="图片">📷</button>
+                            <button class="media-btn" id="videoBtn" title="视频">🎥</button>
+                            <button class="media-btn" id="fileBtn" title="文件">📎</button>
                             <button class="send-btn" onclick="sendMessage()">📤</button>
                         </div>
                     </div>
@@ -913,8 +965,13 @@
                     <input type="text" class="modal-input" id="botNameInput" placeholder="机器人名称">
                 </div>
                 <div class="bot-info-section">
-                    <div class="bot-info-label">机器人头像 (Emoji)</div>
-                    <input type="text" class="modal-input" id="botAvatarInput" placeholder="输入单个 Emoji" maxlength="2">
+                    <div class="bot-info-label">机器人头像</div>
+                    <div class="avatar-upload-container">
+                        <div class="avatar-preview" id="avatarPreview">🤖</div>
+                        <button class="upload-avatar-btn" id="uploadAvatarBtn">
+                            📷 点击上传头像图片
+                        </button>
+                    </div>
                 </div>
                 <div class="bot-info-section">
                     <div class="bot-info-label">机器人用户名</div>
@@ -929,11 +986,11 @@
         </div>
     </div>
 
-    <!-- 隐藏的文件输入 -->
+    <!-- 隐藏的文件输入 - 只保留3个 -->
     <input type="file" class="file-input" id="photoInput" accept="image/*">
     <input type="file" class="file-input" id="videoInput" accept="video/*">
-    <input type="file" class="file-input" id="audioInput" accept="audio/*">
-    <input type="file" class="file-input" id="documentInput">
+    <input type="file" class="file-input" id="fileInput" accept="*/*">
+    <input type="file" class="file-input" id="avatarInput" accept="image/*">
 
     <script>
         // 全局变量
@@ -953,8 +1010,100 @@
         let botSettings = {
             name: '',
             avatar: '🤖',
+            avatarImage: '', // 新增：存储头像图片的 base64
             username: ''
         };
+
+        // 初始化文件上传
+        function initFileInputs() {
+            console.log('初始化文件输入...');
+            
+            // 图片按钮
+            document.getElementById('photoBtn').addEventListener('click', () => {
+                if (!currentChatId) {
+                    alert('请先选择一个对话');
+                    return;
+                }
+                document.getElementById('photoInput').click();
+            });
+            
+            // 视频按钮
+            document.getElementById('videoBtn').addEventListener('click', () => {
+                if (!currentChatId) {
+                    alert('请先选择一个对话');
+                    return;
+                }
+                document.getElementById('videoInput').click();
+            });
+            
+            // 文件按钮（可上传任何类型）
+            document.getElementById('fileBtn').addEventListener('click', () => {
+                if (!currentChatId) {
+                    alert('请先选择一个对话');
+                    return;
+                }
+                document.getElementById('fileInput').click();
+            });
+            
+            // 绑定文件输入事件
+            document.getElementById('photoInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) sendMediaFile('photo', file);
+                e.target.value = '';
+            });
+            
+            document.getElementById('videoInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) sendMediaFile('video', file);
+                e.target.value = '';
+            });
+            
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // 根据文件类型自动判断
+                    if (file.type.startsWith('audio/')) {
+                        sendMediaFile('audio', file);
+                    } else {
+                        sendMediaFile('document', file);
+                    }
+                }
+                e.target.value = '';
+            });
+            
+            // 头像上传按钮
+            document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
+                document.getElementById('avatarInput').click();
+            });
+            
+            document.getElementById('avatarInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        botSettings.avatarImage = event.target.result;
+                        updateAvatarPreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+                e.target.value = '';
+            });
+            
+            console.log('文件输入初始化完成');
+        }
+
+        function updateAvatarPreview() {
+            const preview = document.getElementById('avatarPreview');
+            const topAvatar = document.getElementById('botAvatar');
+            
+            if (botSettings.avatarImage) {
+                preview.innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
+                topAvatar.innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
+            } else {
+                preview.textContent = botSettings.avatar;
+                topAvatar.textContent = botSettings.avatar;
+            }
+        }
 
         window.addEventListener('resize', () => {
             isMobile = window.innerWidth <= 768;
@@ -964,7 +1113,8 @@
             loadFromStorage();
             loadBotSettings();
             initializeBot();
-            startLatencyMonitor(); // 启动延迟监控
+            startLatencyMonitor();
+            initFileInputs();
         });
 
         window.addEventListener('beforeunload', () => {
@@ -1023,7 +1173,9 @@
         }
 
         function applyBotSettings() {
-            if (botSettings.avatar) {
+            if (botSettings.avatarImage) {
+                document.getElementById('botAvatar').innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
+            } else if (botSettings.avatar) {
                 document.getElementById('botAvatar').textContent = botSettings.avatar;
             }
             if (botSettings.name) {
@@ -1031,9 +1183,7 @@
             }
         }
 
-        // 启动延迟监控
         function startLatencyMonitor() {
-            // 每5秒检测一次延迟
             latencyInterval = setInterval(async () => {
                 try {
                     const startTime = Date.now();
@@ -1073,7 +1223,7 @@
                     if (!botSettings.name) {
                         botSettings.name = '@' + data.result.username;
                     }
-                    if (!botSettings.avatar) {
+                    if (!botSettings.avatar && !botSettings.avatarImage) {
                         botSettings.avatar = data.result.first_name.charAt(0);
                     }
                     
@@ -1397,43 +1547,8 @@
             }
         }
 
-        function selectFile(type) {
-            if (!currentChatId) {
-                alert('请先选择一个对话');
-                return;
-            }
-            console.log('选择文件类型:', type); // 调试信息
-            const input = document.getElementById(type + 'Input');
-            console.log('文件输入元素:', input); // 调试信息
-            if (input) {
-                input.click();
-            } else {
-                console.error('找不到文件输入元素:', type + 'Input');
-            }
-        }
-
-        // 修复：确保所有文件输入都正确绑定事件
-        document.addEventListener('DOMContentLoaded', () => {
-            ['photo', 'video', 'audio', 'document'].forEach(type => {
-                const input = document.getElementById(type + 'Input');
-                if (input) {
-                    console.log('绑定事件到:', type + 'Input'); // 调试信息
-                    input.addEventListener('change', function(e) {
-                        console.log('文件选择:', type, e.target.files[0]); // 调试信息
-                        const file = e.target.files[0];
-                        if (file) {
-                            sendMediaFile(type, file);
-                        }
-                        e.target.value = ''; // 清空输入，允许重复选择同一文件
-                    });
-                } else {
-                    console.error('找不到输入元素:', type + 'Input');
-                }
-            });
-        });
-
         async function sendMediaFile(type, file) {
-            console.log('开始上传文件:', type, file.name); // 调试信息
+            console.log(`开始上传 ${type} 文件:`, file.name);
             
             const tempMsgId = Date.now();
             conversations[currentChatId].messages.push({
@@ -1472,7 +1587,6 @@
                 });
                 
                 xhr.addEventListener('load', () => {
-                    console.log('上传响应:', xhr.status, xhr.responseText); // 调试信息
                     if (xhr.status === 200) {
                         const data = JSON.parse(xhr.responseText);
                         if (data.ok) {
@@ -1515,7 +1629,6 @@
                 });
                 
                 xhr.addEventListener('error', () => {
-                    console.error('上传错误'); // 调试信息
                     const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                     if (index !== -1) {
                         conversations[currentChatId].messages.splice(index, 1);
@@ -1528,7 +1641,6 @@
                 xhr.send(formData);
                 
             } catch (error) {
-                console.error('上传异常:', error); // 调试信息
                 const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                 if (index !== -1) {
                     conversations[currentChatId].messages.splice(index, 1);
@@ -1591,7 +1703,7 @@
                 document.getElementById('saveBtn').style.display = 'block';
                 
                 document.getElementById('botNameInput').value = botSettings.name;
-                document.getElementById('botAvatarInput').value = botSettings.avatar;
+                updateAvatarPreview();
                 document.getElementById('botUsernameInput').value = botSettings.username;
             } else {
                 alert('密码错误！');
@@ -1600,7 +1712,6 @@
 
         function saveBotSettings() {
             botSettings.name = document.getElementById('botNameInput').value.trim() || botSettings.name;
-            botSettings.avatar = document.getElementById('botAvatarInput').value.trim() || botSettings.avatar;
             
             applyBotSettings();
             saveBotSettingsToStorage();
