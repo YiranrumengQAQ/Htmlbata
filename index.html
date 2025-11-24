@@ -2,13 +2,14 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Telegram Bot - Fluent Light</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -25,23 +26,33 @@
             --fluent-shadow: 0 0.3px 0.9px rgba(0,0,0,0.108), 0 1.6px 3.6px rgba(0,0,0,0.132);
             --fluent-shadow-hover: 0 3.2px 7.2px rgba(0,0,0,0.132), 0 12.8px 28.8px rgba(0,0,0,0.108);
             --admin-gold: #FFB900;
-            --success-bg: #DFF6DD;
-            --success-text: #107C10;
         }
 
-        html, body {
+        html {
             height: 100%;
+            height: -webkit-fill-available;
+            overflow: hidden;
+        }
+
+        body {
+            height: 100%;
+            height: -webkit-fill-available;
             overflow: hidden;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
             background: var(--fluent-bg);
             color: var(--fluent-text);
+            /* 移动端安全区域 */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .app-container {
             display: flex;
             height: 100vh;
+            height: -webkit-fill-available;
             width: 100%;
             background: var(--fluent-bg);
+            overflow: hidden;
         }
 
         /* 侧边栏 */
@@ -54,6 +65,8 @@
             box-shadow: var(--fluent-shadow);
             position: relative;
             z-index: 10;
+            height: 100%;
+            overflow: hidden;
         }
 
         .sidebar-header {
@@ -147,13 +160,17 @@
             box-shadow: 0 0 0 1px var(--fluent-blue);
         }
 
-        /* 联系人列表 - 可滚动 */
+        /* 联系人列表 - 强制滚动 */
         .contacts-list {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll !important;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior: contain;
             scroll-behavior: smooth;
+            position: relative;
+            /* 添加额外的内边距 */
+            padding-bottom: 20px;
         }
 
         .contact-item {
@@ -230,6 +247,8 @@
             display: flex;
             flex-direction: column;
             background: var(--fluent-bg);
+            height: 100%;
+            overflow: hidden;
         }
 
         .chat-header {
@@ -319,14 +338,18 @@
             background: var(--fluent-blue-active);
         }
 
-        /* 聊天消息区 - 可滚动 */
+        /* 聊天消息区 - 强制滚动 */
         .chat-messages {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll !important;
             overflow-x: hidden;
             padding: 24px;
-            -webkit-overflow-scrolling: touch;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior: contain;
             scroll-behavior: smooth;
+            position: relative;
         }
 
         .date-divider {
@@ -468,9 +491,10 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* 输入区 */
+        /* 输入区 - 添加底部安全区域 */
         .chat-input-area {
             padding: 20px 24px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
             background: var(--fluent-surface);
             border-top: 1px solid var(--fluent-border);
             flex-shrink: 0;
@@ -481,6 +505,7 @@
             display: flex;
             gap: 8px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .toolbar-btn {
@@ -542,6 +567,7 @@
             justify-content: center;
             height: 100%;
             color: var(--fluent-text-secondary);
+            padding: 40px 20px;
         }
 
         .empty-state h3 {
@@ -577,6 +603,7 @@
         .toast {
             position: fixed;
             top: 24px;
+            top: calc(24px + env(safe-area-inset-top));
             right: 24px;
             background: var(--fluent-surface);
             border: 1px solid var(--fluent-border);
@@ -599,11 +626,12 @@
             }
         }
 
-        /* 移动端 */
+        /* 移动端优化 */
         .mobile-toggle {
             display: none;
             position: fixed;
             top: 16px;
+            top: calc(16px + env(safe-area-inset-top));
             left: 16px;
             z-index: 100;
             background: var(--fluent-blue);
@@ -629,6 +657,7 @@
                 left: -100%;
                 top: 0;
                 height: 100vh;
+                height: -webkit-fill-available;
                 width: 85%;
                 max-width: 340px;
                 z-index: 99;
@@ -639,35 +668,78 @@
                 left: 0;
             }
 
+            .chat-area {
+                width: 100%;
+            }
+
             .chat-header {
                 padding-left: 72px;
             }
+
+            .message-content {
+                max-width: 75%;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+            }
+
+            .fluent-btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* 移动端额外的滚动优化 */
+            .contacts-list,
+            .chat-messages {
+                -webkit-overflow-scrolling: touch !important;
+                overflow-y: scroll !important;
+                touch-action: pan-y !important;
+            }
+
+            /* 移动端安全区域 */
+            .chat-input-area {
+                padding-bottom: calc(20px + max(env(safe-area-inset-bottom), 20px));
+            }
         }
 
-        /* 滚动条 */
-        ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
+        /* 强制滚动条样式 */
+        .contacts-list::-webkit-scrollbar,
+        .chat-messages::-webkit-scrollbar,
+        .fluent-textarea::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
 
-        ::-webkit-scrollbar-track {
+        .contacts-list::-webkit-scrollbar-track,
+        .chat-messages::-webkit-scrollbar-track,
+        .fluent-textarea::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        ::-webkit-scrollbar-thumb {
+        .contacts-list::-webkit-scrollbar-thumb,
+        .chat-messages::-webkit-scrollbar-thumb,
+        .fluent-textarea::-webkit-scrollbar-thumb {
             background: #C8C6C4;
-            border-radius: 6px;
-            border: 3px solid transparent;
-            background-clip: content-box;
+            border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
+        .contacts-list::-webkit-scrollbar-thumb:hover,
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .fluent-textarea::-webkit-scrollbar-thumb:hover {
             background: #A19F9D;
-            background-clip: content-box;
         }
 
         .file-input {
             display: none;
+        }
+
+        /* 额外的移动端滚动修复 */
+        @supports (-webkit-touch-callout: none) {
+            .contacts-list,
+            .chat-messages {
+                -webkit-overflow-scrolling: touch !important;
+            }
         }
     </style>
 </head>
@@ -778,6 +850,9 @@
 
             async init() {
                 try {
+                    // 强制启用滚动
+                    this.enableScrolling();
+                    
                     await this.getBotInfo();
                     await this.initAdmin();
                     await this.loadMessages();
@@ -787,6 +862,28 @@
                 } catch (e) {
                     this.toast('❌ 初始化失败: ' + e.message);
                 }
+            },
+
+            enableScrolling() {
+                // 强制启用滚动
+                const contactsList = document.getElementById('contactsList');
+                const chatMessages = document.getElementById('chatMessages');
+                
+                contactsList.style.overflowY = 'scroll';
+                chatMessages.style.overflowY = 'scroll';
+                
+                // 添加触摸事件监听
+                [contactsList, chatMessages].forEach(el => {
+                    el.addEventListener('touchstart', function(e) {
+                        this.allowScrolling = true;
+                    }, { passive: true });
+                    
+                    el.addEventListener('touchmove', function(e) {
+                        if (this.allowScrolling) {
+                            e.stopPropagation();
+                        }
+                    }, { passive: true });
+                });
             },
 
             async apiCall(method, params = {}) {
@@ -997,13 +1094,11 @@
                 btn.textContent = '发送中...';
 
                 try {
-                    // 发送消息
                     const sentMsg = await this.apiCall('sendMessage', {
                         chat_id: this.currentChat,
                         text: text
                     });
 
-                    // 重要：立即处理发送的消息并显示到界面
                     this.processMessage(sentMsg);
                     this.renderMessages();
                     this.renderContacts();
@@ -1011,7 +1106,6 @@
                     input.value = '';
                     input.style.height = 'auto';
                     
-                    // 延迟后再次刷新确保同步
                     setTimeout(() => this.loadMessages(), 500);
                     
                     this.toast('✅ 发送成功');
@@ -1048,14 +1142,12 @@
                     const data = await res.json();
                     if (!data.ok) throw new Error(data.description);
 
-                    // 立即处理发送的文件消息
                     this.processMessage(data.result);
                     this.renderMessages();
                     this.renderContacts();
 
                     input.value = '';
                     
-                    // 延迟刷新确保同步
                     setTimeout(() => this.loadMessages(), 500);
                     
                     this.toast('✅ 上传成功');
@@ -1099,7 +1191,12 @@
 
             scrollToBottom() {
                 const container = document.getElementById('chatMessages');
-                setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+                setTimeout(() => {
+                    container.scrollTo({
+                        top: container.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             },
 
             toggleSidebar() {
