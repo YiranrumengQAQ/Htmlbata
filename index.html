@@ -1,1262 +1,782 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>能量收集系统 ULTIMATE - 多能量池版</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-            max-width: 900px;
-            width: 95%;
-            margin: 0 auto 30px;
-            position: relative;
-            backdrop-filter: blur(15px);
-        }
-
-        h1 {
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            font-size: 2.8em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 25px;
-        }
-
-        /* 故障警告 */
-        .malfunction-warning {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-            animation: shake 0.5s infinite, blink 0.8s infinite;
-            box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px) rotate(-1deg); }
-            75% { transform: translateX(5px) rotate(1deg); }
-        }
-
-        .repair-btn {
-            margin-top: 10px;
-            padding: 12px 30px;
-            background: #f39c12;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s;
-        }
-
-        .repair-btn:hover {
-            background: #e67e22;
-            transform: scale(1.05);
-        }
-
-        /* 能量池选择器 */
-        .pool-selector {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .pool-selector-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .pool-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .pool-option {
-            background: white;
-            border: 3px solid #ddd;
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pool-option:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .pool-option.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .pool-option.active::before {
-            content: '✓';
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 1.5em;
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .pool-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        .pool-stats {
-            font-size: 0.85em;
-            color: #7f8c8d;
-            line-height: 1.6;
-        }
-
-        .pool-probability {
-            font-size: 0.95em;
-            font-weight: bold;
-            color: #e74c3c;
-            margin-top: 5px;
-        }
-
-        /* 机器容器 */
-        .machine-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: visible;
-        }
-
-        /* 故障效果 */
-        .machine-container.malfunction {
-            animation: machineShake 0.3s infinite;
-        }
-
-        @keyframes machineShake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-2deg); }
-            75% { transform: rotate(2deg); }
-        }
-
-        #smokeCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .machine {
-            position: relative;
-            width: 280px;
-            height: 320px;
-            z-index: 2;
-            filter: brightness(1);
-            transition: filter 0.3s;
-        }
-
-        .machine.broken {
-            filter: brightness(0.5) grayscale(0.8);
-        }
-
-        .machine-body {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 250px;
-            background: linear-gradient(145deg, #2c3e50, #34495e);
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4),
-                        inset 0 -8px 20px rgba(0, 0, 0, 0.3),
-                        inset 0 8px 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .control-panel {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 160px;
-            height: 80px;
-            background: linear-gradient(145deg, #1a252f, #253341);
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .indicator-lights {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 8px;
-        }
-
-        .indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #555;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s;
-        }
-
-        .indicator.active-red {
-            background: #e74c3c;
-            box-shadow: 0 0 15px #e74c3c;
-            animation: blink 1s infinite;
-        }
-
-        .indicator.active-green {
-            background: #2ecc71;
-            box-shadow: 0 0 15px #2ecc71;
-            animation: blink 1s infinite;
-        }
-
-        .indicator.active-blue {
-            background: #3498db;
-            box-shadow: 0 0 15px #3498db;
-        }
-
-        .indicator.active-yellow {
-            background: #f39c12;
-            box-shadow: 0 0 15px #f39c12;
-            animation: blink 0.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .display-screen {
-            width: 100%;
-            height: 40px;
-            background: #0a0e27;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Courier New', monospace;
-            color: #0f0;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-shadow: 0 0 10px #0f0;
-            border: 2px solid #1a1a2e;
-        }
-
-        .display-screen.error {
-            color: #f00;
-            text-shadow: 0 0 10px #f00;
-            animation: blink 0.5s infinite;
-        }
-
-        .chimney {
-            position: absolute;
-            top: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(145deg, #34495e, #2c3e50);
-            border-radius: 15px 15px 0 0;
-            box-shadow: inset 0 -5px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .chimney::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 50px;
-            background: #1a252f;
-            border-radius: 10px;
-            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.6);
-        }
-
-        .energy-core {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #3498db, #2980b9, #1a5490);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 40px rgba(52, 152, 219, 0.8),
-                        inset 0 0 30px rgba(255, 255, 255, 0.2);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: translateX(-50%) scale(1);
-                box-shadow: 0 0 40px rgba(52, 152, 219, 0.8);
-            }
-            50% {
-                transform: translateX(-50%) scale(1.05);
-                box-shadow: 0 0 60px rgba(52, 152, 219, 1);
-            }
-        }
-
-        .energy-core::before {
-            content: '';
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            animation: rotate 4s linear infinite;
-        }
-
-        .energy-core::after {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px dashed rgba(255, 255, 255, 0.4);
-            animation: rotate 6s linear infinite reverse;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .energy-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-            z-index: 1;
-        }
-
-        .pipe {
-            position: absolute;
-            background: linear-gradient(90deg, #34495e, #2c3e50);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
-        }
-
-        .pipe-left {
-            left: -30px;
-            top: 100px;
-            width: 40px;
-            height: 15px;
-            border-radius: 10px 0 0 10px;
-        }
-
-        .pipe-right {
-            right: -30px;
-            top: 100px;
-            width: 40px;
-            height: 15px;
-            border-radius: 0 10px 10px 0;
-        }
-
-        .support-base {
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            height: 20px;
-            background: linear-gradient(145deg, #1a252f, #253341);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .vent {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 40px;
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .vent-line {
-            width: 3px;
-            height: 25px;
-            background: #1a252f;
-            border-radius: 2px;
-        }
-
-        .energy-bar-container {
-            width: 100%;
-            height: 40px;
-            background: #ecf0f1;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .energy-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
-            border-radius: 20px;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.1em;
-            box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .energy-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            to { left: 100%; }
-        }
-
-        .status {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.3em;
-            color: #34495e;
-            font-weight: bold;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 10px;
-            background: #95a5a6;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .status-indicator.collecting {
-            background: #2ecc71;
-            animation: blink 1s infinite;
-        }
-
-        .status-indicator.releasing {
-            background: #e74c3c;
-            animation: blink 1s infinite;
-        }
-
-        .status-indicator.malfunction {
-            background: #f39c12;
-            animation: blink 0.5s infinite;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        button {
-            flex: 1;
-            padding: 20px 25px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        button:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
-        }
-
-        button:active {
-            transform: translateY(-2px) scale(0.98);
-        }
-
-        #startBtn {
-            background: linear-gradient(145deg, #2ecc71, #27ae60);
-            color: white;
-            border: 3px solid #27ae60;
-        }
-
-        #stopBtn {
-            background: linear-gradient(145deg, #e74c3c, #c0392b);
-            color: white;
-            border: 3px solid #c0392b;
-        }
-
-        #releaseBtn {
-            background: linear-gradient(145deg, #f39c12, #e67e22);
-            color: white;
-            border: 3px solid #e67e22;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        button span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .history {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .history-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 15px;
-        }
-
-        .history-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .history-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .history-list::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 10px;
-        }
-
-        .history-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 0.9em;
-            color: #555;
-            border-left: 4px solid #667eea;
-        }
-
-        @media (max-width: 768px) {
-            .pool-options {
-                grid-template-columns: 1fr;
-            }
-            .controls {
-                flex-direction: column;
-            }
-            .stats {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>超级安全备忘录 - 现代气泡UI</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* 动态背景气泡 */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      top: -250px;
+      left: -150px;
+      animation: float 20s infinite ease-in-out;
+    }
+    
+    body::after {
+      content: "";
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      bottom: -200px;
+      right: -100px;
+      animation: float 15s infinite ease-in-out reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.1); }
+    }
+    
+    /* 毛玻璃容器 */
+    .glass-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      padding: 40px;
+      max-width: 680px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      letter-spacing: -0.5px;
+    }
+    
+    /* 输入框气泡样式 */
+    .input-bubble {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+      color: #333;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
+    
+    .input-bubble:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 1);
+    }
+    
+    textarea.input-bubble {
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+    
+    /* 按钮气泡 */
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 16px rgba(245, 87, 108, 0.4);
+    }
+    
+    /* 备忘录气泡卡片 */
+    .note-bubble {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: noteIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    @keyframes noteIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .note-bubble:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.98);
+    }
+    
+    .note-bubble::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px 0 0 20px;
+    }
+    
+    .note-content {
+      color: #2d3748;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      padding-left: 10px;
+    }
+    
+    .note-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    /* 标签气泡 */
+    .tag-bubble {
+      display: inline-block;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #4a5568;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-right: 8px;
+    }
+    
+    .note-time {
+      color: #718096;
+      font-size: 0.85rem;
+    }
+    
+    .note-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border-radius: 14px;
+      margin: 0;
+    }
+    
+    /* 工具栏 */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .toolbar-left, .toolbar-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    /* 输入区域 */
+    .input-section {
+      margin-bottom: 20px;
+    }
+    
+    .input-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    
+    .input-row input {
+      flex: 1;
+    }
+    
+    /* 备忘录列表 */
+    .notes-list {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    
+    /* 滚动条美化 */
+    .notes-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .notes-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .notes-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+    
+    .notes-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    
+    /* 错误提示气泡 */
+    .error-bubble {
+      background: rgba(245, 87, 108, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(245, 87, 108, 0.4);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 14px;
+      margin-top: 12px;
+      font-weight: 500;
+      animation: shake 0.5s;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    
+    /* 响应式 */
+    @media (max-width: 640px) {
+      .glass-container {
+        padding: 24px;
+        border-radius: 20px;
+      }
+      
+      .title {
+        font-size: 1.8rem;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+      }
+      
+      .input-row {
+        flex-direction: column;
+      }
+      
+      .note-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .note-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+    
+    /* 标签输入datalist样式优化 */
+    input[list] {
+      padding-right: 30px;
+    }
+    
+    /* 文件输入隐藏 */
+    input[type="file"] {
+      display: none;
+    }
+    
+    /* 加载动画 */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .loading {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 能量收集系统 ULTIMATE</h1>
-        <div class="subtitle">🎮 多能量池 | 故障系统 | 离线同步</div>
-
-        <div class="malfunction-warning" id="malfunctionWarning">
-            ⚠️ 系统故障！机器已停止工作！
-            <br>
-            <button class="repair-btn" id="repairBtn" onclick="repairMachine()">🔧 立即修理</button>
+  <div id="app"></div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+  <script>
+    // ============ 加密核心 ============
+    const SALT = "SecureVault-v2.0-2025";
+    const STORAGE_KEY = "__secure_notes_vault__";
+    const FILE_MAGIC = "SNVLT25";
+    
+    let masterPasswordHash = null;
+    let notes = [];
+    let tags = [];
+    
+    function sha256(str) {
+      return CryptoJS.SHA256(SALT + str).toString();
+    }
+    
+    function aesEncrypt(text, password) {
+      const key = CryptoJS.PBKDF2(password, SALT, {
+        keySize: 256/32,
+        iterations: 1000
+      });
+      return CryptoJS.AES.encrypt(text, key.toString()).toString();
+    }
+    
+    function aesDecrypt(ciphertext, password) {
+      const key = CryptoJS.PBKDF2(password, SALT, {
+        keySize: 256/32,
+        iterations: 1000
+      });
+      try {
+        const bytes = CryptoJS.AES.decrypt(ciphertext, key.toString());
+        return bytes.toString(CryptoJS.enc.Utf8);
+      } catch(e) {
+        return null;
+      }
+    }
+    
+    function encodeFile(data, password) {
+      const encrypted = aesEncrypt(JSON.stringify(data), password);
+      const randomHeader = Array.from({length: 32}, () => 
+        String.fromCharCode(65 + Math.floor(Math.random() * 26))
+      ).join('');
+      return FILE_MAGIC + randomHeader + encrypted;
+    }
+    
+    function decodeFile(fileContent, password) {
+      if (!fileContent.startsWith(FILE_MAGIC)) return null;
+      const encrypted = fileContent.slice(FILE_MAGIC.length + 32);
+      const decrypted = aesDecrypt(encrypted, password);
+      if (!decrypted) return null;
+      try {
+        return JSON.parse(decrypted);
+      } catch(e) {
+        return null;
+      }
+    }
+    
+    function saveToStorage() {
+      const data = {
+        notes,
+        tags,
+        timestamp: Date.now(),
+        version: "2.0"
+      };
+      const encrypted = aesEncrypt(JSON.stringify(data), masterPasswordHash);
+      localStorage.setItem(STORAGE_KEY, encrypted);
+    }
+    
+    function loadFromStorage(passwordHash) {
+      const encrypted = localStorage.getItem(STORAGE_KEY);
+      if (!encrypted) return null;
+      const decrypted = aesDecrypt(encrypted, passwordHash);
+      if (!decrypted) return false;
+      try {
+        const data = JSON.parse(decrypted);
+        notes = data.notes || [];
+        tags = data.tags || [];
+        return true;
+      } catch(e) {
+        return false;
+      }
+    }
+    
+    // ============ UI渲染 ============
+    function render() {
+      const app = document.getElementById('app');
+      
+      if (!masterPasswordHash) {
+        renderPasswordScreen(app);
+      } else {
+        renderMainApp(app);
+      }
+    }
+    
+    function renderPasswordScreen(container) {
+      const isFirstTime = !localStorage.getItem(STORAGE_KEY);
+      
+      container.innerHTML = `
+        <div class="glass-container">
+          <div class="title">🔐 ${isFirstTime ? '设置密码' : '输入密码'}</div>
+          <input type="password" 
+                 class="input-bubble" 
+                 id="password" 
+                 placeholder="${isFirstTime ? '设置主密码（至少6位）' : '输入密码解锁'}"
+                 autocomplete="off">
+          ${isFirstTime ? `
+            <input type="password" 
+                   class="input-bubble" 
+                   id="password2" 
+                   placeholder="确认密码"
+                   autocomplete="off">
+          ` : ''}
+          <button class="btn" id="submitPassword" style="width:100%">
+            ${isFirstTime ? '✨ 创建并进入' : '🚀 解锁'}
+          </button>
+          <div id="errorMsg"></div>
         </div>
-
-        <!-- 能量池选择器 -->
-        <div class="pool-selector">
-            <div class="pool-selector-title">🎯 选择能量池类型</div>
-            <div class="pool-options">
-                <div class="pool-option active" data-pool="0">
-                    <div class="pool-name">🟢 稳定池</div>
-                    <div class="pool-stats">
-                        收集间隔: 5秒<br>
-                        每次收集: +1 能量
-                    </div>
-                    <div class="pool-probability">成功率: 100%</div>
-                </div>
-                <div class="pool-option" data-pool="1">
-                    <div class="pool-name">🔵 均衡池</div>
-                    <div class="pool-stats">
-                        收集间隔: 5秒<br>
-                        每次收集: +2 能量
-                    </div>
-                    <div class="pool-probability">成功率: 50%</div>
-                </div>
-                <div class="pool-option" data-pool="2">
-                    <div class="pool-name">🟣 冒险池</div>
-                    <div class="pool-stats">
-                        收集间隔: 5秒<br>
-                        每次收集: +5 能量
-                    </div>
-                    <div class="pool-probability">成功率: 20%</div>
-                </div>
-                <div class="pool-option" data-pool="3">
-                    <div class="pool-name">🟡 高效池</div>
-                    <div class="pool-stats">
-                        收集间隔: 3秒<br>
-                        每次收集: +1 能量
-                    </div>
-                    <div class="pool-probability">成功率: 70%</div>
-                </div>
-                <div class="pool-option" data-pool="4">
-                    <div class="pool-name">🔴 极限池</div>
-                    <div class="pool-stats">
-                        收集间隔: 8秒<br>
-                        每次收集: +10 能量
-                    </div>
-                    <div class="pool-probability">成功率: 10%</div>
-                </div>
-                <div class="pool-option" data-pool="5">
-                    <div class="pool-name">🟠 爆发池</div>
-                    <div class="pool-stats">
-                        收集间隔: 10秒<br>
-                        每次收集: +3 能量
-                    </div>
-                    <div class="pool-probability">成功率: 80%</div>
-                </div>
+      `;
+      
+      setTimeout(() => document.getElementById('password').focus(), 300);
+      
+      document.getElementById('submitPassword').onclick = () => {
+        if (isFirstTime) {
+          handleSetPassword();
+        } else {
+          handleLogin();
+        }
+      };
+      
+      document.getElementById('password').onkeypress = (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('submitPassword').click();
+        }
+      };
+      
+      if (isFirstTime) {
+        document.getElementById('password2').onkeypress = (e) => {
+          if (e.key === 'Enter') {
+            document.getElementById('submitPassword').click();
+          }
+        };
+      }
+    }
+    
+    function handleSetPassword() {
+      const pwd1 = document.getElementById('password').value;
+      const pwd2 = document.getElementById('password2').value;
+      const errorMsg = document.getElementById('errorMsg');
+      
+      if (pwd1.length < 6) {
+        errorMsg.innerHTML = '<div class="error-bubble">❌ 密码至少需要6位</div>';
+        return;
+      }
+      
+      if (pwd1 !== pwd2) {
+        errorMsg.innerHTML = '<div class="error-bubble">❌ 两次密码输入不一致</div>';
+        return;
+      }
+      
+      masterPasswordHash = sha256(pwd1);
+      notes = [];
+      tags = [];
+      saveToStorage();
+      render();
+    }
+    
+    function handleLogin() {
+      const pwd = document.getElementById('password').value;
+      const hash = sha256(pwd);
+      const errorMsg = document.getElementById('errorMsg');
+      
+      if (loadFromStorage(hash)) {
+        masterPasswordHash = hash;
+        render();
+      } else {
+        errorMsg.innerHTML = '<div class="error-bubble">❌ 密码错误，请重试</div>';
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    }
+    
+    function renderMainApp(container) {
+      container.innerHTML = `
+        <div class="glass-container">
+          <div class="title">✨ 超级安全备忘录</div>
+          
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <button class="btn btn-secondary btn-small" onclick="exportData()">
+                📤 导出
+              </button>
+              <button class="btn btn-secondary btn-small" onclick="document.getElementById('importFile').click()">
+                📥 导入
+              </button>
+              <input type="file" id="importFile" accept=".secure" onchange="importData(event)">
             </div>
+            <div class="toolbar-right">
+              <button class="btn btn-danger btn-small" onclick="logout()">
+                🚪 退出
+              </button>
+            </div>
+          </div>
+          
+          <div class="input-section">
+            <div class="input-row">
+              <input type="text" 
+                     class="input-bubble" 
+                     id="tagInput" 
+                     list="tagList"
+                     placeholder="🏷️ 标签（可选）">
+              <datalist id="tagList">
+                ${tags.map(tag => `<option value="${tag}">`).join('')}
+              </datalist>
+            </div>
+            
+            <textarea class="input-bubble" 
+                      id="noteInput" 
+                      placeholder="✍️ 写下你的想法..."></textarea>
+            
+            <button class="btn" onclick="addNote()" style="width:100%">
+              ➕ 添加备忘录
+            </button>
+          </div>
+          
+          <div class="notes-list" id="notesList">
+            ${renderNotesList()}
+          </div>
         </div>
+      `;
+    }
+    
+    function renderNotesList() {
+      if (notes.length === 0) {
+        return `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <div>还没有备忘录，开始记录吧！</div>
+          </div>
+        `;
+      }
+      
+      return notes.map((note, index) => `
+        <div class="note-bubble">
+          <div class="note-content">${escapeHtml(note.text)}</div>
+          <div class="note-meta">
+            <div>
+              <span class="tag-bubble">${note.tag || '未分类'}</span>
+              <span class="note-time">${formatDate(note.timestamp)}</span>
+            </div>
+            <div class="note-actions">
+              <button class="btn btn-secondary btn-small" onclick="editNote(${index})">
+                ✏️ 编辑
+              </button>
+              <button class="btn btn-danger btn-small" onclick="deleteNote(${index})">
+                🗑️ 删除
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // ============ 功能函数 ============
+    function addNote() {
+      const text = document.getElementById('noteInput').value.trim();
+      const tag = document.getElementById('tagInput').value.trim();
+      
+      if (!text) {
+        alert('⚠️ 请输入备忘内容');
+        return;
+      }
+      
+      if (tag && !tags.includes(tag)) {
+        tags.push(tag);
+      }
+      
+      notes.unshift({
+        text,
+        tag: tag || '未分类',
+        timestamp: Date.now(),
+        id: Date.now() + Math.random()
+      });
+      
+      document.getElementById('noteInput').value = '';
+      document.getElementById('tagInput').value = '';
+      
+      saveToStorage();
+      render();
+    }
+    
+    function editNote(index) {
+      const note = notes[index];
+      const newText = prompt('✏️ 编辑备忘内容:', note.text);
+      
+      if (newText !== null && newText.trim() !== '') {
+        notes[index].text = newText.trim();
+        notes[index].timestamp = Date.now();
+        saveToStorage();
+        render();
+      }
+    }
+    
+    function deleteNote(index) {
+      if (confirm('🗑️ 确定要删除这条备忘录吗？')) {
+        notes.splice(index, 1);
+        saveToStorage();
+        render();
+      }
+    }
+    
+    function exportData() {
+      const data = {
+        notes,
+        tags,
+        exportTime: Date.now(),
+        version: "2.0"
+      };
+      
+      const fileContent = encodeFile(data, masterPasswordHash);
+      const blob = new Blob([fileContent], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `notes_backup_${Date.now()}.secure`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+      alert('✅ 数据已导出！');
+    }
+    
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        const data = decodeFile(fileContent, masterPasswordHash);
         
-        <div class="machine-container" id="machineContainer">
-            <canvas id="smokeCanvas"></canvas>
-            <div class="machine" id="machine">
-                <div class="machine-body">
-                    <div class="control-panel">
-                        <div class="indicator-lights">
-                            <div class="indicator" id="led1"></div>
-                            <div class="indicator" id="led2"></div>
-                            <div class="indicator" id="led3"></div>
-                            <div class="indicator" id="led4"></div>
-                        </div>
-                        <div class="display-screen" id="displayScreen">000</div>
-                    </div>
-                    
-                    <div class="chimney"></div>
-                    
-                    <div class="energy-core">
-                        <span class="energy-value" id="energyValue">0</span>
-                    </div>
-                    
-                    <div class="pipe pipe-left"></div>
-                    <div class="pipe pipe-right"></div>
-                    
-                    <div class="vent">
-                        <div class="vent-line"></div>
-                        <div class="vent-line"></div>
-                        <div class="vent-line"></div>
-                        <div class="vent-line"></div>
-                        <div class="vent-line"></div>
-                    </div>
-                    
-                    <div class="support-base"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="energy-bar-container">
-            <div class="energy-bar" id="energyBar" style="width: 0%">0%</div>
-        </div>
-
-        <div class="status">
-            <span class="status-indicator" id="statusIndicator"></span>
-            <span id="statusText">系统待机中</span>
-        </div>
-
-        <div class="controls">
-            <button id="startBtn"><span>🚀 开始收集</span></button>
-            <button id="stopBtn"><span>⏸️ 停止收集</span></button>
-            <button id="releaseBtn"><span>💥 释放能量</span></button>
-        </div>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-label">当前能量</div>
-                <div class="stat-value"><span id="energyDisplay">0</span> / 100</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">收集次数</div>
-                <div class="stat-value" id="collectCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">释放次数</div>
-                <div class="stat-value" id="releaseCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">故障次数</div>
-                <div class="stat-value" id="malfunctionCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">修理次数</div>
-                <div class="stat-value" id="repairCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">总运行时间</div>
-                <div class="stat-value" id="runTime">0s</div>
-            </div>
-        </div>
-
-        <div class="history">
-            <div class="history-title">📋 操作历史</div>
-            <div class="history-list" id="historyList">
-                <div class="history-item">✅ 系统初始化完成</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ========== 能量池配置 ==========
-        const ENERGY_POOLS = [
-            { name: '稳定池', interval: 5000, amount: 1, probability: 1.0 },      // 100%
-            { name: '均衡池', interval: 5000, amount: 2, probability: 0.5 },      // 50%
-            { name: '冒险池', interval: 5000, amount: 5, probability: 0.2 },      // 20%
-            { name: '高效池', interval: 3000, amount: 1, probability: 0.7 },      // 70%
-            { name: '极限池', interval: 8000, amount: 10, probability: 0.1 },     // 10%
-            { name: '爆发池', interval: 10000, amount: 3, probability: 0.8 }      // 80%
-        ];
-
-        const MALFUNCTION_PROBABILITY = 0.05; // 5%故障概率
-
-        // ========== 数据持久化 ==========
-        class PersistenceManager {
-            constructor() {
-                this.storageKey = 'energySystemUltimate';
-            }
-            saveState(state) {
-                try {
-                    localStorage.setItem(this.storageKey, JSON.stringify(state));
-                } catch (e) {
-                    console.error('保存失败:', e);
-                }
-            }
-            loadState() {
-                try {
-                    const data = localStorage.getItem(this.storageKey);
-                    return data ? JSON.parse(data) : null;
-                } catch (e) {
-                    return null;
-                }
-            }
+        if (data && Array.isArray(data.notes)) {
+          if (confirm(`📥 发现 ${data.notes.length} 条备忘录，是否导入？\n\n⚠️ 当前数据将被覆盖！`)) {
+            notes = data.notes;
+            tags = data.tags || [];
+            saveToStorage();
+            render();
+            alert('✅ 导入成功！');
+          }
+        } else {
+          alert('❌ 文件无效或密码不匹配');
         }
-
-        // ========== 系统状态 ==========
-        const persistence = new PersistenceManager();
-        let energy = 0;
-        let isCollecting = false;
-        let isReleasing = false;
-        let isMalfunction = false;
-        let collectInterval = null;
-        let releaseInterval = null;
-        let malfunctionCheckInterval = null;
-        let timeInterval = null;
-        let collectCount = 0;
-        let releaseCount = 0;
-        let malfunctionCount = 0;
-        let repairCount = 0;
-        let totalRunTime = 0;
-        let currentPoolIndex = 0;
-
-        // ========== DOM 元素 ==========
-        const energyValue = document.getElementById('energyValue');
-        const energyBar = document.getElementById('energyBar');
-        const statusText = document.getElementById('statusText');
-        const statusIndicator = document.getElementById('statusIndicator');
-        const displayScreen = document.getElementById('displayScreen');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const releaseBtn = document.getElementById('releaseBtn');
-        const collectCountEl = document.getElementById('collectCount');
-        const releaseCountEl = document.getElementById('releaseCount');
-        const malfunctionCountEl = document.getElementById('malfunctionCount');
-        const repairCountEl = document.getElementById('repairCount');
-        const runTimeEl = document.getElementById('runTime');
-        const energyDisplay = document.getElementById('energyDisplay');
-        const historyList = document.getElementById('historyList');
-        const malfunctionWarning = document.getElementById('malfunctionWarning');
-        const machineContainer = document.getElementById('machineContainer');
-        const machine = document.getElementById('machine');
-        const led1 = document.getElementById('led1');
-        const led2 = document.getElementById('led2');
-        const led3 = document.getElementById('led3');
-        const led4 = document.getElementById('led4');
-
-        // ========== 能量池选择 ==========
-        document.querySelectorAll('.pool-option').forEach((option, index) => {
-            option.addEventListener('click', () => {
-                if (isCollecting) {
-                    alert('⚠️ 请先停止收集再切换能量池！');
-                    return;
-                }
-                document.querySelectorAll('.pool-option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                currentPoolIndex = index;
-                addHistory(`🎯 切换到${ENERGY_POOLS[index].name} (成功率${(ENERGY_POOLS[index].probability * 100).toFixed(0)}%)`);
-                saveCurrentState();
-            });
-        });
-
-        // ========== 烟雾效果 ==========
-        const canvas = document.getElementById('smokeCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-            reset() {
-                this.x = canvas.width / 2 + (Math.random() - 0.5) * 40;
-                this.y = canvas.height / 2 - 80;
-                this.vx = (Math.random() - 0.5) * 2.5;
-                this.vy = -Math.random() * 2.5 - 1.5;
-                this.life = 1;
-                this.size = Math.random() * 35 + 25;
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vy -= 0.03;
-                this.life -= 0.008;
-                this.size += 0.4;
-                if (this.life <= 0) this.reset();
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.life * 0.35;
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                if (isMalfunction) {
-                    gradient.addColorStop(0, 'rgba(50, 50, 50, 0.9)');
-                    gradient.addColorStop(0.5, 'rgba(80, 80, 80, 0.5)');
-                    gradient.addColorStop(1, 'rgba(100, 100, 100, 0)');
-                } else if (isReleasing) {
-                    gradient.addColorStop(0, 'rgba(231, 76, 60, 0.9)');
-                    gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.5)');
-                    gradient.addColorStop(1, 'rgba(230, 126, 34, 0)');
-                } else {
-                    gradient.addColorStop(0, 'rgba(200, 200, 220, 0.9)');
-                    gradient.addColorStop(0.5, 'rgba(150, 150, 180, 0.5)');
-                    gradient.addColorStop(1, 'rgba(100, 100, 150, 0)');
-                }
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        let particles = [];
-        for (let i = 0; i < 20; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateSmoke() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if ((isCollecting || isReleasing) && !isMalfunction) {
-                particles.forEach(particle => {
-                    particle.update();
-                    particle.draw();
-                });
-            }
-            requestAnimationFrame(animateSmoke);
-        }
-        animateSmoke();
-
-        // ========== 更新显示 ==========
-        function updateDisplay() {
-            energyValue.textContent = energy;
-            energyDisplay.textContent = energy;
-            energyBar.style.width = energy + '%';
-            energyBar.textContent = energy + '%';
-            displayScreen.textContent = isMalfunction ? 'ERR' : String(energy).padStart(3, '0');
-            displayScreen.className = isMalfunction ? 'display-screen error' : 'display-screen';
-            collectCountEl.textContent = collectCount;
-            releaseCountEl.textContent = releaseCount;
-            malfunctionCountEl.textContent = malfunctionCount;
-            repairCountEl.textContent = repairCount;
-            
-            led1.className = 'indicator';
-            led2.className = 'indicator';
-            led3.className = 'indicator';
-            led4.className = 'indicator';
-            
-            if (isMalfunction) {
-                led1.className = 'indicator active-yellow';
-                led2.className = 'indicator active-yellow';
-                led3.className = 'indicator active-yellow';
-                led4.className = 'indicator active-yellow';
-            } else {
-                if (isCollecting) led2.className = 'indicator active-green';
-                if (isReleasing) led1.className = 'indicator active-red';
-                if (energy > 50) led3.className = 'indicator active-blue';
-                if (energy === 100) led4.className = 'indicator active-green';
-            }
-        }
-
-        // ========== 故障系统 ==========
-        function checkMalfunction() {
-            if (!isMalfunction && isCollecting && Math.random() < MALFUNCTION_PROBABILITY) {
-                triggerMalfunction();
-            }
-        }
-
-        function triggerMalfunction() {
-            isMalfunction = true;
-            malfunctionCount++;
-            isCollecting = false;
-            
-            if (collectInterval) {
-                clearInterval(collectInterval);
-                collectInterval = null;
-            }
-            
-            malfunctionWarning.style.display = 'block';
-            machineContainer.classList.add('malfunction');
-            machine.classList.add('broken');
-            statusText.textContent = '⚠️ 系统故障！';
-            statusIndicator.className = 'status-indicator malfunction';
-            
-            addHistory(`❌ 机器发生故障！已停止运行 (故障率5%)`);
-            updateDisplay();
-            saveCurrentState();
-        }
-
-        function repairMachine() {
-            isMalfunction = false;
-            repairCount++;
-            
-            malfunctionWarning.style.display = 'none';
-            machineContainer.classList.remove('malfunction');
-            machine.classList.remove('broken');
-            statusText.textContent = '系统待机中';
-            statusIndicator.className = 'status-indicator';
-            
-            addHistory(`🔧 机器修理完成！可以继续使用`);
-            updateDisplay();
-            saveCurrentState();
-        }
-
-        // ========== 历史记录 ==========
-        function addHistory(message) {
-            const time = new Date().toLocaleTimeString('zh-CN');
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.textContent = `[${time}] ${message}`;
-            historyList.insertBefore(historyItem, historyList.firstChild);
-            while (historyList.children.length > 15) {
-                historyList.removeChild(historyList.lastChild);
-            }
-        }
-
-        // ========== 时间格式化 ==========
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            if (h > 0) return `${h}h ${m}m ${s}s`;
-            if (m > 0) return `${m}m ${s}s`;
-            return `${s}s`;
-        }
-
-        function updateRunTime() {
-            totalRunTime++;
-            runTimeEl.textContent = formatTime(totalRunTime);
-        }
-
-        // ========== 保存状态 ==========
-        function saveCurrentState() {
-            persistence.saveState({
-                energy, isCollecting, isReleasing, isMalfunction,
-                collectCount, releaseCount, malfunctionCount, repairCount,
-                totalRunTime, currentPoolIndex, lastSaveTime: Date.now()
-            });
-        }
-
-        function startAutoSave() {
-            setInterval(saveCurrentState, 2000);
-        }
-
-        // ========== 开始收集 ==========
-        function startCollecting(isResuming = false) {
-            if (isCollecting || isMalfunction) return;
-            
-            isCollecting = true;
-            statusText.textContent = `正在从${ENERGY_POOLS[currentPoolIndex].name}收集能量...`;
-            statusIndicator.className = 'status-indicator collecting';
-            
-            if (!isResuming) {
-                addHistory(`✅ 开始收集 - ${ENERGY_POOLS[currentPoolIndex].name}`);
-            }
-
-            if (!timeInterval) {
-                timeInterval = setInterval(updateRunTime, 1000);
-            }
-
-            if (!malfunctionCheckInterval) {
-                malfunctionCheckInterval = setInterval(checkMalfunction, 5000);
-            }
-
-            const pool = ENERGY_POOLS[currentPoolIndex];
-            collectInterval = setInterval(() => {
-                if (isMalfunction) {
-                    clearInterval(collectInterval);
-                    collectInterval = null;
-                    return;
-                }
-                
-                if (energy < 100) {
-                    if (Math.random() < pool.probability) {
-                        const gainedEnergy = Math.min(pool.amount, 100 - energy);
-                        energy += gainedEnergy;
-                        collectCount++;
-                        updateDisplay();
-                        addHistory(`⚡ 收集成功 +${gainedEnergy} (当前:${energy}) - ${pool.name}`);
-                    } else {
-                        addHistory(`❌ 收集失败 (概率:${(pool.probability*100).toFixed(0)}%)`);
-                    }
-                } else {
-                    statusText.textContent = '能量已满！';
-                    addHistory('⚠️ 能量已达上限');
-                }
-                saveCurrentState();
-            }, pool.interval);
-        }
-
-        startBtn.addEventListener('click', () => {
-            if (isMalfunction) {
-                alert('⚠️ 机器故障中，请先修理！');
-                return;
-            }
-            startCollecting();
-        });
-
-        // ========== 停止收集 ==========
-        stopBtn.addEventListener('click', () => {
-            if (!isCollecting) return;
-            
-            isCollecting = false;
-            statusText.textContent = '收集已停止';
-            statusIndicator.className = 'status-indicator';
-            
-            if (collectInterval) {
-                clearInterval(collectInterval);
-                collectInterval = null;
-            }
-            if (malfunctionCheckInterval) {
-                clearInterval(malfunctionCheckInterval);
-                malfunctionCheckInterval = null;
-            }
-            
-            addHistory('⏸️ 停止收集');
-            saveCurrentState();
-        });
-
-        // ========== 释放能量 ==========
-        function startReleasing(isResuming = false) {
-            if (isReleasing || isMalfunction) return;
-            if (energy === 0) {
-                alert('⚠️ 能量不足！');
-                return;
-            }
-            
-            isReleasing = true;
-            statusText.textContent = '正在释放能量...';
-            statusIndicator.className = 'status-indicator releasing';
-            
-            if (!isResuming) addHistory('💥 开始释放能量');
-
-            releaseInterval = setInterval(() => {
-                if (energy > 0) {
-                    energy--;
-                    releaseCount++;
-                    updateDisplay();
-                    addHistory(`🔥 释放 -1 (剩余:${energy})`);
-                } else {
-                    isReleasing = false;
-                    statusText.textContent = '能量释放完毕';
-                    statusIndicator.className = 'status-indicator';
-                    clearInterval(releaseInterval);
-                    releaseInterval = null;
-                    addHistory('✅ 释放完成');
-                }
-                saveCurrentState();
-            }, 10000);
-        }
-
-        releaseBtn.addEventListener('click', () => {
-            if (isMalfunction) {
-                alert('⚠️ 机器故障中，请先修理！');
-                return;
-            }
-            startReleasing();
-        });
-
-        // ========== 初始化 ==========
-        function initializeSystem() {
-            const savedState = persistence.loadState();
-            if (savedState) {
-                energy = savedState.energy;
-                collectCount = savedState.collectCount;
-                releaseCount = savedState.releaseCount;
-                malfunctionCount = savedState.malfunctionCount;
-                repairCount = savedState.repairCount;
-                totalRunTime = savedState.totalRunTime;
-                currentPoolIndex = savedState.currentPoolIndex;
-                isMalfunction = savedState.isMalfunction;
-                
-                document.querySelectorAll('.pool-option').forEach((opt, idx) => {
-                    opt.classList.toggle('active', idx === currentPoolIndex);
-                });
-                
-                if (isMalfunction) {
-                    malfunctionWarning.style.display = 'block';
-                    machineContainer.classList.add('malfunction');
-                    machine.classList.add('broken');
-                    statusIndicator.className = 'status-indicator malfunction';
-                }
-            }
-            updateDisplay();
-            startAutoSave();
-        }
-
-        window.addEventListener('beforeunload', saveCurrentState);
-        initializeSystem();
-    </script>
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+    
+    function logout() {
+      if (confirm('🚪 确定要退出吗？需要重新输入密码才能访问。')) {
+        masterPasswordHash = null;
+        render();
+      }
+    }
+    
+    // ============ 工具函数 ============
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return '刚刚';
+      if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+      if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
+      
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // ============ 初始化 ============
+    window.onload = () => {
+      render();
+    };
+  </script>
 </body>
 </html>
