@@ -115,6 +115,10 @@
             animation: pulse 2s infinite;
         }
 
+        .status-dot.offline {
+            background: #ef4444;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -627,11 +631,6 @@
             color: #1f1f1f;
         }
 
-        .modal-btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-
         .loading {
             text-align: center;
             padding: 30px;
@@ -733,10 +732,6 @@
                 display: none;
             }
 
-            .status-indicator span {
-                font-size: 11px;
-            }
-
             .status-indicator {
                 padding: 6px 10px;
             }
@@ -832,11 +827,11 @@
             </div>
             <div class="network-status">
                 <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span id="networkStatus">已连接</span>
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="networkStatus">连接中</span>
                 </div>
                 <div class="status-indicator">
-                    <span>延迟: <strong id="latency">0ms</strong></span>
+                    <span>延迟: <strong id="latency">--ms</strong></span>
                 </div>
             </div>
         </div>
@@ -938,7 +933,7 @@
     <input type="file" class="file-input" id="photoInput" accept="image/*">
     <input type="file" class="file-input" id="videoInput" accept="video/*">
     <input type="file" class="file-input" id="audioInput" accept="audio/*">
-    <input type="file" class="file-input" id="documentInput" accept="*/*">
+    <input type="file" class="file-input" id="documentInput">
 
     <script>
         // 全局变量
@@ -953,6 +948,7 @@
         let conversations = {};
         let updateOffset = 0;
         let pollingInterval = null;
+        let latencyInterval = null;
         let isMobile = window.innerWidth <= 768;
         let botSettings = {
             name: '',
@@ -968,6 +964,7 @@
             loadFromStorage();
             loadBotSettings();
             initializeBot();
+            startLatencyMonitor(); // 启动延迟监控
         });
 
         window.addEventListener('beforeunload', () => {
@@ -1034,6 +1031,34 @@
             }
         }
 
+        // 启动延迟监控
+        function startLatencyMonitor() {
+            // 每5秒检测一次延迟
+            latencyInterval = setInterval(async () => {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`https://api.telegram.org/bot${botToken}/getMe`, {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+                    const latency = Date.now() - startTime;
+                    
+                    if (response.ok) {
+                        document.getElementById('latency').textContent = latency + 'ms';
+                        document.getElementById('networkStatus').textContent = '已连接';
+                        document.getElementById('statusDot').classList.remove('offline');
+                    } else {
+                        document.getElementById('networkStatus').textContent = '连接异常';
+                        document.getElementById('statusDot').classList.add('offline');
+                    }
+                } catch (error) {
+                    document.getElementById('networkStatus').textContent = '连接中断';
+                    document.getElementById('latency').textContent = '--ms';
+                    document.getElementById('statusDot').classList.add('offline');
+                }
+            }, 5000);
+        }
+
         async function initializeBot() {
             try {
                 const startTime = Date.now();
@@ -1054,6 +1079,7 @@
                     
                     applyBotSettings();
                     document.getElementById('latency').textContent = latency + 'ms';
+                    document.getElementById('networkStatus').textContent = '已连接';
                     
                     addBuiltInAdmin();
                     startPolling();
@@ -1063,6 +1089,7 @@
             } catch (error) {
                 console.error('初始化失败:', error);
                 document.getElementById('networkStatus').textContent = '连接失败';
+                document.getElementById('statusDot').classList.add('offline');
                 setTimeout(initializeBot, 5000);
             }
         }
@@ -1089,12 +1116,9 @@
 
         async function getUpdates() {
             try {
-                const startTime = Date.now();
                 const response = await fetch(
                     `https://api.telegram.org/bot${botToken}/getUpdates?offset=${updateOffset}&timeout=30`
                 );
-                const latency = Date.now() - startTime;
-                document.getElementById('latency').textContent = latency + 'ms';
                 
                 if (!response.ok) throw new Error('获取更新失败');
                 
@@ -1108,10 +1132,7 @@
                     });
                     saveToStorage();
                 }
-                
-                document.getElementById('networkStatus').textContent = '已连接';
             } catch (error) {
-                document.getElementById('networkStatus').textContent = '连接中断';
                 console.error('Polling error:', error);
             }
         }
@@ -1305,7 +1326,6 @@
                     }
                 }
                 
-                // 显示上传进度
                 if (msg.uploading) {
                     mediaHtml += `
                         <div class="upload-progress">
@@ -1382,19 +1402,39 @@
                 alert('请先选择一个对话');
                 return;
             }
-            document.getElementById(type + 'Input').click();
+            console.log('选择文件类型:', type); // 调试信息
+            const input = document.getElementById(type + 'Input');
+            console.log('文件输入元素:', input); // 调试信息
+            if (input) {
+                input.click();
+            } else {
+                console.error('找不到文件输入元素:', type + 'Input');
+            }
         }
 
-        ['photo', 'video', 'audio', 'document'].forEach(type => {
-            document.getElementById(type + 'Input').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) sendMediaFile(type, file);
-                e.target.value = '';
+        // 修复：确保所有文件输入都正确绑定事件
+        document.addEventListener('DOMContentLoaded', () => {
+            ['photo', 'video', 'audio', 'document'].forEach(type => {
+                const input = document.getElementById(type + 'Input');
+                if (input) {
+                    console.log('绑定事件到:', type + 'Input'); // 调试信息
+                    input.addEventListener('change', function(e) {
+                        console.log('文件选择:', type, e.target.files[0]); // 调试信息
+                        const file = e.target.files[0];
+                        if (file) {
+                            sendMediaFile(type, file);
+                        }
+                        e.target.value = ''; // 清空输入，允许重复选择同一文件
+                    });
+                } else {
+                    console.error('找不到输入元素:', type + 'Input');
+                }
             });
         });
 
         async function sendMediaFile(type, file) {
-            // 添加临时消息显示上传进度
+            console.log('开始上传文件:', type, file.name); // 调试信息
+            
             const tempMsgId = Date.now();
             conversations[currentChatId].messages.push({
                 id: tempMsgId,
@@ -1418,13 +1458,11 @@
             };
             
             try {
-                // 使用 XMLHttpRequest 来跟踪上传进度
                 const xhr = new XMLHttpRequest();
                 
                 xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable) {
                         const progress = Math.round((e.loaded / e.total) * 100);
-                        // 更新进度
                         const msg = conversations[currentChatId].messages.find(m => m.id === tempMsgId);
                         if (msg) {
                             msg.progress = progress;
@@ -1434,16 +1472,15 @@
                 });
                 
                 xhr.addEventListener('load', () => {
+                    console.log('上传响应:', xhr.status, xhr.responseText); // 调试信息
                     if (xhr.status === 200) {
                         const data = JSON.parse(xhr.responseText);
                         if (data.ok) {
-                            // 移除临时消息
                             const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                             if (index !== -1) {
                                 conversations[currentChatId].messages.splice(index, 1);
                             }
                             
-                            // 添加真实消息
                             const msgData = {
                                 id: data.result.message_id,
                                 text: '',
@@ -1467,7 +1504,6 @@
                             renderMessages();
                             saveToStorage();
                         } else {
-                            // 移除临时消息
                             const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                             if (index !== -1) {
                                 conversations[currentChatId].messages.splice(index, 1);
@@ -1479,7 +1515,7 @@
                 });
                 
                 xhr.addEventListener('error', () => {
-                    // 移除临时消息
+                    console.error('上传错误'); // 调试信息
                     const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                     if (index !== -1) {
                         conversations[currentChatId].messages.splice(index, 1);
@@ -1492,7 +1528,7 @@
                 xhr.send(formData);
                 
             } catch (error) {
-                // 移除临时消息
+                console.error('上传异常:', error); // 调试信息
                 const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
                 if (index !== -1) {
                     conversations[currentChatId].messages.splice(index, 1);
@@ -1535,7 +1571,6 @@
             closeAddContactModal();
         }
 
-        // 机器人设置相关函数
         function openBotSettingsModal() {
             document.getElementById('botSettingsModal').classList.add('active');
             document.getElementById('passwordInput').value = '';
@@ -1555,7 +1590,6 @@
                 document.getElementById('unlockBtn').style.display = 'none';
                 document.getElementById('saveBtn').style.display = 'block';
                 
-                // 填充当前设置
                 document.getElementById('botNameInput').value = botSettings.name;
                 document.getElementById('botAvatarInput').value = botSettings.avatar;
                 document.getElementById('botUsernameInput').value = botSettings.username;
