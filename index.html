@@ -107,6 +107,15 @@
             animation: pulse 2s infinite;
         }
 
+        .status-dot.offline {
+            background: #D13438;
+            animation: none;
+        }
+
+        .status-dot.reconnecting {
+            background: #FFB900;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.6; transform: scale(0.9); }
@@ -128,6 +137,25 @@
             font-size: 13px;
             color: var(--fluent-text);
             flex-shrink: 0;
+        }
+
+        .network-info {
+            padding: 12px 20px;
+            background: #E8F5E9;
+            border-bottom: 1px solid var(--fluent-border);
+            font-size: 12px;
+            color: #2E7D32;
+            flex-shrink: 0;
+        }
+
+        .network-info.warning {
+            background: #FFF4CE;
+            color: #F59B00;
+        }
+
+        .network-info.error {
+            background: #FDE7E9;
+            color: #A80000;
         }
 
         .search-box {
@@ -451,7 +479,6 @@
             white-space: pre-wrap;
         }
 
-        /* 媒体预览优化 */
         .message-media {
             margin-top: 10px;
             max-width: 100%;
@@ -514,7 +541,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* 输入区 - 简化移动端布局 */
+        /* 输入区 */
         .chat-input-area {
             padding: 16px;
             padding-bottom: calc(16px + env(safe-area-inset-bottom));
@@ -565,7 +592,6 @@
             box-shadow: 0 0 0 1px var(--fluent-blue);
         }
 
-        /* 文件按钮 - 横向布局 */
         .file-buttons {
             display: flex;
             gap: 6px;
@@ -593,7 +619,6 @@
             transform: scale(0.95);
         }
 
-        /* 空状态 */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -610,7 +635,6 @@
             margin-bottom: 8px;
         }
 
-        /* 加载 */
         .loading {
             display: flex;
             flex-direction: column;
@@ -633,7 +657,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             top: 24px;
@@ -661,7 +684,6 @@
             }
         }
 
-        /* 移动端优化 */
         .mobile-toggle {
             display: none;
             position: fixed;
@@ -736,7 +758,6 @@
             }
         }
 
-        /* 滚动条样式 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -765,7 +786,6 @@
     <div id="toast"></div>
 
     <div class="app-container">
-        <!-- 侧边栏 -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="app-title">
@@ -773,8 +793,8 @@
                 </div>
                 <div class="status-bar">
                     <div class="status-indicator">
-                        <span class="status-dot"></span>
-                        <span id="statusText">在线</span>
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">初始化中...</span>
                     </div>
                     <span class="admin-badge">管理员</span>
                 </div>
@@ -782,6 +802,10 @@
 
             <div class="bot-info" id="botInfo">
                 🤖 加载机器人信息...
+            </div>
+
+            <div class="network-info" id="networkInfo">
+                📡 网络连接正常 | 延迟: <span id="latency">-</span>ms
             </div>
 
             <div class="search-box">
@@ -796,7 +820,6 @@
             </div>
         </div>
 
-        <!-- 聊天区域 -->
         <div class="chat-area">
             <div class="chat-header">
                 <div class="chat-title-section">
@@ -862,33 +885,198 @@
             contacts: new Map(),
             messages: new Map(),
             botInfo: null,
+            
+            // 网络稳定性相关
+            retryCount: 0,
+            maxRetries: 5,
+            retryDelay: 1000,
+            isOnline: true,
+            lastPingTime: 0,
+            connectionAttempts: 0,
+            failedRequests: 0,
+            requestQueue: [],
+            isProcessingQueue: false,
 
             async init() {
                 try {
-                    await this.getBotInfo();
-                    await this.initAdmin();
-                    await this.loadMessages();
+                    this.updateStatus('初始化中...', 'reconnecting');
+                    
+                    // 监听网络状态
+                    this.setupNetworkMonitoring();
+                    
+                    // 初始化机器人
+                    await this.initWithRetry();
+                    
+                    this.updateStatus('在线', 'online');
                     this.startPolling();
                     this.setupInput();
                     this.setupSearch();
+                    this.startHealthCheck();
                 } catch (e) {
-                    this.toast('❌ 初始化失败: ' + e.message);
+                    this.updateStatus('初始化失败', 'offline');
+                    this.toast('❌ 初始化失败，正在重试...');
+                    setTimeout(() => this.init(), 3000);
                 }
             },
 
-            async apiCall(method, params = {}) {
-                const res = await fetch(`${this.api}${getTk()}/${method}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params)
+            async initWithRetry() {
+                let attempts = 0;
+                while (attempts < this.maxRetries) {
+                    try {
+                        await this.getBotInfo();
+                        await this.initAdmin();
+                        await this.loadMessages();
+                        return;
+                    } catch (e) {
+                        attempts++;
+                        if (attempts < this.maxRetries) {
+                            await this.sleep(this.retryDelay * attempts);
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
+            },
+
+            setupNetworkMonitoring() {
+                // 监听在线/离线状态
+                window.addEventListener('online', () => {
+                    this.isOnline = true;
+                    this.updateStatus('网络已恢复', 'online');
+                    this.toast('✅ 网络已恢复，正在同步...');
+                    this.processQueue();
+                    this.loadMessages();
                 });
-                const data = await res.json();
-                if (!data.ok) throw new Error(data.description || '请求失败');
-                return data.result;
+
+                window.addEventListener('offline', () => {
+                    this.isOnline = false;
+                    this.updateStatus('网络断开', 'offline');
+                    this.toast('⚠️ 网络断开，消息将在恢复后发送');
+                });
+
+                // 页面可见性变化
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden && this.isOnline) {
+                        this.loadMessages();
+                    }
+                });
+            },
+
+            startHealthCheck() {
+                setInterval(async () => {
+                    const start = Date.now();
+                    try {
+                        await this.apiCall('getMe', {}, false);
+                        const latency = Date.now() - start;
+                        document.getElementById('latency').textContent = latency;
+                        
+                        // 更新网络状态
+                        const networkInfo = document.getElementById('networkInfo');
+                        if (latency < 500) {
+                            networkInfo.className = 'network-info';
+                            networkInfo.innerHTML = `📡 网络连接优秀 | 延迟: <span id="latency">${latency}</span>ms`;
+                        } else if (latency < 1500) {
+                            networkInfo.className = 'network-info warning';
+                            networkInfo.innerHTML = `📡 网络连接一般 | 延迟: <span id="latency">${latency}</span>ms`;
+                        } else {
+                            networkInfo.className = 'network-info error';
+                            networkInfo.innerHTML = `📡 网络连接较慢 | 延迟: <span id="latency">${latency}</span>ms`;
+                        }
+                        
+                        this.failedRequests = 0;
+                    } catch (e) {
+                        this.failedRequests++;
+                        if (this.failedRequests >= 3) {
+                            this.updateStatus('连接不稳定', 'reconnecting');
+                            this.reconnect();
+                        }
+                    }
+                }, 5000);
+            },
+
+            async reconnect() {
+                this.updateStatus('正在重连...', 'reconnecting');
+                this.connectionAttempts++;
+                
+                try {
+                    await this.initWithRetry();
+                    this.updateStatus('在线', 'online');
+                    this.toast('✅ 重连成功');
+                    this.connectionAttempts = 0;
+                } catch (e) {
+                    if (this.connectionAttempts < 10) {
+                        setTimeout(() => this.reconnect(), 5000);
+                    } else {
+                        this.updateStatus('离线', 'offline');
+                        this.toast('❌ 无法连接服务器');
+                    }
+                }
+            },
+
+            updateStatus(text, state) {
+                document.getElementById('statusText').textContent = text;
+                const dot = document.getElementById('statusDot');
+                dot.className = 'status-dot';
+                if (state === 'offline') dot.classList.add('offline');
+                if (state === 'reconnecting') dot.classList.add('reconnecting');
+            },
+
+            async apiCall(method, params = {}, useQueue = true) {
+                if (!this.isOnline && useQueue) {
+                    return new Promise((resolve, reject) => {
+                        this.requestQueue.push({ method, params, resolve, reject });
+                    });
+                }
+
+                let lastError;
+                for (let i = 0; i < this.maxRetries; i++) {
+                    try {
+                        const res = await fetch(`${this.api}${getTk()}/${method}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(params),
+                            signal: AbortSignal.timeout(15000)
+                        });
+                        
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        
+                        const data = await res.json();
+                        if (!data.ok) throw new Error(data.description || '请求失败');
+                        
+                        this.retryCount = 0;
+                        return data.result;
+                    } catch (e) {
+                        lastError = e;
+                        if (i < this.maxRetries - 1) {
+                            await this.sleep(this.retryDelay * (i + 1));
+                        }
+                    }
+                }
+                throw lastError;
+            },
+
+            async processQueue() {
+                if (this.isProcessingQueue || this.requestQueue.length === 0) return;
+                
+                this.isProcessingQueue = true;
+                while (this.requestQueue.length > 0) {
+                    const { method, params, resolve, reject } = this.requestQueue.shift();
+                    try {
+                        const result = await this.apiCall(method, params, false);
+                        resolve(result);
+                    } catch (e) {
+                        reject(e);
+                    }
+                }
+                this.isProcessingQueue = false;
+            },
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             },
 
             async getBotInfo() {
-                this.botInfo = await this.apiCall('getMe');
+                this.botInfo = await this.apiCall('getMe', {}, false);
                 document.getElementById('botInfo').textContent = 
                     `🤖 ${this.botInfo.first_name} (@${this.botInfo.username})`;
             },
@@ -908,6 +1096,8 @@
             },
 
             async loadMessages() {
+                if (!this.isOnline) return;
+                
                 try {
                     const updates = await this.apiCall('getUpdates', {
                         offset: this.offset,
@@ -926,10 +1116,9 @@
                     if (this.currentChat) {
                         this.renderMessages();
                     }
-                    document.getElementById('statusText').textContent = '在线';
+                    this.updateStatus('在线', 'online');
                 } catch (e) {
-                    document.getElementById('statusText').textContent = '离线';
-                    console.error(e);
+                    console.error('加载消息失败:', e);
                 }
             },
 
@@ -1010,10 +1199,6 @@
                 }
             },
 
-            async getFileUrl(filePath) {
-                return `https://api.telegram.org/file/bot${getTk()}/${filePath}`;
-            },
-
             renderMessages() {
                 const container = document.getElementById('chatMessages');
                 const msgs = this.messages.get(this.currentChat) || [];
@@ -1047,10 +1232,10 @@
                         const photo = msg.photo[msg.photo.length - 1];
                         media = `<div class="message-media"><img src="https://api.telegram.org/file/bot${getTk()}/${photo.file_path}" onclick="window.open(this.src)" alt="图片" loading="lazy"></div>`;
                     } else if (msg.video) {
-                        media = `<div class="message-media"><video controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${msg.video.file_path}" type="video/mp4">您的浏览器不支持视频播放</video></div>`;
+                        media = `<div class="message-media"><video controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${msg.video.file_path}" type="video/mp4"></video></div>`;
                     } else if (msg.audio || msg.voice) {
                         const audio = msg.audio || msg.voice;
-                        media = `<div class="message-media"><audio controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${audio.file_path}">您的浏览器不支持音频播放</audio></div>`;
+                        media = `<div class="message-media"><audio controls preload="metadata"><source src="https://api.telegram.org/file/bot${getTk()}/${audio.file_path}"></audio></div>`;
                     } else if (msg.document) {
                         media = `<div class="message-file" onclick="window.open('https://api.telegram.org/file/bot${getTk()}/${msg.document.file_path}')"><span>📄</span><span>${this.esc(msg.document.file_name)}</span></div>`;
                     }
@@ -1129,25 +1314,36 @@
                 const methods = { photo: 'sendPhoto', video: 'sendVideo', audio: 'sendAudio', document: 'sendDocument' };
                 this.toast('📤 上传中...');
 
-                try {
-                    const res = await fetch(`${this.api}${getTk()}/${methods[type]}`, {
-                        method: 'POST',
-                        body: fd
-                    });
-                    const data = await res.json();
-                    if (!data.ok) throw new Error(data.description);
+                let attempts = 0;
+                while (attempts < this.maxRetries) {
+                    try {
+                        const res = await fetch(`${this.api}${getTk()}/${methods[type]}`, {
+                            method: 'POST',
+                            body: fd,
+                            signal: AbortSignal.timeout(30000)
+                        });
+                        const data = await res.json();
+                        if (!data.ok) throw new Error(data.description);
 
-                    this.processMessage(data.result);
-                    this.renderMessages();
-                    this.renderContacts();
+                        this.processMessage(data.result);
+                        this.renderMessages();
+                        this.renderContacts();
 
-                    input.value = '';
-                    
-                    setTimeout(() => this.loadMessages(), 500);
-                    
-                    this.toast('✅ 上传成功');
-                } catch (e) {
-                    this.toast('❌ ' + e.message);
+                        input.value = '';
+                        
+                        setTimeout(() => this.loadMessages(), 500);
+                        
+                        this.toast('✅ 上传成功');
+                        return;
+                    } catch (e) {
+                        attempts++;
+                        if (attempts < this.maxRetries) {
+                            this.toast(`⚠️ 上传失败，重试中 (${attempts}/${this.maxRetries})...`);
+                            await this.sleep(2000);
+                        } else {
+                            this.toast('❌ 上传失败: ' + e.message);
+                        }
+                    }
                 }
             },
 
@@ -1158,7 +1354,11 @@
             },
 
             startPolling() {
-                setInterval(() => this.loadMessages(), 2000);
+                setInterval(() => {
+                    if (this.isOnline) {
+                        this.loadMessages();
+                    }
+                }, 1500);
             },
 
             setupInput() {
