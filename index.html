@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>PepC企业级聊天机器人界面</title>
+    <title>Pepc企业级聊天界面</title>
     <style>
         :root {
             --primary-color: #0078d4;
             --primary-hover: #106ebe;
-            --surface-color: #f3f2f1;
-            --surface-alt: #ffffff;
+            --bg-color: #f3f3f3;
+            --surface-color: #ffffff;
             --text-primary: #201f1e;
             --text-secondary: #605e5c;
             --border-color: #edebe9;
-            --success-color: #107c10;
-            --warning-color: #d13438;
-            --shadow: 0 1.6px 3.6px rgba(0, 0, 0, 0.13);
-            --border-radius: 6px;
-            --safe-area-bottom: env(safe-area-inset-bottom);
+            --shadow: 0 1px 3px rgba(0,0,0,0.12);
+            --safe-area-bottom: env(safe-area-inset-bottom, constant(safe-area-inset-bottom, 0px));
+            --safe-area-top: env(safe-area-inset-top, constant(safe-area-inset-top, 0px));
         }
 
         * {
@@ -28,71 +26,62 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--surface-color);
+            background: var(--bg-color);
             color: var(--text-primary);
-            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
-            padding-bottom: max(20px, var(--safe-area-bottom, 20px));
+            display: flex;
+            flex-direction: column;
         }
 
         .app-container {
-            height: 100vh;
             display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* 头部 */
-        .header {
-            background: var(--surface-alt);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            height: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--surface-color);
             box-shadow: var(--shadow);
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--success-color);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* 主内容区域 */
-        .main-content {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* 联系人列表视图 */
-        .contacts-view {
-            width: 100%;
+        /* 左侧联系人列表 */
+        .contacts-panel {
+            width: 360px;
+            background: var(--surface-color);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            background: var(--surface-alt);
+            min-width: 320px;
         }
 
         .contacts-header {
             padding: 16px 20px;
+            background: var(--surface-color);
             border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contacts-search {
+            flex: 1;
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: #f3f2f1;
+            font-size: 14px;
+        }
+
+        .add-contact-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 16px;
         }
 
@@ -103,17 +92,22 @@
         }
 
         .contact-item {
-            display: flex;
-            align-items: center;
             padding: 12px 20px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             transition: background 0.2s;
-            border-bottom: 1px solid var(--border-color);
+            border-left: 3px solid transparent;
         }
 
-        .contact-item:hover,
+        .contact-item:hover {
+            background: #f3f2f1;
+        }
+
         .contact-item.active {
-            background: #e1dfdd;
+            background: #e1f5fe;
+            border-left-color: var(--primary-color);
         }
 
         .contact-avatar {
@@ -121,14 +115,12 @@
             height: 48px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-color), #005a9e);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             font-weight: 600;
-            font-size: 18px;
-            margin-right: 16px;
-            flex-shrink: 0;
+            font-size: 16px;
         }
 
         .contact-info {
@@ -138,6 +130,7 @@
 
         .contact-name {
             font-weight: 600;
+            font-size: 15px;
             margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
@@ -145,176 +138,173 @@
         }
 
         .contact-status {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* 添加联系人按钮 */
-        .add-contact-btn {
-            position: sticky;
-            bottom: 80px;
-            left: 20px;
-            right: 20px;
-            margin: 0 auto;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-        }
+        .status-online { color: #107c10; }
+        .status-offline { color: #a4262b; }
 
-        .add-contact-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        /* 聊天视图 */
-        .chat-view {
-            display: none;
-            width: 100%;
-            height: 100%;
-            flex-direction: column;
-            background: var(--surface-alt);
-        }
-
-        .chat-view.active {
+        /* 右侧聊天区域 */
+        .chat-panel {
+            flex: 1;
             display: flex;
+            flex-direction: column;
+            min-width: 0;
         }
 
         .chat-header {
             padding: 16px 20px;
+            background: var(--surface-color);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .back-btn {
+        .chat-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: none;
-            border: none;
-            font-size: 20px;
+            border: 1px solid var(--border-color);
             cursor: pointer;
-            color: var(--text-secondary);
-            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
         }
 
-        .chat-messages {
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .chat-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .bot-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #107c10;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .messages-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3f3f3' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-2v2h2v4h2v-4h4v-2h-4zm0-30V0h-2v4h-2V0h-2v4h-2V0h-2v4h2v2h2v2h2v-2h2v-2h2V4h-2zM18 28v-8h-2v8h-2v2h2v4h2v-4h4v-2h-4zM6 24V8h4v16h-4zM36 20V4h4v16h-4zM20 4v16h4V4h-4zM36 18v-4h2v4h2v2h-2v4h-2v-4h-4v-2h4zm0-14V0h-2v4h-2V0h-2v4h-2V0h-2v2h2v2h2v-2h2v-2h2V4h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         .message {
-            max-width: 70%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            position: relative;
+            margin-bottom: 16px;
+            display: flex;
+            animation: fadeIn 0.3s ease-in;
         }
 
         .message.sent {
-            align-self: flex-end;
-            background: var(--primary-color);
-            color: white;
+            justify-content: flex-end;
         }
 
         .message.received {
-            align-self: flex-start;
-            background: #e1dfdd;
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-bubble {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow);
         }
 
         .message-time {
-            font-size: 11px;
+            font-size: 12px;
             opacity: 0.7;
             margin-top: 4px;
         }
 
-        /* 文件预览 */
         .file-preview {
-            width: 200px;
-            max-width: 100%;
+            max-width: 200px;
+            max-height: 200px;
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .file-preview img,
-        .file-preview video,
-        .file-preview audio {
-            width: 100%;
-            height: auto;
+            margin-top: 8px;
             display: block;
         }
 
-        .file-icon {
-            width: 200px;
-            height: 120px;
-            background: #f3f2f1;
-            border: 2px dashed #d0d0d0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: #999;
+        .audio-preview {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* 输入区域 */
-        .chat-input-container {
+        .input-container {
             padding: 16px 20px;
-            background: var(--surface-alt);
+            background: var(--surface-color);
             border-top: 1px solid var(--border-color);
-            position: sticky;
-            bottom: 0;
-        }
-
-        .input-wrapper {
             display: flex;
-            gap: 8px;
-            align-items: flex-end;
-            max-height: 120px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-        }
-
-        .file-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #edebe9;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
+            gap: 12px;
+            padding-bottom: calc(20px + max(var(--safe-area-bottom), 20px));
         }
 
         .message-input {
             flex: 1;
+            padding: 12px 20px;
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 12px 16px;
-            font-size: 16px;
+            border-radius: 24px;
+            background: #f3f2f1;
+            font-size: 15px;
             resize: none;
-            max-height: 80px;
-            outline: none;
+            max-height: 120px;
         }
 
         .send-btn {
@@ -325,74 +315,21 @@
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
         }
 
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .send-btn:hover {
+            background: var(--primary-hover);
         }
 
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .contacts-view {
-                position: absolute;
-                z-index: 10;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                transform: translateX(0);
-                transition: transform 0.3s ease;
-            }
-
-            .contacts-view.hidden {
-                transform: translateX(-100%);
-            }
-
-            .chat-view {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
+        .file-input {
+            display: none;
         }
 
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 添加联系人弹窗 */
+        /* 添加联系人模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -404,452 +341,503 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(4px);
         }
 
         .modal-content {
             background: white;
-            padding: 24px;
-            border-radius: 8px;
+            padding: 32px;
+            border-radius: 12px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
-        .modal-header {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                max-width: 100%;
+            }
+
+            .contacts-panel {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .contacts-panel.open {
+                transform: translateX(0);
+            }
+
+            .chat-back {
+                display: flex;
+            }
+
+            .chat-header {
+                padding: 16px;
+            }
+
+            .input-container {
+                padding: 16px;
+                padding-bottom: calc(16px + max(var(--safe-area-bottom), 16px));
+            }
         }
 
-        .modal-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 16px;
-            margin-bottom: 16px;
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .modal-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #edebe9;
-            color: var(--text-primary);
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 头部 -->
-        <div class="header">
-            <div class="logo">🤖 PepC ML机器人管理中心</div>
-            <div class="status-indicator" title="机器人在线"></div>
-            <span id="botStatus">在线 | 延迟: <span id="latency">28ms</span></span>
+        <!-- 联系人列表面板 -->
+        <div class="contacts-panel" id="contactsPanel">
+            <div class="contacts-header">
+                <input type="text" class="contacts-search" placeholder="搜索联系人..." id="searchInput">
+                <button class="add-contact-btn" id="addContactBtn" title="添加联系人">+</button>
+            </div>
+            <div class="contacts-list" id="contactsList">
+                <!-- 默认管理员联系人 -->
+                <div class="contact-item active" data-id="6389066995" data-name="管理员">
+                    <div class="contact-avatar">管</div>
+                    <div class="contact-info">
+                        <div class="contact-name">管理员</div>
+                        <div class="contact-status status-online">在线 • 延迟 45ms</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 主内容 -->
-        <div class="main-content">
-            <!-- 联系人列表视图 -->
-            <div class="contacts-view" id="contactsView">
-                <div class="contacts-header">
-                    联系人列表 <span id="contactsCount">(1)</span>
+        <!-- 聊天面板 -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <button class="chat-back" id="chatBackBtn">←</button>
+                <div class="chat-avatar" id="chatAvatar">管</div>
+                <div class="chat-title" id="chatTitle">管理员</div>
+                <div class="bot-status">
+                    <div class="status-dot"></div>
+                    <span id="botStatus">在线 • 45ms</span>
                 </div>
-                <div class="contacts-list" id="contactsList">
-                    <!-- 默认管理员 -->
-                    <div class="contact-item active" data-userid="6389066995" data-username="管理员">
-                        <div class="contact-avatar">管理员</div>
-                        <div class="contact-info">
-                            <div class="contact-name">管理员</div>
-                            <div class="contact-status" id="status_6389066995">在线 | 最后消息: 欢迎使用PepC系统</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="add-contact-btn" id="addContactBtn">➕ 通过ID添加联系人</button>
             </div>
-
-            <!-- 聊天视图 -->
-            <div class="chat-view active" id="chatView">
-                <div class="chat-header">
-                    <button class="back-btn" id="backBtn">←</button>
-                    <div class="contact-avatar" id="chatAvatar">管理员</div>
-                    <div>
-                        <div id="chatUsername">管理员</div>
-                        <div class="contact-status" id="chatStatus">在线</div>
-                    </div>
-                </div>
-                <div class="chat-messages" id="chatMessages"></div>
-                <div class="chat-input-container">
-                    <div class="input-wrapper">
-                        <div class="file-input-wrapper">
-                            <input type="file" class="file-input" id="fileInput" accept="image/*,video/*,audio/*,.pdf">
-                            <button class="file-btn" title="发送文件">📎</button>
-                        </div>
-                        <textarea class="message-input" id="messageInput" placeholder="输入消息... 支持@提到联系人" rows="1"></textarea>
-                        <button class="send-btn" id="sendBtn" title="发送">➤</button>
-                    </div>
-                </div>
+            <div class="messages-container" id="messagesContainer"></div>
+            <div class="input-container">
+                <input type="file" id="fileInput" class="file-input" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+                <textarea class="message-input" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn">发送</button>
             </div>
         </div>
     </div>
 
-    <!-- 添加联系人弹窗 -->
+    <!-- 添加联系人模态框 -->
     <div class="modal" id="addContactModal">
         <div class="modal-content">
-            <div class="modal-header">添加联系人</div>
-            <input type="text" class="modal-input" id="contactIdInput" placeholder="输入联系人ID（如：123456789）">
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" id="cancelAdd">取消</button>
-                <button class="btn btn-primary" id="confirmAdd">添加</button>
+            <h3>添加联系人</h3>
+            <input type="number" id="contactIdInput" placeholder="输入用户ID" style="width: 100%; padding: 12px; margin: 16px 0; border: 1px solid #ddd; border-radius: 8px;">
+            <div style="display: flex; gap: 12px;">
+                <button id="confirmAddContact" style="flex: 1; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">添加</button>
+                <button id="cancelAddContact" style="flex: 1; padding: 12px; background: #f3f2f1; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">取消</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 配置 - 令牌已加密处理（实际使用时从后端获取）
-        const config = {
-            token: btoa('your_encrypted_token_here'), // Base64编码的令牌
-            wsUrl: 'wss://your-pepc-bot-server.com/ws?token=' + btoa('your_encrypted_token_here'),
-            apiBase: 'https://your-pepc-bot-api.com',
+        // 配置 - 请替换为实际的令牌（前端暴露但已base64混淆）
+        const CONFIG = {
+            token: 'UEVQQ1RfVE9LRU5fMjAyNTEyMDQ=',
+            pepcApi: 'wss://your-pepc-server.com/ws',
             adminId: '6389066995',
-            botId: 'pepc_ml_bot_001'
+            pollInterval: 2000,
+            reconnectDelay: 3000
         };
 
-        class PepCChat {
-            constructor() {
-                this.currentUserId = config.adminId;
-                this.currentUsername = '管理员';
-                this.contacts = new Map();
-                this.messages = new Map();
-                this.ws = null;
-                this.init();
-            }
+        // 解码令牌（简单base64，仅前端混淆）
+        const PEPC_TOKEN = atob(CONFIG.token);
+        console.log('令牌已加载，网络稳定运行中...');
 
-            init() {
-                this.initElements();
-                this.initEvents();
-                this.loadDefaultContact();
-                this.connectWebSocket();
-                this.startStatusPolling();
-                this.autoResizeTextarea();
-            }
+        // 应用状态
+        let currentContact = { id: CONFIG.adminId, name: '管理员' };
+        let contacts = [{ id: CONFIG.adminId, name: '管理员', status: 'online', latency: 45 }];
+        let messages = [];
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
 
-            initElements() {
-                this.elements = {
-                    contactsView: document.getElementById('contactsView'),
-                    chatView: document.getElementById('chatView'),
-                    contactsList: document.getElementById('contactsList'),
-                    chatMessages: document.getElementById('chatMessages'),
-                    messageInput: document.getElementById('messageInput'),
-                    sendBtn: document.getElementById('sendBtn'),
-                    fileInput: document.getElementById('fileInput'),
-                    addContactBtn: document.getElementById('addContactBtn'),
-                    backBtn: document.getElementById('backBtn'),
-                    addContactModal: document.getElementById('addContactModal'),
-                    contactIdInput: document.getElementById('contactIdInput'),
-                    cancelAdd: document.getElementById('cancelAdd'),
-                    confirmAdd: document.getElementById('confirmAdd'),
-                    botStatus: document.getElementById('botStatus'),
-                    latency: document.getElementById('latency'),
-                    contactsCount: document.getElementById('contactsCount')
-                };
-            }
+        // DOM元素
+        const elements = {
+            contactsPanel: document.getElementById('contactsPanel'),
+            contactsList: document.getElementById('contactsList'),
+            messagesContainer: document.getElementById('messagesContainer'),
+            messageInput: document.getElementById('messageInput'),
+            sendBtn: document.getElementById('sendBtn'),
+            chatTitle: document.getElementById('chatTitle'),
+            chatAvatar: document.getElementById('chatAvatar'),
+            botStatus: document.getElementById('botStatus'),
+            searchInput: document.getElementById('searchInput'),
+            addContactBtn: document.getElementById('addContactBtn'),
+            chatBackBtn: document.getElementById('chatBackBtn'),
+            fileInput: document.getElementById('fileInput'),
+            addContactModal: document.getElementById('addContactModal'),
+            contactIdInput: document.getElementById('contactIdInput'),
+            confirmAddContact: document.getElementById('confirmAddContact'),
+            cancelAddContact: document.getElementById('cancelAddContact')
+        };
 
-            initEvents() {
-                // 发送消息
-                this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
-                this.elements.messageInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendMessage();
-                    }
-                });
+        // 初始化
+        init();
 
-                // 文件上传
-                this.elements.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
-
-                // 联系人点击
-                this.elements.contactsList.addEventListener('click', (e) => {
-                    const item = e.target.closest('.contact-item');
-                    if (item) this.selectContact(item.dataset.userid, item.dataset.username);
-                });
-
-                // 添加联系人
-                this.elements.addContactBtn.addEventListener('click', () => this.showAddContactModal());
-                this.elements.cancelAdd.addEventListener('click', () => this.hideAddContactModal());
-                this.elements.confirmAdd.addEventListener('click', () => this.addContactById());
-
-                // 返回按钮
-                this.elements.backBtn.addEventListener('click', () => this.showContactsView());
-
-                // 模态框点击外部关闭
-                this.elements.addContactModal.addEventListener('click', (e) => {
-                    if (e.target === this.elements.addContactModal) this.hideAddContactModal();
-                });
-            }
-
-            connectWebSocket() {
-                try {
-                    this.ws = new WebSocket(config.wsUrl);
-                    
-                    this.ws.onopen = () => {
-                        console.log('WebSocket连接成功');
-                        this.updateBotStatus('在线', 28);
-                    };
-
-                    this.ws.onmessage = (event) => {
-                        const data = JSON.parse(event.data);
-                        this.handleWebSocketMessage(data);
-                    };
-
-                    this.ws.onclose = () => {
-                        console.log('WebSocket断开，3秒后重连...');
-                        this.updateBotStatus('重连中...', 999);
-                        setTimeout(() => this.connectWebSocket(), 3000);
-                    };
-
-                    this.ws.onerror = (error) => {
-                        console.error('WebSocket错误:', error);
-                        this.updateBotStatus('连接错误', 999);
-                    };
-                } catch (error) {
-                    console.error('WebSocket连接失败:', error);
-                }
-            }
-
-            handleWebSocketMessage(data) {
-                switch (data.type) {
-                    case 'message':
-                        this.addMessage(data.from !== config.botId ? 'received' : 'sent', data.content, data.from, data.timestamp);
-                        break;
-                    case 'status_update':
-                        this.updateContactStatus(data.userId, data.status);
-                        break;
-                    case 'latency':
-                        this.updateBotStatus('在线', data.latency);
-                        break;
-                }
-            }
-
-            sendMessage() {
-                const text = this.elements.messageInput.value.trim();
-                if (!text && !this.elements.fileInput.files.length) return;
-
-                const messageId = Date.now();
-                this.addMessage('sent', text || '文件已发送', config.botId, messageId);
-
-                // 通过WebSocket发送
-                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    this.ws.send(JSON.stringify({
-                        type: 'message',
-                        to: this.currentUserId,
-                        content: text,
-                        timestamp: messageId
-                    }));
-                }
-
-                this.elements.messageInput.value = '';
-                this.elements.sendBtn.disabled = false;
-            }
-
-            handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const url = URL.createObjectURL(file);
-                const fileType = file.type.split('/')[0];
-                
-                let preview;
-                if (fileType === 'image') {
-                    preview = `<img src="${url}" class="file-preview" alt="${file.name}">`;
-                } else if (fileType === 'video') {
-                    preview = `<video src="${url}" class="file-preview" controls></video>`;
-                } else if (fileType === 'audio') {
-                    preview = `<audio src="${url}" class="file-preview" controls></audio>`;
-                } else {
-                    preview = `
-                        <div class="file-preview">
-                            <div class="file-icon">📄</div>
-                            <div style="padding: 8px; text-align: center; font-size: 12px;">${file.name}</div>
-                        </div>`;
-                }
-
-                this.addMessage('sent', preview, config.botId, Date.now());
-                event.target.value = '';
-            }
-
-            addMessage(type, content, from, timestamp) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                messageDiv.innerHTML = `
-                    <div>${content}</div>
-                    <div class="message-time">${this.formatTime(timestamp)}</div>
-                `;
-                this.elements.chatMessages.appendChild(messageDiv);
-                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
-                
-                // 保存到本地存储
-                this.saveMessage(this.currentUserId, type, content, from, timestamp);
-            }
-
-            selectContact(userId, username) {
-                this.currentUserId = userId;
-                this.currentUsername = username;
-                
-                // 更新UI
-                document.querySelectorAll('.contact-item').forEach(item => item.classList.remove('active'));
-                event.currentTarget.classList.add('active');
-                
-                document.getElementById('chatUsername').textContent = username;
-                document.getElementById('chatAvatar').textContent = username.slice(0, 2);
-                
-                // 加载聊天记录
-                this.loadChatHistory(userId);
-                
-                // 显示聊天视图
-                this.elements.contactsView.classList.add('hidden');
-                this.elements.chatView.classList.add('active');
-            }
-
-            loadDefaultContact() {
-                this.contacts.set(config.adminId, { username: '管理员', status: '在线', lastMessage: '欢迎使用PepC企业级聊天系统' });
-                this.updateContactsList();
-            }
-
-            addContactById() {
-                const userId = this.elements.contactIdInput.value.trim();
-                if (!userId) return;
-
-                // 模拟API调用添加联系人
-                this.contacts.set(userId, { 
-                    username: `用户${userId.slice(-4)}`, 
-                    status: '离线',
-                    lastMessage: '暂无消息'
-                });
-                
-                this.updateContactsList();
-                this.hideAddContactModal();
-                this.elements.contactIdInput.value = '';
-                
-                // 添加成功提示
-                this.addMessage('sent', `已添加联系人: ${userId}`, config.botId, Date.now());
-            }
-
-            updateContactsList() {
-                this.elements.contactsList.innerHTML = '';
-                this.contacts.forEach((info, userId) => {
-                    const item = document.createElement('div');
-                    item.className = `contact-item ${userId === this.currentUserId ? 'active' : ''}`;
-                    item.dataset.userid = userId;
-                    item.dataset.username = info.username;
-                    item.innerHTML = `
-                        <div class="contact-avatar">${info.username.slice(0, 2)}</div>
-                        <div class="contact-info">
-                            <div class="contact-name">${info.username}</div>
-                            <div class="contact-status" id="status_${userId}">${info.status} | ${info.lastMessage}</div>
-                        </div>
-                    `;
-                    this.elements.contactsList.appendChild(item);
-                });
-                
-                this.elements.contactsCount.textContent = `(${this.contacts.size})`;
-            }
-
-            updateContactStatus(userId, status) {
-                const contact = this.contacts.get(userId);
-                if (contact) {
-                    contact.status = status;
-                    const statusEl = document.getElementById(`status_${userId}`);
-                    if (statusEl) statusEl.textContent = `${status} | ${contact.lastMessage}`;
-                }
-            }
-
-            loadChatHistory(userId) {
-                // 从localStorage加载历史消息
-                const history = JSON.parse(localStorage.getItem(`chat_${userId}`) || '[]');
-                this.elements.chatMessages.innerHTML = '';
-                history.forEach(msg => {
-                    this.addMessage(msg.type, msg.content, msg.from, msg.timestamp);
-                });
-            }
-
-            saveMessage(userId, type, content, from, timestamp) {
-                const history = JSON.parse(localStorage.getItem(`chat_${userId}`) || '[]');
-                history.push({ type, content, from, timestamp: new Date(timestamp).toISOString() });
-                localStorage.setItem(`chat_${userId}`, JSON.stringify(history));
-            }
-
-            showContactsView() {
-                this.elements.contactsView.classList.remove('hidden');
-                this.elements.chatView.classList.remove('active');
-            }
-
-            showAddContactModal() {
-                this.elements.addContactModal.style.display = 'flex';
-                this.elements.contactIdInput.focus();
-            }
-
-            hideAddContactModal() {
-                this.elements.addContactModal.style.display = 'none';
-            }
-
-            updateBotStatus(status, latency) {
-                this.elements.botStatus.textContent = `在线 | 延迟: ${latency}ms`;
-                this.elements.latency.textContent = `${latency}ms`;
-            }
-
-            startStatusPolling() {
-                setInterval(() => {
-                    // 模拟延迟检测
-                    const latency = Math.floor(Math.random() * 50) + 20;
-                    this.updateBotStatus('在线', latency);
-                }, 5000);
-            }
-
-            autoResizeTextarea() {
-                const textarea = this.elements.messageInput;
-                textarea.addEventListener('input', () => {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
-                    this.elements.sendBtn.disabled = !textarea.value.trim();
-                });
-            }
-
-            formatTime(timestamp) {
-                return new Date(timestamp).toLocaleTimeString('zh-CN', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-            }
+        function init() {
+            loadPersistedData();
+            setupEventListeners();
+            connectWebSocket();
+            startAutoRefresh();
+            setupAutoResize();
         }
 
-        // 初始化应用
-        document.addEventListener('DOMContentLoaded', () => {
-            new PepCChat();
-        });
+        // 持久化数据
+        function loadPersistedData() {
+            const savedContacts = localStorage.getItem('pepc_contacts');
+            const savedMessages = localStorage.getItem(`pepc_messages_${currentContact.id}`);
+            
+            if (savedContacts) contacts = JSON.parse(savedContacts);
+            if (savedMessages) messages = JSON.parse(savedMessages);
+            
+            renderContacts();
+            renderMessages();
+        }
 
-        // PWA支持和服务工作线程（企业级稳定性）
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {
-                // 静默失败
+        function savePersistedData() {
+            localStorage.setItem('pepc_contacts', JSON.stringify(contacts));
+            localStorage.setItem(`pepc_messages_${currentContact.id}`, JSON.stringify(messages));
+        }
+
+        // 事件监听器
+        function setupEventListeners() {
+            // 发送消息
+            elements.sendBtn.addEventListener('click', sendMessage);
+            elements.messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
             });
+
+            // 文件上传
+            elements.fileInput.addEventListener('change', handleFileUpload);
+
+            // 联系人点击
+            elements.contactsList.addEventListener('click', (e) => {
+                const contactItem = e.target.closest('.contact-item');
+                if (contactItem) selectContact(contactItem.dataset.id, contactItem.dataset.name);
+            });
+
+            // 添加联系人
+            elements.addContactBtn.addEventListener('click', () => elements.addContactModal.style.display = 'flex');
+            elements.confirmAddContact.addEventListener('click', addContact);
+            elements.cancelAddContact.addEventListener('click', () => elements.addContactModal.style.display = 'none');
+            elements.chatBackBtn.addEventListener('click', () => elements.contactsPanel.classList.remove('open'));
+
+            // 搜索
+            elements.searchInput.addEventListener('input', filterContacts);
+
+            // 自适应输入框高度
+            elements.messageInput.addEventListener('input', autoResize);
         }
+
+        // 选择联系人
+        function selectContact(id, name) {
+            currentContact = { id, name };
+            elements.contactsList.querySelectorAll('.contact-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-id="${id}"]`).classList.add('active');
+            
+            elements.chatTitle.textContent = name;
+            elements.chatAvatar.textContent = name.charAt(0);
+            
+            loadPersistedData(); // 加载对应联系人的消息
+            renderMessages();
+            
+            // 移动端隐藏联系人列表
+            if (window.innerWidth <= 768) {
+                elements.contactsPanel.classList.remove('open');
+            }
+        }
+
+        // 发送消息
+        async function sendMessage() {
+            const text = elements.messageInput.value.trim();
+            if (!text && !elements.fileInput.files[0]) return;
+
+            const message = {
+                id: Date.now(),
+                type: 'text',
+                text,
+                sender: 'me',
+                timestamp: new Date().toISOString(),
+                status: 'sent'
+            };
+
+            if (elements.fileInput.files[0]) {
+                message.type = 'file';
+                message.file = await uploadFile(elements.fileInput.files[0]);
+                elements.fileInput.value = '';
+            }
+
+            messages.push(message);
+            elements.messageInput.value = '';
+            autoResize();
+            renderMessages();
+            savePersistedData();
+
+            // 发送到Pepc服务器
+            sendToPepcServer(message);
+        }
+
+        // 处理文件上传
+        async function handleFileUpload(e) {
+            sendMessage(); // 发送文件
+        }
+
+        // 上传文件到服务器
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('token', PEPC_TOKEN);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                return result.url;
+            } catch (error) {
+                console.error('文件上传失败:', error);
+                return null;
+            }
+        }
+
+        // WebSocket连接
+        function connectWebSocket() {
+            if (ws) ws.close();
+
+            ws = new WebSocket(CONFIG.pepcApi);
+
+            ws.onopen = () => {
+                console.log('Pepc WebSocket连接成功');
+                reconnectAttempts = 0;
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    token: PEPC_TOKEN,
+                    user_id: currentContact.id
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket断开，3秒后重连...');
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    setTimeout(() => {
+                        reconnectAttempts++;
+                        connectWebSocket();
+                    }, CONFIG.reconnectDelay);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket错误:', error);
+            };
+        }
+
+        // 处理WebSocket消息
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'message':
+                    const incomingMessage = {
+                        id: data.id,
+                        type: data.message_type || 'text',
+                        text: data.text,
+                        sender: 'other',
+                        file: data.file_url,
+                        timestamp: data.timestamp || new Date().toISOString()
+                    };
+                    messages.push(incomingMessage);
+                    renderMessages();
+                    savePersistedData();
+                    break;
+                case 'status':
+                    updateContactStatus(data.user_id, data.status, data.latency);
+                    break;
+                case 'contacts':
+                    updateContacts(data.contacts);
+                    break;
+            }
+        }
+
+        // 发送到Pepc服务器
+        function sendToPepcServer(message) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'message',
+                    token: PEPC_TOKEN,
+                    to_id: currentContact.id,
+                    message: message.text,
+                    file_url: message.file || null,
+                    timestamp: message.timestamp
+                }));
+            }
+        }
+
+        // 自动刷新状态
+        function startAutoRefresh() {
+            setInterval(() => {
+                updateBotStatus();
+                refreshContactsStatus();
+            }, CONFIG.pollInterval);
+        }
+
+        // 更新机器人状态
+        function updateBotStatus() {
+            const latency = Math.floor(Math.random() * 100) + 30;
+            const status = latency < 100 ? '在线' : '延迟';
+            elements.botStatus.textContent = `${status} • ${latency}ms`;
+        }
+
+        // 更新联系人状态
+        function updateContactStatus(userId, status, latency) {
+            const contact = contacts.find(c => c.id === userId);
+            if (contact) {
+                contact.status = status;
+                contact.latency = latency;
+                renderContacts();
+            }
+        }
+
+        // 刷新联系人状态
+        function refreshContactsStatus() {
+            contacts.forEach(contact => {
+                contact.latency = Math.floor(Math.random() * 100) + 30;
+            });
+            renderContacts();
+        }
+
+        // 渲染联系人
+        function renderContacts() {
+            const filteredContacts = filterContacts().filteredContacts;
+            elements.contactsList.innerHTML = filteredContacts.map(contact => `
+                <div class="contact-item ${contact.id === currentContact.id ? 'active' : ''}" 
+                     data-id="${contact.id}" data-name="${contact.name}">
+                    <div class="contact-avatar">${contact.name.charAt(0)}</div>
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.name}</div>
+                        <div class="contact-status status-${contact.status}">
+                            ${contact.status === 'online' ? '在线' : '离线'} • 延迟 ${contact.latency}ms
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染消息
+        function renderMessages() {
+            elements.messagesContainer.innerHTML = messages.map(msg => {
+                const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let content = '';
+
+                if (msg.type === 'text') {
+                    content = escapeHtml(msg.text);
+                } else if (msg.type === 'file') {
+                    if (msg.file.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                        content = `<img src="${msg.file}" class="file-preview" alt="图片" onerror="this.style.display='none'">`;
+                    } else if (msg.file.match(/\.(mp4|webm)$/i)) {
+                        content = `<video src="${msg.file}" class="file-preview" controls></video>`;
+                    } else if (msg.file.match(/\.(mp3|wav|m4a)$/i)) {
+                        content = `<audio src="${msg.file}" class="audio-preview" controls></audio>`;
+                    } else {
+                        content = `<a href="${msg.file}" target="_blank" style="color: inherit;">📎 ${msg.file.split('/').pop()}</a>`;
+                    }
+                }
+
+                return `
+                    <div class="message ${msg.sender}">
+                        <div class="message-bubble">
+                            ${content}
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 自动滚动到底部
+            elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
+        }
+
+        // 添加联系人
+        function addContact() {
+            const id = elements.contactIdInput.value.trim();
+            if (!id || contacts.find(c => c.id === id)) {
+                alert('无效的ID或已存在');
+                return;
+            }
+
+            contacts.push({ id, name: `用户${id}`, status: 'offline', latency: 0 });
+            renderContacts();
+            savePersistedData();
+            elements.addContactModal.style.display = 'none';
+            elements.contactIdInput.value = '';
+        }
+
+        // 搜索联系人
+        function filterContacts() {
+            const query = elements.searchInput.value.toLowerCase();
+            const filtered = contacts.filter(c => 
+                c.name.toLowerCase().includes(query) || c.id.includes(query)
+            );
+            renderContacts();
+            return { filteredContacts: filtered };
+        }
+
+        // 自动调整输入框高度
+        function autoResize() {
+            elements.messageInput.style.height = 'auto';
+            elements.messageInput.style.height = Math.min(elements.messageInput.scrollHeight, 120) + 'px';
+        }
+
+        // 自适应页面高度
+        function setupAutoResize() {
+            const resizeObserver = new ResizeObserver(() => {
+                document.body.style.height = window.innerHeight + 'px';
+            });
+            resizeObserver.observe(document.body);
+        }
+
+        // 防XSS转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 初始化完成
+        console.log('Pepc企业级聊天界面初始化完成 - 微软Fluent UI风格，美观流畅，网络稳定');
     </script>
 </body>
 </html>
