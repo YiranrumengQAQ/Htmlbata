@@ -970,6 +970,25 @@
         .message.received.group-message .message-content {
             background: rgba(255, 255, 255, 0.98);
         }
+
+        .chat-type-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .chat-type-badge.private {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .chat-type-badge.group {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1486,13 +1505,14 @@
                 if (username) {
                     conversations[chatId].username = username;
                 }
+                conversations[chatId].chatType = chatType;
             }
 
-            // 每次收到消息都刷新头像
+            // 每次收到消息都刷新头像（包括群组头像）
             const avatarUrl = await getUserAvatar(chatId);
             if (avatarUrl) {
                 conversations[chatId].avatarUrl = avatarUrl;
-                console.log('✅ 已刷新联系人头像:', fullName);
+                console.log('✅ 已刷新头像:', fullName, '类型:', chatType);
             }
 
             const msgData = {
@@ -1591,12 +1611,21 @@
                     ? `<img src="${conv.avatarUrl}" alt="${displayName}">`
                     : avatarLetter;
                 
+                // 聊天类型标签
+                let chatTypeBadge = '';
+                if (conv.chatType === 'group') {
+                    chatTypeBadge = '<span class="chat-type-badge group">群组</span>';
+                } else if (conv.chatType === 'private') {
+                    chatTypeBadge = '<span class="chat-type-badge private">私信</span>';
+                }
+
                 div.innerHTML = `
                     <div class="user-avatar">${avatarHtml}</div>
                     <div class="conversation-info">
                         <div class="conversation-name">
                             ${displayName}
                             ${conv.isAdmin ? '<span class="admin-badge">管理员</span>' : ''}
+                            ${chatTypeBadge}
                         </div>
                         <div class="conversation-time">${time}</div>
                     </div>
