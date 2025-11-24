@@ -277,9 +277,18 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
             flex-shrink: 0;
             height: 60px;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
         }
 
         .back-btn {
@@ -306,6 +315,31 @@
             font-size: 16px;
             font-weight: 600;
             color: #1f1f1f;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .clear-chat-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #ef4444;
+        }
+
+        .clear-chat-btn:active {
+            background: #ef4444;
+            color: white;
+            transform: scale(0.95);
         }
 
         /* 消息容器 */
@@ -531,28 +565,6 @@
             transform: scale(0.92);
         }
 
-        .clear-btn {
-            width: 42px;
-            height: 42px;
-            border: none;
-            border-radius: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            color: #ef4444;
-        }
-
-        .clear-btn:active {
-            background: #ef4444;
-            color: white;
-            transform: scale(0.92);
-        }
-
         .send-btn {
             width: 42px;
             height: 42px;
@@ -572,11 +584,6 @@
 
         .send-btn:active {
             transform: scale(0.92);
-        }
-
-        /* PC端专属 */
-        .pc-only {
-            display: flex;
         }
 
         /* 模态框 */
@@ -796,6 +803,13 @@
             border-color: #3b82f6;
         }
 
+        .sync-avatar-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
         /* ==================== 响应式设计 - 移动端 ==================== */
         @media screen and (max-width: 768px) {
             .navbar {
@@ -864,6 +878,12 @@
                 height: 56px;
             }
 
+            .clear-chat-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
             .messages-container {
                 padding: 12px 15px;
             }
@@ -888,11 +908,6 @@
 
             .input-actions {
                 gap: 4px;
-            }
-
-            /* 移动端隐藏清理按钮 */
-            .pc-only {
-                display: none;
             }
         }
 
@@ -954,8 +969,11 @@
             <!-- 聊天区域 -->
             <div class="chat-area" id="chatArea">
                 <div class="chat-header">
-                    <button class="back-btn" onclick="backToConversations()">◀</button>
-                    <div class="chat-user-name" id="chatUserName">选择一个对话开始聊天</div>
+                    <div class="chat-header-left">
+                        <button class="back-btn" onclick="backToConversations()">◀</button>
+                        <div class="chat-user-name" id="chatUserName">选择一个对话开始聊天</div>
+                    </div>
+                    <button class="clear-chat-btn" id="clearChatBtn" title="清理聊天记录" style="display: none;">🗑️</button>
                 </div>
                 <div class="messages-container" id="messagesContainer">
                     <div class="empty-state">
@@ -976,7 +994,6 @@
                             <button class="media-btn" id="photoBtn" title="图片">📷</button>
                             <button class="media-btn" id="videoBtn" title="视频">🎥</button>
                             <button class="media-btn" id="fileBtn" title="文件">📎</button>
-                            <button class="clear-btn pc-only" id="clearBtn" title="清理聊天记录">🗑️</button>
                             <button class="send-btn" onclick="sendMessage()" title="发送">✈️</button>
                         </div>
                     </div>
@@ -1019,6 +1036,7 @@
                             📷 点击上传头像图片
                         </button>
                     </div>
+                    <div class="sync-avatar-note">💡 头像已自动与 Telegram 同步</div>
                 </div>
                 <div class="bot-info-section">
                     <div class="bot-info-label">机器人用户名</div>
@@ -1069,7 +1087,8 @@
             name: '',
             avatar: '🤖',
             avatarImage: '',
-            username: ''
+            username: '',
+            botId: null
         };
 
         function initFileInputs() {
@@ -1097,7 +1116,7 @@
                 document.getElementById('fileInput').click();
             });
 
-            document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('clearChatBtn').addEventListener('click', () => {
                 if (!currentChatId) {
                     alert('请先选择一个对话');
                     return;
@@ -1145,6 +1164,41 @@
                 }
                 e.target.value = '';
             });
+        }
+
+        // 获取机器人头像
+        async function getBotAvatar(botId) {
+            try {
+                const response = await fetch(
+                    `https://api.telegram.org/bot${botToken}/getUserProfilePhotos?user_id=${botId}&limit=1`
+                );
+                const data = await response.json();
+                
+                if (data.ok && data.result.photos && data.result.photos.length > 0) {
+                    const photo = data.result.photos[0][0]; // 获取最小尺寸的头像
+                    const fileResponse = await fetch(
+                        `https://api.telegram.org/bot${botToken}/getFile?file_id=${photo.file_id}`
+                    );
+                    const fileData = await fileResponse.json();
+                    
+                    if (fileData.ok) {
+                        const avatarUrl = `https://api.telegram.org/file/bot${botToken}/${fileData.result.file_path}`;
+                        
+                        // 将头像转换为 base64 并保存
+                        const imgResponse = await fetch(avatarUrl);
+                        const blob = await imgResponse.blob();
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            botSettings.avatarImage = reader.result;
+                            saveBotSettingsToStorage();
+                            applyBotSettings();
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                }
+            } catch (error) {
+                console.error('获取机器人头像失败:', error);
+            }
         }
 
         function openClearChatModal() {
@@ -1293,11 +1347,14 @@
                 const data = await response.json();
                 if (data.ok) {
                     botSettings.username = '@' + data.result.username;
+                    botSettings.botId = data.result.id;
+                    
                     if (!botSettings.name) {
-                        botSettings.name = '@' + data.result.username;
+                        botSettings.name = data.result.first_name || '@' + data.result.username;
                     }
-                    if (!botSettings.avatar && !botSettings.avatarImage) {
-                        botSettings.avatar = data.result.first_name.charAt(0);
+                    if (!botSettings.avatarImage) {
+                        // 获取机器人头像
+                        await getBotAvatar(data.result.id);
                     }
                     
                     applyBotSettings();
@@ -1471,6 +1528,9 @@
             const conv = conversations[chatId];
             document.getElementById('chatUserName').textContent = conv.note || conv.name;
             
+            // 显示清理按钮
+            document.getElementById('clearChatBtn').style.display = 'flex';
+            
             if (isMobile) {
                 document.getElementById('sidebar').classList.add('hidden');
                 document.getElementById('chatArea').classList.add('show');
@@ -1484,6 +1544,8 @@
             document.getElementById('sidebar').classList.remove('hidden');
             document.getElementById('chatArea').classList.remove('show');
             currentChatId = null;
+            // 隐藏清理按钮
+            document.getElementById('clearChatBtn').style.display = 'none';
         }
 
         async function renderMessages() {
