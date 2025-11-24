@@ -1,782 +1,1540 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>超级安全备忘录 - 现代气泡UI</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    /* 动态背景气泡 */
-    body::before {
-      content: "";
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 50%;
-      top: -250px;
-      left: -150px;
-      animation: float 20s infinite ease-in-out;
-    }
-    
-    body::after {
-      content: "";
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 50%;
-      bottom: -200px;
-      right: -100px;
-      animation: float 15s infinite ease-in-out reverse;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(30px, -30px) scale(1.1); }
-    }
-    
-    /* 毛玻璃容器 */
-    .glass-container {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      padding: 40px;
-      max-width: 680px;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #fff;
-      text-align: center;
-      margin-bottom: 30px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      letter-spacing: -0.5px;
-    }
-    
-    /* 输入框气泡样式 */
-    .input-bubble {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 18px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      border: none;
-      width: 100%;
-      font-size: 1rem;
-      color: #333;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      outline: none;
-    }
-    
-    .input-bubble:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
-      background: rgba(255, 255, 255, 1);
-    }
-    
-    textarea.input-bubble {
-      resize: vertical;
-      min-height: 100px;
-      font-family: inherit;
-    }
-    
-    /* 按钮气泡 */
-    .btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      border: none;
-      border-radius: 18px;
-      padding: 14px 28px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      margin: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-    
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
-    }
-    
-    .btn:active {
-      transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      box-shadow: 0 4px 16px rgba(245, 87, 108, 0.4);
-    }
-    
-    /* 备忘录气泡卡片 */
-    .note-bubble {
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: noteIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    @keyframes noteIn {
-      from { opacity: 0; transform: scale(0.95) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    
-    .note-bubble:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-      background: rgba(255, 255, 255, 0.98);
-    }
-    
-    .note-bubble::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 5px;
-      height: 100%;
-      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-      border-radius: 20px 0 0 20px;
-    }
-    
-    .note-content {
-      color: #2d3748;
-      font-size: 1.05rem;
-      line-height: 1.6;
-      margin-bottom: 12px;
-      padding-left: 10px;
-    }
-    
-    .note-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-left: 10px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    /* 标签气泡 */
-    .tag-bubble {
-      display: inline-block;
-      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      color: #4a5568;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      margin-right: 8px;
-    }
-    
-    .note-time {
-      color: #718096;
-      font-size: 0.85rem;
-    }
-    
-    .note-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .btn-small {
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      border-radius: 14px;
-      margin: 0;
-    }
-    
-    /* 工具栏 */
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    .toolbar-left, .toolbar-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    
-    /* 输入区域 */
-    .input-section {
-      margin-bottom: 20px;
-    }
-    
-    .input-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      align-items: center;
-    }
-    
-    .input-row input {
-      flex: 1;
-    }
-    
-    /* 备忘录列表 */
-    .notes-list {
-      max-height: 500px;
-      overflow-y: auto;
-      padding-right: 8px;
-    }
-    
-    /* 滚动条美化 */
-    .notes-list::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .notes-list::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
-    
-    .notes-list::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-    }
-    
-    .notes-list::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-    
-    /* 空状态 */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .empty-state-icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
-    
-    /* 错误提示气泡 */
-    .error-bubble {
-      background: rgba(245, 87, 108, 0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(245, 87, 108, 0.4);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 14px;
-      margin-top: 12px;
-      font-weight: 500;
-      animation: shake 0.5s;
-    }
-    
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-    }
-    
-    /* 响应式 */
-    @media (max-width: 640px) {
-      .glass-container {
-        padding: 24px;
-        border-radius: 20px;
-      }
-      
-      .title {
-        font-size: 1.8rem;
-      }
-      
-      .toolbar {
-        flex-direction: column;
-      }
-      
-      .input-row {
-        flex-direction: column;
-      }
-      
-      .note-meta {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .note-actions {
-        width: 100%;
-        justify-content: flex-end;
-      }
-    }
-    
-    /* 标签输入datalist样式优化 */
-    input[list] {
-      padding-right: 30px;
-    }
-    
-    /* 文件输入隐藏 */
-    input[type="file"] {
-      display: none;
-    }
-    
-    /* 加载动画 */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    
-    .loading {
-      animation: pulse 1.5s infinite;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业博客编辑器 - 类WordPress界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f0f0f1;
+            color: #1d2327;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #c3c4c7;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d2327;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #2271b1;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #135e96;
+        }
+
+        .btn-secondary {
+            background: #f6f7f7;
+            color: #2c3338;
+            border: 1px solid #c3c4c7;
+        }
+
+        .btn-secondary:hover {
+            background: #e9eaea;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 61px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #c3c4c7;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #646970;
+            margin-bottom: 12px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .editor-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .title-input {
+            width: 100%;
+            border: none;
+            font-size: 32px;
+            font-weight: 600;
+            padding: 12px 0;
+            margin-bottom: 20px;
+            outline: none;
+            color: #1d2327;
+        }
+
+        .title-input::placeholder {
+            color: #a7aaad;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            background: #f9f9f9;
+            border: 1px solid #dcdcde;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            padding-right: 8px;
+            border-right: 1px solid #dcdcde;
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            padding: 6px 10px;
+            background: #fff;
+            border: 1px solid #c3c4c7;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .toolbar-btn:hover {
+            background: #f0f0f1;
+            border-color: #8c8f94;
+        }
+
+        .toolbar-btn.active {
+            background: #2271b1;
+            color: #fff;
+            border-color: #2271b1;
+        }
+
+        .editor-content {
+            min-height: 400px;
+            padding: 20px;
+            border: 1px solid #dcdcde;
+            border-radius: 4px;
+            outline: none;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .editor-content:focus {
+            border-color: #2271b1;
+            box-shadow: 0 0 0 1px #2271b1;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1d2327;
+            margin-bottom: 6px;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #c3c4c7;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #2271b1;
+            box-shadow: 0 0 0 1px #2271b1;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 32px;
+            border: 1px solid #c3c4c7;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #646970;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f0f0f1;
+            border: 1px solid #c3c4c7;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-btn:hover {
+            background: #e9eaea;
+        }
+
+        .preview-mode {
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .preview-mode h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #1d2327;
+        }
+
+        .style-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .style-option {
+            padding: 6px 12px;
+            background: #fff;
+            border: 2px solid #c3c4c7;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .style-option:hover {
+            border-color: #2271b1;
+        }
+
+        .style-option.active {
+            background: #2271b1;
+            color: #fff;
+            border-color: #2271b1;
+        }
+
+        .media-insert-area {
+            background: #f9f9f9;
+            border: 2px dashed #c3c4c7;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #dcdcde;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #646970;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #2271b1;
+        }
+
+        .tab-btn.active {
+            color: #2271b1;
+            border-bottom-color: #2271b1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00a32a;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            background: #282c34;
+            color: #abb2bf;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .editor-wrapper {
+                padding: 20px;
+            }
+
+            .toolbar {
+                gap: 4px;
+            }
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-group input[type="range"] {
+            flex: 1;
+        }
+
+        .range-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-  <div id="app"></div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
-  <script>
-    // ============ 加密核心 ============
-    const SALT = "SecureVault-v2.0-2025";
-    const STORAGE_KEY = "__secure_notes_vault__";
-    const FILE_MAGIC = "SNVLT25";
-    
-    let masterPasswordHash = null;
-    let notes = [];
-    let tags = [];
-    
-    function sha256(str) {
-      return CryptoJS.SHA256(SALT + str).toString();
-    }
-    
-    function aesEncrypt(text, password) {
-      const key = CryptoJS.PBKDF2(password, SALT, {
-        keySize: 256/32,
-        iterations: 1000
-      });
-      return CryptoJS.AES.encrypt(text, key.toString()).toString();
-    }
-    
-    function aesDecrypt(ciphertext, password) {
-      const key = CryptoJS.PBKDF2(password, SALT, {
-        keySize: 256/32,
-        iterations: 1000
-      });
-      try {
-        const bytes = CryptoJS.AES.decrypt(ciphertext, key.toString());
-        return bytes.toString(CryptoJS.enc.Utf8);
-      } catch(e) {
-        return null;
-      }
-    }
-    
-    function encodeFile(data, password) {
-      const encrypted = aesEncrypt(JSON.stringify(data), password);
-      const randomHeader = Array.from({length: 32}, () => 
-        String.fromCharCode(65 + Math.floor(Math.random() * 26))
-      ).join('');
-      return FILE_MAGIC + randomHeader + encrypted;
-    }
-    
-    function decodeFile(fileContent, password) {
-      if (!fileContent.startsWith(FILE_MAGIC)) return null;
-      const encrypted = fileContent.slice(FILE_MAGIC.length + 32);
-      const decrypted = aesDecrypt(encrypted, password);
-      if (!decrypted) return null;
-      try {
-        return JSON.parse(decrypted);
-      } catch(e) {
-        return null;
-      }
-    }
-    
-    function saveToStorage() {
-      const data = {
-        notes,
-        tags,
-        timestamp: Date.now(),
-        version: "2.0"
-      };
-      const encrypted = aesEncrypt(JSON.stringify(data), masterPasswordHash);
-      localStorage.setItem(STORAGE_KEY, encrypted);
-    }
-    
-    function loadFromStorage(passwordHash) {
-      const encrypted = localStorage.getItem(STORAGE_KEY);
-      if (!encrypted) return null;
-      const decrypted = aesDecrypt(encrypted, passwordHash);
-      if (!decrypted) return false;
-      try {
-        const data = JSON.parse(decrypted);
-        notes = data.notes || [];
-        tags = data.tags || [];
-        return true;
-      } catch(e) {
-        return false;
-      }
-    }
-    
-    // ============ UI渲染 ============
-    function render() {
-      const app = document.getElementById('app');
-      
-      if (!masterPasswordHash) {
-        renderPasswordScreen(app);
-      } else {
-        renderMainApp(app);
-      }
-    }
-    
-    function renderPasswordScreen(container) {
-      const isFirstTime = !localStorage.getItem(STORAGE_KEY);
-      
-      container.innerHTML = `
-        <div class="glass-container">
-          <div class="title">🔐 ${isFirstTime ? '设置密码' : '输入密码'}</div>
-          <input type="password" 
-                 class="input-bubble" 
-                 id="password" 
-                 placeholder="${isFirstTime ? '设置主密码（至少6位）' : '输入密码解锁'}"
-                 autocomplete="off">
-          ${isFirstTime ? `
-            <input type="password" 
-                   class="input-bubble" 
-                   id="password2" 
-                   placeholder="确认密码"
-                   autocomplete="off">
-          ` : ''}
-          <button class="btn" id="submitPassword" style="width:100%">
-            ${isFirstTime ? '✨ 创建并进入' : '🚀 解锁'}
-          </button>
-          <div id="errorMsg"></div>
+    <div class="header">
+        <h1>🖊️ 专业博客编辑器</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="togglePreview()">👁️ 预览</button>
+            <button class="btn btn-secondary" onclick="saveDraft()">💾 保存草稿</button>
+            <button class="btn btn-primary" onclick="exportHTML()">📥 导出HTML</button>
         </div>
-      `;
-      
-      setTimeout(() => document.getElementById('password').focus(), 300);
-      
-      document.getElementById('submitPassword').onclick = () => {
-        if (isFirstTime) {
-          handleSetPassword();
-        } else {
-          handleLogin();
+    </div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>📝 文档设置</h3>
+                <button class="sidebar-btn" onclick="openModal('settings')">⚙️ 全局设置</button>
+                <button class="sidebar-btn" onclick="openModal('seo')">🔍 SEO优化</button>
+                <button class="sidebar-btn" onclick="openModal('style')">🎨 样式定制</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>📎 插入媒体</h3>
+                <button class="sidebar-btn" onclick="openModal('image')">🖼️ 插入图片</button>
+                <button class="sidebar-btn" onclick="openModal('video')">🎬 插入视频</button>
+                <button class="sidebar-btn" onclick="openModal('audio')">🎵 插入音频</button>
+                <button class="sidebar-btn" onclick="openModal('link')">🔗 插入链接</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🔧 高级功能</h3>
+                <button class="sidebar-btn" onclick="openModal('code')">💻 插入代码</button>
+                <button class="sidebar-btn" onclick="openModal('table')">📊 插入表格</button>
+                <button class="sidebar-btn" onclick="openModal('quote')">💬 插入引用</button>
+                <button class="sidebar-btn" onclick="insertDivider()">➖ 插入分隔线</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>📚 模板</h3>
+                <button class="sidebar-btn" onclick="loadTemplate('blog')">📰 博客模板</button>
+                <button class="sidebar-btn" onclick="loadTemplate('article')">📄 文章模板</button>
+                <button class="sidebar-btn" onclick="loadTemplate('tutorial')">📖 教程模板</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="editor-wrapper">
+                <input type="text" class="title-input" id="postTitle" placeholder="在此输入标题...">
+                
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="formatText('bold')" title="加粗"><b>B</b></button>
+                        <button class="toolbar-btn" onclick="formatText('italic')" title="斜体"><i>I</i></button>
+                        <button class="toolbar-btn" onclick="formatText('underline')" title="下划线"><u>U</u></button>
+                        <button class="toolbar-btn" onclick="formatText('strikeThrough')" title="删除线"><s>S</s></button>
+                    </div>
+
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="formatText('insertOrderedList')" title="有序列表">1.</button>
+                        <button class="toolbar-btn" onclick="formatText('insertUnorderedList')" title="无序列表">•</button>
+                        <button class="toolbar-btn" onclick="formatText('indent')" title="增加缩进">→</button>
+                        <button class="toolbar-btn" onclick="formatText('outdent')" title="减少缩进">←</button>
+                    </div>
+
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="formatText('justifyLeft')" title="左对齐">⬅</button>
+                        <button class="toolbar-btn" onclick="formatText('justifyCenter')" title="居中">↔</button>
+                        <button class="toolbar-btn" onclick="formatText('justifyRight')" title="右对齐">➡</button>
+                        <button class="toolbar-btn" onclick="formatText('justifyFull')" title="两端对齐">⬌</button>
+                    </div>
+
+                    <div class="toolbar-group">
+                        <select class="toolbar-btn" onchange="changeHeading(this.value)" style="width: auto;">
+                            <option value="">段落</option>
+                            <option value="h1">标题 1</option>
+                            <option value="h2">标题 2</option>
+                            <option value="h3">标题 3</option>
+                            <option value="h4">标题 4</option>
+                            <option value="h5">标题 5</option>
+                            <option value="h6">标题 6</option>
+                        </select>
+                    </div>
+
+                    <div class="toolbar-group">
+                        <input type="color" class="toolbar-btn" onchange="changeColor('foreColor', this.value)" title="文字颜色" style="width: 40px; padding: 2px;">
+                        <input type="color" class="toolbar-btn" onchange="changeColor('backColor', this.value)" title="背景颜色" style="width: 40px; padding: 2px;">
+                    </div>
+
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="formatText('undo')" title="撤销">↶</button>
+                        <button class="toolbar-btn" onclick="formatText('redo')" title="重做">↷</button>
+                    </div>
+
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="clearFormatting()" title="清除格式">✕</button>
+                        <button class="toolbar-btn" onclick="viewSource()" title="查看源码">&lt;/&gt;</button>
+                    </div>
+                </div>
+
+                <div class="editor-content" id="editor" contenteditable="true" data-placeholder="开始书写您的内容...">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ 全局设置</h2>
+                <button class="close-btn" onclick="closeModal('settings')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>作者名称</label>
+                    <input type="text" id="authorName" placeholder="输入作者名称">
+                </div>
+                <div class="input-group">
+                    <label>发布日期</label>
+                    <input type="date" id="publishDate">
+                </div>
+                <div class="input-group">
+                    <label>分类</label>
+                    <input type="text" id="category" placeholder="技术, 生活, 旅行...">
+                </div>
+                <div class="input-group">
+                    <label>标签</label>
+                    <input type="text" id="tags" placeholder="用逗号分隔多个标签">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showAuthor" checked>
+                    <label for="showAuthor">显示作者信息</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showDate" checked>
+                    <label for="showDate">显示发布日期</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableComments" checked>
+                    <label for="enableComments">启用评论功能</label>
+                </div>
+                <button class="btn btn-primary" onclick="closeModal('settings')">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEO模态框 -->
+    <div class="modal" id="seoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔍 SEO优化</h2>
+                <button class="close-btn" onclick="closeModal('seo')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>页面标题 (Title Tag)</label>
+                    <input type="text" id="seoTitle" placeholder="60字符以内" maxlength="60">
+                </div>
+                <div class="input-group">
+                    <label>Meta描述 (Description)</label>
+                    <textarea id="seoDescription" rows="3" placeholder="160字符以内" maxlength="160"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>关键词 (Keywords)</label>
+                    <input type="text" id="seoKeywords" placeholder="用逗号分隔">
+                </div>
+                <div class="input-group">
+                    <label>URL别名 (Slug)</label>
+                    <input type="text" id="seoSlug" placeholder="my-blog-post">
+                </div>
+                <button class="btn btn-primary" onclick="closeModal('seo')">保存SEO设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 样式定制模态框 -->
+    <div class="modal" id="styleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎨 样式定制</h2>
+                <button class="close-btn" onclick="closeModal('style')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>主题风格</label>
+                    <div class="style-selector">
+                        <div class="style-option active" onclick="selectStyle(this, 'default')">默认</div>
+                        <div class="style-option" onclick="selectStyle(this, 'minimal')">简约</div>
+                        <div class="style-option" onclick="selectStyle(this, 'modern')">现代</div>
+                        <div class="style-option" onclick="selectStyle(this, 'classic')">经典</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>字体系列</label>
+                    <select id="fontFamily">
+                        <option value="Microsoft YaHei">微软雅黑</option>
+                        <option value="SimSun">宋体</option>
+                        <option value="SimHei">黑体</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>字体大小</label>
+                    <div class="range-group">
+                        <input type="range" id="fontSize" min="12" max="24" value="16" oninput="updateRangeValue(this, 'fontSizeValue')">
+                        <span class="range-value" id="fontSizeValue">16px</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>行高</label>
+                    <div class="range-group">
+                        <input type="range" id="lineHeight" min="1" max="3" step="0.1" value="1.8" oninput="updateRangeValue(this, 'lineHeightValue')">
+                        <span class="range-value" id="lineHeightValue">1.8</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>内容宽度</label>
+                    <div class="range-group">
+                        <input type="range" id="contentWidth" min="600" max="1200" step="50" value="900" oninput="updateRangeValue(this, 'contentWidthValue')">
+                        <span class="range-value" id="contentWidthValue">900px</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>主色调</label>
+                    <div class="color-picker-group">
+                        <input type="color" class="color-picker" id="primaryColor" value="#2271b1">
+                        <span id="primaryColorValue">#2271b1</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="applyStyles()">应用样式</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片插入模态框 -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🖼️ 插入图片</h2>
+                <button class="close-btn" onclick="closeModal('image')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>图片URL直链</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="input-group">
+                    <label>图片描述 (Alt Text)</label>
+                    <input type="text" id="imageAlt" placeholder="图片描述文字">
+                </div>
+                <div class="input-group">
+                    <label>图片宽度</label>
+                    <input type="text" id="imageWidth" placeholder="例如: 100%, 500px, auto">
+                </div>
+                <div class="input-group">
+                    <label>图片对齐</label>
+                    <select id="imageAlign">
+                        <option value="none">无</option>
+                        <option value="left">左对齐</option>
+                        <option value="center">居中</option>
+                        <option value="right">右对齐</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="insertImage()">插入图片</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频插入模态框 -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎬 插入视频</h2>
+                <button class="close-btn" onclick="closeModal('video')">×</button>
+            </div>
+            <div class="tab-group">
+                <button class="tab-btn active" onclick="switchTab('videoUrl')">视频URL</button>
+                <button class="tab-btn" onclick="switchTab('videoEmbed')">嵌入代码</button>
+            </div>
+            <div class="tab-content active" id="videoUrlTab">
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label>视频URL直链</label>
+                        <input type="url" id="videoUrl" placeholder="https://example.com/video.mp4">
+                    </div>
+                    <div class="input-group">
+                        <label>视频宽度</label>
+                        <input type="text" id="videoWidth" placeholder="例如: 100%, 640px" value="100%">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="videoControls" checked>
+                        <label for="videoControls">显示控制栏</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="videoAutoplay">
+                        <label for="videoAutoplay">自动播放</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="insertVideo()">插入视频</button>
+                </div>
+            </div>
+            <div class="tab-content" id="videoEmbedTab">
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label>嵌入代码 (iframe/embed)</label>
+                        <textarea id="videoEmbed" rows="4" placeholder="粘贴YouTube、Bilibili等平台的嵌入代码"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="insertVideoEmbed()">插入嵌入视频</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频插入模态框 -->
+    <div class="modal" id="audioModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎵 插入音频</h2>
+                <button class="close-btn" onclick="closeModal('audio')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>音频URL直链</label>
+                    <input type="url" id="audioUrl" placeholder="https://example.com/audio.mp3">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audioControls" checked>
+                    <label for="audioControls">显示控制栏</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audioAutoplay">
+                    <label for="audioAutoplay">自动播放</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audioLoop">
+                    <label for="audioLoop">循环播放</label>
+                </div>
+                <button class="btn btn-primary" onclick="insertAudio()">插入音频</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 链接插入模态框 -->
+    <div class="modal" id="linkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔗 插入链接</h2>
+                <button class="close-btn" onclick="closeModal('link')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>链接URL</label>
+                    <input type="url" id="linkUrl" placeholder="https://example.com">
+                </div>
+                <div class="input-group">
+                    <label>链接文本</label>
+                    <input type="text" id="linkText" placeholder="点击这里">
+                </div>
+                <div class="input-group">
+                    <label>链接标题 (Title)</label>
+                    <input type="text" id="linkTitle" placeholder="鼠标悬停显示的文字">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="linkNewTab" checked>
+                    <label for="linkNewTab">在新标签页打开</label>
+                </div>
+                <button class="btn btn-primary" onclick="insertLink()">插入链接</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 代码插入模态框 -->
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💻 插入代码</h2>
+                <button class="close-btn" onclick="closeModal('code')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>编程语言</label>
+                    <select id="codeLanguage">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="php">PHP</option>
+                        <option value="sql">SQL</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>代码内容</label>
+                    <textarea id="codeContent" rows="10" placeholder="在此粘贴或输入代码..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="insertCode()">插入代码</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表格插入模态框 -->
+    <div class="modal" id="tableModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 插入表格</h2>
+                <button class="close-btn" onclick="closeModal('table')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>行数</label>
+                    <input type="number" id="tableRows" value="3" min="1" max="20">
+                </div>
+                <div class="input-group">
+                    <label>列数</label>
+                    <input type="number" id="tableCols" value="3" min="1" max="10">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tableHeader" checked>
+                    <label for="tableHeader">包含表头</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tableBorder" checked>
+                    <label for="tableBorder">显示边框</label>
+                </div>
+                <button class="btn btn-primary" onclick="insertTable()">插入表格</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引用插入模态框 -->
+    <div class="modal" id="quoteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💬 插入引用</h2>
+                <button class="close-btn" onclick="closeModal('quote')">×</button>
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label>引用内容</label>
+                    <textarea id="quoteContent" rows="4" placeholder="输入引用文字..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>引用来源 (可选)</label>
+                    <input type="text" id="quoteAuthor" placeholder="作者或出处">
+                </div>
+                <button class="btn btn-primary" onclick="insertQuote()">插入引用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // 编辑器功能
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editor').focus();
         }
-      };
-      
-      document.getElementById('password').onkeypress = (e) => {
-        if (e.key === 'Enter') {
-          document.getElementById('submitPassword').click();
+
+        function changeHeading(tag) {
+            if (tag) {
+                document.execCommand('formatBlock', false, tag);
+            } else {
+                document.execCommand('formatBlock', false, 'p');
+            }
+            document.getElementById('editor').focus();
         }
-      };
-      
-      if (isFirstTime) {
-        document.getElementById('password2').onkeypress = (e) => {
-          if (e.key === 'Enter') {
-            document.getElementById('submitPassword').click();
-          }
-        };
-      }
-    }
-    
-    function handleSetPassword() {
-      const pwd1 = document.getElementById('password').value;
-      const pwd2 = document.getElementById('password2').value;
-      const errorMsg = document.getElementById('errorMsg');
-      
-      if (pwd1.length < 6) {
-        errorMsg.innerHTML = '<div class="error-bubble">❌ 密码至少需要6位</div>';
-        return;
-      }
-      
-      if (pwd1 !== pwd2) {
-        errorMsg.innerHTML = '<div class="error-bubble">❌ 两次密码输入不一致</div>';
-        return;
-      }
-      
-      masterPasswordHash = sha256(pwd1);
-      notes = [];
-      tags = [];
-      saveToStorage();
-      render();
-    }
-    
-    function handleLogin() {
-      const pwd = document.getElementById('password').value;
-      const hash = sha256(pwd);
-      const errorMsg = document.getElementById('errorMsg');
-      
-      if (loadFromStorage(hash)) {
-        masterPasswordHash = hash;
-        render();
-      } else {
-        errorMsg.innerHTML = '<div class="error-bubble">❌ 密码错误，请重试</div>';
-        document.getElementById('password').value = '';
-        document.getElementById('password').focus();
-      }
-    }
-    
-    function renderMainApp(container) {
-      container.innerHTML = `
-        <div class="glass-container">
-          <div class="title">✨ 超级安全备忘录</div>
-          
-          <div class="toolbar">
-            <div class="toolbar-left">
-              <button class="btn btn-secondary btn-small" onclick="exportData()">
-                📤 导出
-              </button>
-              <button class="btn btn-secondary btn-small" onclick="document.getElementById('importFile').click()">
-                📥 导入
-              </button>
-              <input type="file" id="importFile" accept=".secure" onchange="importData(event)">
-            </div>
-            <div class="toolbar-right">
-              <button class="btn btn-danger btn-small" onclick="logout()">
-                🚪 退出
-              </button>
-            </div>
-          </div>
-          
-          <div class="input-section">
-            <div class="input-row">
-              <input type="text" 
-                     class="input-bubble" 
-                     id="tagInput" 
-                     list="tagList"
-                     placeholder="🏷️ 标签（可选）">
-              <datalist id="tagList">
-                ${tags.map(tag => `<option value="${tag}">`).join('')}
-              </datalist>
-            </div>
+
+        function changeColor(command, color) {
+            document.execCommand(command, false, color);
+            document.getElementById('editor').focus();
+        }
+
+        function clearFormatting() {
+            document.execCommand('removeFormat', false, null);
+            document.getElementById('editor').focus();
+        }
+
+        // 模态框控制
+        function openModal(modalName) {
+            document.getElementById(modalName + 'Modal').classList.add('active');
+        }
+
+        function closeModal(modalName) {
+            document.getElementById(modalName + 'Modal').classList.remove('active');
+        }
+
+        // 标签页切换
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
             
-            <textarea class="input-bubble" 
-                      id="noteInput" 
-                      placeholder="✍️ 写下你的想法..."></textarea>
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
             
-            <button class="btn" onclick="addNote()" style="width:100%">
-              ➕ 添加备忘录
-            </button>
-          </div>
-          
-          <div class="notes-list" id="notesList">
-            ${renderNotesList()}
-          </div>
-        </div>
-      `;
-    }
-    
-    function renderNotesList() {
-      if (notes.length === 0) {
-        return `
-          <div class="empty-state">
-            <div class="empty-state-icon">📝</div>
-            <div>还没有备忘录，开始记录吧！</div>
-          </div>
-        `;
-      }
-      
-      return notes.map((note, index) => `
-        <div class="note-bubble">
-          <div class="note-content">${escapeHtml(note.text)}</div>
-          <div class="note-meta">
-            <div>
-              <span class="tag-bubble">${note.tag || '未分类'}</span>
-              <span class="note-time">${formatDate(note.timestamp)}</span>
-            </div>
-            <div class="note-actions">
-              <button class="btn btn-secondary btn-small" onclick="editNote(${index})">
-                ✏️ 编辑
-              </button>
-              <button class="btn btn-danger btn-small" onclick="deleteNote(${index})">
-                🗑️ 删除
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-    
-    // ============ 功能函数 ============
-    function addNote() {
-      const text = document.getElementById('noteInput').value.trim();
-      const tag = document.getElementById('tagInput').value.trim();
-      
-      if (!text) {
-        alert('⚠️ 请输入备忘内容');
-        return;
-      }
-      
-      if (tag && !tags.includes(tag)) {
-        tags.push(tag);
-      }
-      
-      notes.unshift({
-        text,
-        tag: tag || '未分类',
-        timestamp: Date.now(),
-        id: Date.now() + Math.random()
-      });
-      
-      document.getElementById('noteInput').value = '';
-      document.getElementById('tagInput').value = '';
-      
-      saveToStorage();
-      render();
-    }
-    
-    function editNote(index) {
-      const note = notes[index];
-      const newText = prompt('✏️ 编辑备忘内容:', note.text);
-      
-      if (newText !== null && newText.trim() !== '') {
-        notes[index].text = newText.trim();
-        notes[index].timestamp = Date.now();
-        saveToStorage();
-        render();
-      }
-    }
-    
-    function deleteNote(index) {
-      if (confirm('🗑️ 确定要删除这条备忘录吗？')) {
-        notes.splice(index, 1);
-        saveToStorage();
-        render();
-      }
-    }
-    
-    function exportData() {
-      const data = {
-        notes,
-        tags,
-        exportTime: Date.now(),
-        version: "2.0"
-      };
-      
-      const fileContent = encodeFile(data, masterPasswordHash);
-      const blob = new Blob([fileContent], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `notes_backup_${Date.now()}.secure`;
-      a.click();
-      
-      URL.revokeObjectURL(url);
-      alert('✅ 数据已导出！');
-    }
-    
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const fileContent = e.target.result;
-        const data = decodeFile(fileContent, masterPasswordHash);
-        
-        if (data && Array.isArray(data.notes)) {
-          if (confirm(`📥 发现 ${data.notes.length} 条备忘录，是否导入？\n\n⚠️ 当前数据将被覆盖！`)) {
-            notes = data.notes;
-            tags = data.tags || [];
-            saveToStorage();
-            render();
-            alert('✅ 导入成功！');
-          }
-        } else {
-          alert('❌ 文件无效或密码不匹配');
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
         }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-    
-    function logout() {
-      if (confirm('🚪 确定要退出吗？需要重新输入密码才能访问。')) {
-        masterPasswordHash = null;
-        render();
-      }
-    }
-    
-    // ============ 工具函数 ============
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    
-    function formatDate(timestamp) {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diff = now - date;
-      
-      if (diff < 60000) return '刚刚';
-      if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-      if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-      if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
-      
-      return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-    
-    // ============ 初始化 ============
-    window.onload = () => {
-      render();
-    };
-  </script>
+
+        // 样式选择
+        function selectStyle(element, style) {
+            document.querySelectorAll('.style-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        // 范围滑块更新
+        function updateRangeValue(input, targetId) {
+            const value = input.value;
+            const suffix = input.id === 'lineHeight' ? '' : 'px';
+            document.getElementById(targetId).textContent = value + suffix;
+        }
+
+        // 插入图片
+        function insertImage() {
+            const url = document.getElementById('imageUrl').value;
+            const alt = document.getElementById('imageAlt').value || '图片';
+            const width = document.getElementById('imageWidth').value || 'auto';
+            const align = document.getElementById('imageAlign').value;
+            
+            if (!url) {
+                showNotification('请输入图片URL', 'error');
+                return;
+            }
+            
+            let style = `width: ${width}; max-width: 100%; height: auto;`;
+            if (align === 'center') {
+                style += ' display: block; margin: 20px auto;';
+            } else if (align === 'left') {
+                style += ' float: left; margin: 10px 20px 10px 0;';
+            } else if (align === 'right') {
+                style += ' float: right; margin: 10px 0 10px 20px;';
+            }
+            
+            const imgHtml = `<img src="${url}" alt="${alt}" style="${style}">`;
+            document.execCommand('insertHTML', false, imgHtml);
+            
+            closeModal('image');
+            showNotification('图片已插入');
+        }
+
+        // 插入视频
+        function insertVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const width = document.getElementById('videoWidth').value || '100%';
+            const controls = document.getElementById('videoControls').checked;
+            const autoplay = document.getElementById('videoAutoplay').checked;
+            
+            if (!url) {
+                showNotification('请输入视频URL', 'error');
+                return;
+            }
+            
+            const videoHtml = `<video src="${url}" style="width: ${width}; max-width: 100%;" ${controls ? 'controls' : ''} ${autoplay ? 'autoplay' : ''}></video><br>`;
+            document.execCommand('insertHTML', false, videoHtml);
+            
+            closeModal('video');
+            showNotification('视频已插入');
+        }
+
+        // 插入嵌入视频
+        function insertVideoEmbed() {
+            const embed = document.getElementById('videoEmbed').value;
+            
+            if (!embed) {
+                showNotification('请输入嵌入代码', 'error');
+                return;
+            }
+            
+            document.execCommand('insertHTML', false, embed + '<br>');
+            closeModal('video');
+            showNotification('嵌入视频已插入');
+        }
+
+        // 插入音频
+        function insertAudio() {
+            const url = document.getElementById('audioUrl').value;
+            const controls = document.getElementById('audioControls').checked;
+            const autoplay = document.getElementById('audioAutoplay').checked;
+            const loop = document.getElementById('audioLoop').checked;
+            
+            if (!url) {
+                showNotification('请输入音频URL', 'error');
+                return;
+            }
+            
+            const audioHtml = `<audio src="${url}" ${controls ? 'controls' : ''} ${autoplay ? 'autoplay' : ''} ${loop ? 'loop' : ''} style="width: 100%; max-width: 500px;"></audio><br>`;
+            document.execCommand('insertHTML', false, audioHtml);
+            
+            closeModal('audio');
+            showNotification('音频已插入');
+        }
+
+        // 插入链接
+        function insertLink() {
+            const url = document.getElementById('linkUrl').value;
+            const text = document.getElementById('linkText').value || url;
+            const title = document.getElementById('linkTitle').value;
+            const newTab = document.getElementById('linkNewTab').checked;
+            
+            if (!url) {
+                showNotification('请输入链接URL', 'error');
+                return;
+            }
+            
+            const linkHtml = `<a href="${url}" ${title ? `title="${title}"` : ''} ${newTab ? 'target="_blank"' : ''}>${text}</a>`;
+            document.execCommand('insertHTML', false, linkHtml);
+            
+            closeModal('link');
+            showNotification('链接已插入');
+        }
+
+        // 插入代码
+        function insertCode() {
+            const language = document.getElementById('codeLanguage').value;
+            const content = document.getElementById('codeContent').value;
+            
+            if (!content) {
+                showNotification('请输入代码内容', 'error');
+                return;
+            }
+            
+            const codeHtml = `<pre style="background: #282c34; color: #abb2bf; padding: 16px; border-radius: 4px; overflow-x: auto; font-family: 'Courier New', monospace;"><code class="language-${language}">${escapeHtml(content)}</code></pre><br>`;
+            document.execCommand('insertHTML', false, codeHtml);
+            
+            closeModal('code');
+            showNotification('代码已插入');
+        }
+
+        // 插入表格
+        function insertTable() {
+            const rows = parseInt(document.getElementById('tableRows').value);
+            const cols = parseInt(document.getElementById('tableCols').value);
+            const hasHeader = document.getElementById('tableHeader').checked;
+            const hasBorder = document.getElementById('tableBorder').checked;
+            
+            let tableHtml = `<table style="width: 100%; border-collapse: collapse; margin: 20px 0; ${hasBorder ? 'border: 1px solid #ddd;' : ''}">`;
+            
+            for (let i = 0; i < rows; i++) {
+                tableHtml += '<tr>';
+                for (let j = 0; j < cols; j++) {
+                    const tag = (i === 0 && hasHeader) ? 'th' : 'td';
+                    const style = `padding: 12px; ${hasBorder ? 'border: 1px solid #ddd;' : ''} ${(i === 0 && hasHeader) ? 'background: #f0f0f1; font-weight: 600;' : ''}`;
+                    tableHtml += `<${tag} style="${style}">${(i === 0 && hasHeader) ? `列${j + 1}` : '&nbsp;'}</${tag}>`;
+                }
+                tableHtml += '</tr>';
+            }
+            
+            tableHtml += '</table><br>';
+            document.execCommand('insertHTML', false, tableHtml);
+            
+            closeModal('table');
+            showNotification('表格已插入');
+        }
+
+        // 插入引用
+        function insertQuote() {
+            const content = document.getElementById('quoteContent').value;
+            const author = document.getElementById('quoteAuthor').value;
+            
+            if (!content) {
+                showNotification('请输入引用内容', 'error');
+                return;
+            }
+            
+            const quoteHtml = `<blockquote style="border-left: 4px solid #2271b1; padding: 16px 20px; margin: 20px 0; background: #f9f9f9; font-style: italic;">${content}${author ? `<footer style="margin-top: 10px; font-size: 14px; color: #646970;">— ${author}</footer>` : ''}</blockquote><br>`;
+            document.execCommand('insertHTML', false, quoteHtml);
+            
+            closeModal('quote');
+            showNotification('引用已插入');
+        }
+
+        // 插入分隔线
+        function insertDivider() {
+            document.execCommand('insertHTML', false, '<hr style="border: none; border-top: 2px solid #ddd; margin: 30px 0;"><br>');
+            showNotification('分隔线已插入');
+        }
+
+        // 应用样式
+        function applyStyles() {
+            const editor = document.getElementById('editor');
+            const wrapper = document.querySelector('.editor-wrapper');
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const lineHeight = document.getElementById('lineHeight').value;
+            const contentWidth = document.getElementById('contentWidth').value;
+            
+            editor.style.fontFamily = fontFamily;
+            editor.style.fontSize = fontSize + 'px';
+            editor.style.lineHeight = lineHeight;
+            wrapper.style.maxWidth = contentWidth + 'px';
+            
+            closeModal('style');
+            showNotification('样式已应用');
+        }
+
+        // 查看源码
+        let isSourceView = false;
+        function viewSource() {
+            const editor = document.getElementById('editor');
+            
+            if (!isSourceView) {
+                const html = editor.innerHTML;
+                editor.textContent = html;
+                editor.style.fontFamily = 'monospace';
+                editor.style.background = '#282c34';
+                editor.style.color = '#abb2bf';
+                isSourceView = true;
+            } else {
+                const text = editor.textContent;
+                editor.innerHTML = text;
+                editor.style.fontFamily = '';
+                editor.style.background = '';
+                editor.style.color = '';
+                isSourceView = false;
+            }
+        }
+
+        // 预览功能
+        let isPreview = false;
+        function togglePreview() {
+            const editor = document.getElementById('editor');
+            const toolbar = document.querySelector('.toolbar');
+            
+            if (!isPreview) {
+                editor.contentEditable = 'false';
+                editor.style.background = '#f9f9f9';
+                toolbar.style.display = 'none';
+                isPreview = true;
+                showNotification('预览模式');
+            } else {
+                editor.contentEditable = 'true';
+                editor.style.background = '';
+                toolbar.style.display = 'flex';
+                isPreview = false;
+                showNotification('编辑模式');
+            }
+        }
+
+        // 保存草稿
+        function saveDraft() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('editor').innerHTML;
+            
+            const draft = {
+                title: title,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('blogDraft', JSON.stringify(draft));
+            showNotification('草稿已保存');
+        }
+
+        // 加载草稿
+        function loadDraft() {
+            const draft = localStorage.getItem('blogDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+                if (confirm('检测到有保存的草稿,是否加载?')) {
+                    document.getElementById('postTitle').value = data.title;
+                    document.getElementById('editor').innerHTML = data.content;
+                    showNotification('草稿已加载');
+                }
+            }
+        }
+
+        // 加载模板
+        function loadTemplate(type) {
+            const templates = {
+                blog: {
+                    title: '我的博客文章标题',
+                    content: '<h2>引言</h2><p>在这里写下你的引言...</p><h2>正文</h2><p>在这里写下你的正文内容...</p><h2>总结</h2><p>在这里写下你的总结...</p>'
+                },
+                article: {
+                    title: '专业文章标题',
+                    content: '<h1>文章标题</h1><p><strong>摘要：</strong>在这里写下文章摘要...</p><h2>第一章节</h2><p>章节内容...</p><h2>第二章节</h2><p>章节内容...</p><h2>结论</h2><p>文章结论...</p>'
+                },
+                tutorial: {
+                    title: '教程：如何做某事',
+                    content: '<h1>教程标题</h1><p>本教程将教你如何...</p><h2>准备工作</h2><ul><li>准备事项1</li><li>准备事项2</li></ul><h2>步骤1</h2><p>详细说明...</p><h2>步骤2</h2><p>详细说明...</p><h2>总结</h2><p>恭喜你完成了本教程!</p>'
+                }
+            };
+            
+            if (templates[type]) {
+                document.getElementById('postTitle').value = templates[type].title;
+                document.getElementById('editor').innerHTML = templates[type].content;
+                showNotification('模板已加载');
+            }
+        }
+
+        // 导出HTML
+        function exportHTML() {
+            const title = document.getElementById('postTitle').value || '未命名文章';
+            const content = document.getElementById('editor').innerHTML;
+            const author = document.getElementById('authorName').value || '匿名作者';
+            const date = document.getElementById('publishDate').value || new Date().toLocaleDateString('zh-CN');
+            const fontFamily = document.getElementById('fontFamily').value || 'Microsoft YaHei';
+            const fontSize = document.getElementById('fontSize').value || '16';
+            const lineHeight = document.getElementById('lineHeight').value || '1.8';
+            
+            const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="${author}">
+    <meta name="description" content="${document.getElementById('seoDescription').value || title}">
+    <meta name="keywords" content="${document.getElementById('seoKeywords').value || ''}">
+    <title>${document.getElementById('seoTitle').value || title}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: '${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: ${fontSize}px;
+            line-height: ${lineHeight};
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .article-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .article-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .article-content {
+            color: #333;
+        }
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            margin: 24px 0 16px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #1a1a1a;
+        }
+        .article-content h1 { font-size: 32px; }
+        .article-content h2 { font-size: 28px; }
+        .article-content h3 { font-size: 24px; }
+        .article-content p {
+            margin: 16px 0;
+        }
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .article-content a {
+            color: #2271b1;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .article-content a:hover {
+            border-bottom-color: #2271b1;
+        }
+        .article-content ul,
+        .article-content ol {
+            margin: 16px 0;
+            padding-left: 30px;
+        }
+        .article-content li {
+            margin: 8px 0;
+        }
+        .article-content blockquote {
+            border-left: 4px solid #2271b1;
+            padding: 16px 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .article-content pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .article-content code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .article-content table td,
+        .article-content table th {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .article-content table th {
+            background: #f0f0f1;
+            font-weight: 600;
+        }
+        .article-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            .article-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <article>
+            <header class="article-header">
+                <h1 class="article-title">${title}</h1>
+                <div class="article-meta">
+                    ${document.getElementById('showAuthor').checked ? `<span>✍️ ${author}</span>` : ''}
+                    ${document.getElementById('showDate').checked ? `<span>📅 ${date}</span>` : ''}
+                </div>
+            </header>
+            <div class="article-content">
+                ${content}
+            </div>
+            <footer class="article-footer">
+                <p>© ${new Date().getFullYear()} ${author}. All rights reserved.</p>
+            </footer>
+        </article>
+    </div>
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (title || 'article') + '.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('HTML文件已导出');
+        }
+
+        // 通知提示
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#d63638' : '#00a32a';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // 页面加载时检查草稿
+        window.addEventListener('load', () => {
+            loadDraft();
+            // 设置默认日期
+            document.getElementById('publishDate').valueAsDate = new Date();
+            // 监听颜色选择器
+            document.getElementById('primaryColor').addEventListener('input', (e) => {
+                document.getElementById('primaryColorValue').textContent = e.target.value;
+            });
+        });
+
+        // 自动保存功能
+        setInterval(() => {
+            const content = document.getElementById('editor').innerHTML;
+            if (content.trim().length > 0) {
+                saveDraft();
+            }
+        }, 60000); // 每分钟自动保存一次
+
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'b':
+                        e.preventDefault();
+                        formatText('bold');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        formatText('italic');
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        formatText('underline');
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveDraft();
+                        break;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
