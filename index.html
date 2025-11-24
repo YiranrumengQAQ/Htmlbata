@@ -119,7 +119,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #10b981;
+            background: #60a5fa;
             animation: pulse 2s infinite;
         }
 
@@ -927,6 +927,49 @@
                 gap: 3px;
             }
         }
+    
+        .group-sender-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .group-sender-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .group-sender-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .group-sender-name {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .message.received.group-message {
+            margin-top: 8px;
+        }
+
+        .message.received.group-message .message-content {
+            background: rgba(255, 255, 255, 0.98);
+        }
     </style>
 </head>
 <body>
@@ -1408,10 +1451,23 @@
         }
 
         async function processMessage(message) {
-            const chatId = message.from.id.toString();
-            const fullName = message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : '');
-            const username = message.from.username ? '@' + message.from.username : '';
-            
+            // 支持群组消息
+            let chatId, fullName, username, chatType;
+
+            if (message.chat.type === 'group' || message.chat.type === 'supergroup') {
+                // 群组消息
+                chatId = message.chat.id.toString();
+                fullName = message.chat.title;
+                username = message.chat.username ? '@' + message.chat.username : '';
+                chatType = 'group';
+            } else {
+                // 私聊消息
+                chatId = message.from.id.toString();
+                fullName = message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : '');
+                username = message.from.username ? '@' + message.from.username : '';
+                chatType = 'private';
+            }
+
             if (!conversations[chatId]) {
                 conversations[chatId] = {
                     id: chatId,
@@ -1421,38 +1477,44 @@
                     isAdmin: chatId === adminId,
                     lastMessageTime: message.date * 1000,
                     messages: [],
-                    avatarUrl: null
+                    avatarUrl: null,
+                    chatType: chatType
                 };
-                
-                // 获取用户头像
-                const avatarUrl = await getUserAvatar(chatId);
-                if (avatarUrl) {
-                    conversations[chatId].avatarUrl = avatarUrl;
-                    console.log('✅ 已同步联系人头像:', fullName);
-                }
             } else {
                 // 更新联系人名字（如果变了）
                 conversations[chatId].name = fullName;
                 if (username) {
                     conversations[chatId].username = username;
                 }
-                
-                // 如果还没有头像，尝试获取
-                if (!conversations[chatId].avatarUrl) {
-                    const avatarUrl = await getUserAvatar(chatId);
-                    if (avatarUrl) {
-                        conversations[chatId].avatarUrl = avatarUrl;
-                        console.log('✅ 已同步联系人头像:', fullName);
-                    }
-                }
             }
-            
+
+            // 每次收到消息都刷新头像
+            const avatarUrl = await getUserAvatar(chatId);
+            if (avatarUrl) {
+                conversations[chatId].avatarUrl = avatarUrl;
+                console.log('✅ 已刷新联系人头像:', fullName);
+            }
+
             const msgData = {
                 id: message.message_id,
                 text: message.text || message.caption || '',
                 date: message.date * 1000,
                 from: 'received'
             };
+
+            // 群组消息需要保存发送者信息
+            if (chatType === 'group') {
+                msgData.sender = {
+                    id: message.from.id,
+                    name: message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : ''),
+                    username: message.from.username ? '@' + message.from.username : ''
+                };
+                // 获取发送者头像
+                const senderAvatarUrl = await getUserAvatar(message.from.id);
+                if (senderAvatarUrl) {
+                    msgData.sender.avatarUrl = senderAvatarUrl;
+                }
+            }
 
             if (message.photo && message.photo.length > 0) {
                 msgData.photo = message.photo[message.photo.length - 1].file_id;
@@ -1468,10 +1530,10 @@
                 msgData.documentName = message.document.file_name || 'document';
                 msgData.documentSize = message.document.file_size || 0;
             }
-            
+
             conversations[chatId].messages.push(msgData);
             conversations[chatId].lastMessageTime = message.date * 1000;
-            
+
             renderConversations();
             if (currentChatId === chatId) {
                 renderMessages();
@@ -1641,8 +1703,25 @@
                     `;
                 }
                 
+                // 群组消息显示发送者信息
+                let senderInfoHtml = '';
+                if (msg.from === 'received' && msg.sender) {
+                    const senderAvatarHtml = msg.sender.avatarUrl 
+                        ? `<img src="${msg.sender.avatarUrl}" alt="${msg.sender.name}">`
+                        : msg.sender.name.charAt(0).toUpperCase();
+
+                    senderInfoHtml = `
+                        <div class="group-sender-info">
+                            <div class="group-sender-avatar">${senderAvatarHtml}</div>
+                            <div class="group-sender-name">${escapeHtml(msg.sender.name)}</div>
+                        </div>
+                    `;
+                    div.classList.add('group-message');
+                }
+
                 div.innerHTML = `
                     <div class="message-content">
+                        ${senderInfoHtml}
                         ${msg.text ? `<div class="message-text">${escapeHtml(msg.text)}</div>` : ''}
                         ${mediaHtml}
                         <div class="message-time">${time}</div>
