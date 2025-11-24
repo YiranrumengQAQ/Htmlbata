@@ -967,10 +967,6 @@
             margin-top: 8px;
         }
 
-        .message.received.group-message .message-content {
-            background: rgba(255, 255, 255, 0.98);
-        }
-
         .chat-type-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -1043,8 +1039,8 @@
         }
 
         .message-sticker {
-            max-width: 150px;
-            max-height: 150px;
+            max-width: 200px;
+            max-height: 200px;
             width: auto;
             height: auto;
             cursor: pointer;
@@ -1052,8 +1048,8 @@
         }
 
         .message-animation {
-            max-width: 200px;
-            max-height: 200px;
+            max-width: 300px;
+            max-height: 300px;
             width: auto;
             height: auto;
             border-radius: 12px;
@@ -1064,8 +1060,8 @@
         .message.sticker-only .message-content,
         .message.animation-only .message-content {
             background: transparent !important;
-            box-shadow: none;
-            padding: 4px;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
     </style>
 </head>
@@ -1625,11 +1621,13 @@
                 msgData.stickerEmoji = message.sticker.emoji || '';
                 msgData.isAnimatedSticker = message.sticker.is_animated || false;
                 msgData.isVideoSticker = message.sticker.is_video || false;
+                console.log('📌 收到贴纸:', msgData.sticker, '动态:', msgData.isAnimatedSticker, '视频:', msgData.isVideoSticker);
             }
             if (message.animation) {
                 msgData.animation = message.animation.file_id;
                 msgData.animationWidth = message.animation.width;
                 msgData.animationHeight = message.animation.height;
+                console.log('🎬 收到GIF动图:', msgData.animation);
             }
 
             conversations[chatId].messages.push(msgData);
@@ -1765,7 +1763,7 @@
             });
         }
 
-                function deleteConversation(chatId) {
+        function deleteConversation(chatId) {
             const wrapper = document.querySelector(`[data-chat-id="${chatId}"]`);
             if (wrapper) {
                 const item = wrapper.querySelector('.conversation-item');
