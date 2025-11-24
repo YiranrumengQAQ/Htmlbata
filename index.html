@@ -30,7 +30,7 @@
             flex-direction: column;
             width: 100%;
             height: 100vh;
-            height: 100dvh; /* 动态视口高度 */
+            height: 100dvh;
         }
 
         /* 顶部导航栏 */
@@ -52,6 +52,18 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .bot-info:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .bot-info:active {
+            transform: scale(0.98);
         }
 
         .bot-avatar {
@@ -235,7 +247,7 @@
             color: #6b7280;
         }
 
-        /* 聊天区域 - 关键修复 */
+        /* 聊天区域 */
         .chat-area {
             flex: 1;
             display: flex;
@@ -410,7 +422,37 @@
             opacity: 0.7;
         }
 
-        /* 输入区域 - 完全重构 */
+        /* 上传进度条 */
+        .upload-progress {
+            margin-top: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* 输入区域 */
         .input-area {
             padding: 12px 15px;
             background: rgba(255, 255, 255, 0.98);
@@ -585,6 +627,11 @@
             color: #1f1f1f;
         }
 
+        .modal-btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
         .loading {
             text-align: center;
             padding: 30px;
@@ -654,6 +701,17 @@
             font-weight: 500;
         }
 
+        .bot-info-section {
+            margin-bottom: 15px;
+        }
+
+        .bot-info-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
         /* ==================== 响应式设计 - 移动端 ==================== */
         @media screen and (max-width: 768px) {
             .navbar {
@@ -676,15 +734,11 @@
             }
 
             .status-indicator span {
-                display: none;
+                font-size: 11px;
             }
 
             .status-indicator {
-                padding: 8px;
-                border-radius: 50%;
-                width: 32px;
-                height: 32px;
-                justify-content: center;
+                padding: 6px 10px;
             }
 
             .main-content {
@@ -769,7 +823,7 @@
     <div class="container">
         <!-- 顶部导航栏 -->
         <div class="navbar">
-            <div class="bot-info">
+            <div class="bot-info" onclick="openBotSettingsModal()">
                 <div class="bot-avatar" id="botAvatar">🤖</div>
                 <div>
                     <div class="bot-username" id="botUsername">初始化中...</div>
@@ -782,7 +836,7 @@
                     <span id="networkStatus">已连接</span>
                 </div>
                 <div class="status-indicator">
-                    <span><strong id="latency">0ms</strong></span>
+                    <span>延迟: <strong id="latency">0ms</strong></span>
                 </div>
             </div>
         </div>
@@ -815,7 +869,7 @@
                         <div class="empty-state-text">请从左侧选择一个对话</div>
                     </div>
                 </div>
-                <!-- 输入区域 - 完全重构 -->
+                <!-- 输入区域 -->
                 <div class="input-area">
                     <div class="input-container">
                         <textarea 
@@ -850,11 +904,41 @@
         </div>
     </div>
 
+    <!-- 机器人设置模态框 -->
+    <div class="modal" id="botSettingsModal">
+        <div class="modal-content">
+            <div class="modal-title">🔐 机器人设置</div>
+            <div class="bot-info-section">
+                <div class="bot-info-label">访问密码</div>
+                <input type="password" class="modal-input" id="passwordInput" placeholder="输入密码解锁编辑功能">
+            </div>
+            <div id="botSettingsContent" style="display: none;">
+                <div class="bot-info-section">
+                    <div class="bot-info-label">机器人名称</div>
+                    <input type="text" class="modal-input" id="botNameInput" placeholder="机器人名称">
+                </div>
+                <div class="bot-info-section">
+                    <div class="bot-info-label">机器人头像 (Emoji)</div>
+                    <input type="text" class="modal-input" id="botAvatarInput" placeholder="输入单个 Emoji" maxlength="2">
+                </div>
+                <div class="bot-info-section">
+                    <div class="bot-info-label">机器人用户名</div>
+                    <input type="text" class="modal-input" id="botUsernameInput" placeholder="@用户名" readonly>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeBotSettingsModal()">取消</button>
+                <button class="modal-btn modal-btn-primary" id="unlockBtn" onclick="unlockBotSettings()">解锁</button>
+                <button class="modal-btn modal-btn-primary" id="saveBtn" onclick="saveBotSettings()" style="display: none;">保存</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 隐藏的文件输入 -->
     <input type="file" class="file-input" id="photoInput" accept="image/*">
     <input type="file" class="file-input" id="videoInput" accept="video/*">
     <input type="file" class="file-input" id="audioInput" accept="audio/*">
-    <input type="file" class="file-input" id="documentInput">
+    <input type="file" class="file-input" id="documentInput" accept="*/*">
 
     <script>
         // 全局变量
@@ -862,12 +946,19 @@
         const adminId = '6389066995';
         const STORAGE_KEY = 'telegram_bot_conversations';
         const OFFSET_KEY = 'telegram_bot_update_offset';
+        const BOT_SETTINGS_KEY = 'telegram_bot_settings';
+        const ADMIN_PASSWORD = 'Abrade1234';
         
         let currentChatId = null;
         let conversations = {};
         let updateOffset = 0;
         let pollingInterval = null;
         let isMobile = window.innerWidth <= 768;
+        let botSettings = {
+            name: '',
+            avatar: '🤖',
+            username: ''
+        };
 
         window.addEventListener('resize', () => {
             isMobile = window.innerWidth <= 768;
@@ -875,11 +966,13 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
+            loadBotSettings();
             initializeBot();
         });
 
         window.addEventListener('beforeunload', () => {
             saveToStorage();
+            saveBotSettingsToStorage();
         });
 
         setInterval(() => {
@@ -912,6 +1005,35 @@
             }
         }
 
+        function loadBotSettings() {
+            try {
+                const saved = localStorage.getItem(BOT_SETTINGS_KEY);
+                if (saved) {
+                    botSettings = JSON.parse(saved);
+                    applyBotSettings();
+                }
+            } catch (error) {
+                console.error('加载设置失败:', error);
+            }
+        }
+
+        function saveBotSettingsToStorage() {
+            try {
+                localStorage.setItem(BOT_SETTINGS_KEY, JSON.stringify(botSettings));
+            } catch (error) {
+                console.error('保存设置失败:', error);
+            }
+        }
+
+        function applyBotSettings() {
+            if (botSettings.avatar) {
+                document.getElementById('botAvatar').textContent = botSettings.avatar;
+            }
+            if (botSettings.name) {
+                document.getElementById('botUsername').textContent = botSettings.name;
+            }
+        }
+
         async function initializeBot() {
             try {
                 const startTime = Date.now();
@@ -922,8 +1044,15 @@
                 
                 const data = await response.json();
                 if (data.ok) {
-                    document.getElementById('botUsername').textContent = '@' + data.result.username;
-                    document.getElementById('botAvatar').textContent = data.result.first_name.charAt(0);
+                    botSettings.username = '@' + data.result.username;
+                    if (!botSettings.name) {
+                        botSettings.name = '@' + data.result.username;
+                    }
+                    if (!botSettings.avatar) {
+                        botSettings.avatar = data.result.first_name.charAt(0);
+                    }
+                    
+                    applyBotSettings();
                     document.getElementById('latency').textContent = latency + 'ms';
                     
                     addBuiltInAdmin();
@@ -1176,6 +1305,18 @@
                     }
                 }
                 
+                // 显示上传进度
+                if (msg.uploading) {
+                    mediaHtml += `
+                        <div class="upload-progress">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${msg.progress || 0}%"></div>
+                            </div>
+                            <div class="progress-text">上传中... ${msg.progress || 0}%</div>
+                        </div>
+                    `;
+                }
+                
                 div.innerHTML = `
                     <div class="message-content">
                         ${msg.text ? `<div class="message-text">${escapeHtml(msg.text)}</div>` : ''}
@@ -1253,6 +1394,18 @@
         });
 
         async function sendMediaFile(type, file) {
+            // 添加临时消息显示上传进度
+            const tempMsgId = Date.now();
+            conversations[currentChatId].messages.push({
+                id: tempMsgId,
+                text: '',
+                date: Date.now(),
+                from: 'sent',
+                uploading: true,
+                progress: 0
+            });
+            renderMessages();
+            
             const formData = new FormData();
             formData.append('chat_id', currentChatId);
             formData.append(type, file);
@@ -1265,43 +1418,87 @@
             };
             
             try {
-                const response = await fetch(
-                    `https://api.telegram.org/bot${botToken}/${methodMap[type]}`,
-                    {
-                        method: 'POST',
-                        body: formData
-                    }
-                );
+                // 使用 XMLHttpRequest 来跟踪上传进度
+                const xhr = new XMLHttpRequest();
                 
-                const data = await response.json();
-                if (data.ok) {
-                    const msgData = {
-                        id: data.result.message_id,
-                        text: '',
-                        date: Date.now(),
-                        from: 'sent'
-                    };
-                    
-                    if (type === 'photo' && data.result.photo) {
-                        msgData.photo = data.result.photo[data.result.photo.length - 1].file_id;
-                    } else if (type === 'video' && data.result.video) {
-                        msgData.video = data.result.video.file_id;
-                    } else if (type === 'audio' && data.result.audio) {
-                        msgData.audio = data.result.audio.file_id;
-                    } else if (type === 'document' && data.result.document) {
-                        msgData.document = data.result.document.file_id;
-                        msgData.documentName = file.name;
-                        msgData.documentSize = file.size;
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const progress = Math.round((e.loaded / e.total) * 100);
+                        // 更新进度
+                        const msg = conversations[currentChatId].messages.find(m => m.id === tempMsgId);
+                        if (msg) {
+                            msg.progress = progress;
+                            renderMessages();
+                        }
                     }
-                    
-                    conversations[currentChatId].messages.push(msgData);
+                });
+                
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        if (data.ok) {
+                            // 移除临时消息
+                            const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
+                            if (index !== -1) {
+                                conversations[currentChatId].messages.splice(index, 1);
+                            }
+                            
+                            // 添加真实消息
+                            const msgData = {
+                                id: data.result.message_id,
+                                text: '',
+                                date: Date.now(),
+                                from: 'sent'
+                            };
+                            
+                            if (type === 'photo' && data.result.photo) {
+                                msgData.photo = data.result.photo[data.result.photo.length - 1].file_id;
+                            } else if (type === 'video' && data.result.video) {
+                                msgData.video = data.result.video.file_id;
+                            } else if (type === 'audio' && data.result.audio) {
+                                msgData.audio = data.result.audio.file_id;
+                            } else if (type === 'document' && data.result.document) {
+                                msgData.document = data.result.document.file_id;
+                                msgData.documentName = file.name;
+                                msgData.documentSize = file.size;
+                            }
+                            
+                            conversations[currentChatId].messages.push(msgData);
+                            renderMessages();
+                            saveToStorage();
+                        } else {
+                            // 移除临时消息
+                            const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
+                            if (index !== -1) {
+                                conversations[currentChatId].messages.splice(index, 1);
+                            }
+                            alert('发送失败: ' + data.description);
+                            renderMessages();
+                        }
+                    }
+                });
+                
+                xhr.addEventListener('error', () => {
+                    // 移除临时消息
+                    const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
+                    if (index !== -1) {
+                        conversations[currentChatId].messages.splice(index, 1);
+                    }
+                    alert('发送失败');
                     renderMessages();
-                    saveToStorage();
-                } else {
-                    alert('发送失败: ' + data.description);
-                }
+                });
+                
+                xhr.open('POST', `https://api.telegram.org/bot${botToken}/${methodMap[type]}`);
+                xhr.send(formData);
+                
             } catch (error) {
+                // 移除临时消息
+                const index = conversations[currentChatId].messages.findIndex(m => m.id === tempMsgId);
+                if (index !== -1) {
+                    conversations[currentChatId].messages.splice(index, 1);
+                }
                 alert('发送失败: ' + error.message);
+                renderMessages();
             }
         }
 
@@ -1338,6 +1535,45 @@
             closeAddContactModal();
         }
 
+        // 机器人设置相关函数
+        function openBotSettingsModal() {
+            document.getElementById('botSettingsModal').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('botSettingsContent').style.display = 'none';
+            document.getElementById('unlockBtn').style.display = 'block';
+            document.getElementById('saveBtn').style.display = 'none';
+        }
+
+        function closeBotSettingsModal() {
+            document.getElementById('botSettingsModal').classList.remove('active');
+        }
+
+        function unlockBotSettings() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('botSettingsContent').style.display = 'block';
+                document.getElementById('unlockBtn').style.display = 'none';
+                document.getElementById('saveBtn').style.display = 'block';
+                
+                // 填充当前设置
+                document.getElementById('botNameInput').value = botSettings.name;
+                document.getElementById('botAvatarInput').value = botSettings.avatar;
+                document.getElementById('botUsernameInput').value = botSettings.username;
+            } else {
+                alert('密码错误！');
+            }
+        }
+
+        function saveBotSettings() {
+            botSettings.name = document.getElementById('botNameInput').value.trim() || botSettings.name;
+            botSettings.avatar = document.getElementById('botAvatarInput').value.trim() || botSettings.avatar;
+            
+            applyBotSettings();
+            saveBotSettingsToStorage();
+            closeBotSettingsModal();
+            alert('设置已保存！');
+        }
+
         document.getElementById('searchBox').addEventListener('input', renderConversations);
 
         document.getElementById('messageInput').addEventListener('keydown', function(e) {
@@ -1355,6 +1591,12 @@
         document.getElementById('addContactModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeAddContactModal();
+            }
+        });
+
+        document.getElementById('botSettingsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBotSettingsModal();
             }
         });
     </script>
