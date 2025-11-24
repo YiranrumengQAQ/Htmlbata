@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Bot 聊天界面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram Bot 聊天中心</title>
     <style>
         * {
             margin: 0;
@@ -11,113 +11,269 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            height: 100vh;
+        html, body {
+            height: 100%;
             overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .container {
             display: flex;
             height: 100vh;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
-            box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            box-shadow: 0 0 60px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        /* 移动端菜单按钮 */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+            will-change: transform;
+        }
+
+        .mobile-menu-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* 遮罩层 */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.show {
+            display: block;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         /* 联系人列表区域 */
         .contacts-panel {
-            width: 320px;
-            background: #f5f7fb;
+            width: 380px;
+            background: linear-gradient(180deg, #f8f9fc 0%, #f0f2f8 100%);
             border-right: 1px solid #e0e4e8;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
         .panel-header {
-            padding: 20px;
+            padding: 24px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .panel-header h2 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .refresh-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 9px 18px;
+            border-radius: 24px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            will-change: transform;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .refresh-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
         }
 
         .status-bar {
-            padding: 12px 20px;
+            padding: 14px 20px;
+            background: white;
+            border-bottom: 2px solid #e8eaf6;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.6; 
+                transform: scale(0.92);
+            }
+        }
+
+        .bot-info {
+            font-size: 12px;
+            color: #666;
+            padding: 10px 20px;
             background: #fff;
             border-bottom: 1px solid #e0e4e8;
-            font-size: 13px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4caf50;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .contacts-list {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            overflow-x: hidden;
+            padding: 12px 10px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .contact-item {
-            padding: 15px;
-            margin-bottom: 5px;
-            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
-            border: 1px solid transparent;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            will-change: transform, box-shadow;
         }
 
         .contact-item:hover {
-            background: #e8eaf6;
+            background: #f5f7ff;
             border-color: #667eea;
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
         }
 
         .contact-item.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            transform: translateX(6px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            gap: 10px;
         }
 
         .contact-name {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.3;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .contact-id {
+            font-size: 10px;
+            opacity: 0.75;
+            background: rgba(0,0,0,0.08);
+            padding: 3px 10px;
+            border-radius: 12px;
             font-weight: 600;
-            margin-bottom: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .contact-item.active .contact-id {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .contact-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .contact-type {
+            font-size: 11px;
+            opacity: 0.7;
+            background: rgba(0,0,0,0.06);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .contact-item.active .contact-type {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .contact-time {
+            font-size: 11px;
+            opacity: 0.6;
         }
 
         .contact-preview {
@@ -126,6 +282,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.4;
         }
 
         /* 聊天区域 */
@@ -134,43 +291,126 @@
             display: flex;
             flex-direction: column;
             background: #fafbfc;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
         .chat-header {
-            padding: 20px;
+            padding: 18px 24px;
             background: white;
-            border-bottom: 1px solid #e0e4e8;
+            border-bottom: 2px solid #e8eaf6;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .chat-title-wrapper {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            margin-bottom: 8px;
         }
 
         .chat-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: #f5f7fb;
+            border: 1px solid #e0e4e8;
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon-btn:hover {
+            background: #e8eaf6;
+            border-color: #667eea;
+        }
+
+        .chat-info {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .chat-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f5f7fb;
+            padding: 4px 10px;
+            border-radius: 10px;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            overflow-x: hidden;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .date-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .date-divider::before,
+        .date-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+
+        .date-divider::before { left: 0; }
+        .date-divider::after { right: 0; }
+
+        .date-divider span {
+            background: #e8eaf6;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
         }
 
         .message {
             display: flex;
-            gap: 10px;
-            max-width: 70%;
-            animation: slideIn 0.3s ease;
+            gap: 12px;
+            max-width: 75%;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(16px);
             }
             to {
                 opacity: 1;
@@ -183,11 +423,33 @@
             flex-direction: row-reverse;
         }
 
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
         .message-content {
             background: white;
-            padding: 12px 16px;
-            border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 14px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: relative;
+            max-width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .message-content:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
 
         .message.sent .message-content {
@@ -195,33 +457,67 @@
             color: white;
         }
 
+        .message-sender {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            opacity: 0.9;
+        }
+
         .message-text {
             word-wrap: break-word;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 14px;
         }
 
         .message-media {
             max-width: 100%;
+            max-height: 400px;
+            border-radius: 16px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .message-media:hover {
+            transform: scale(1.02);
+        }
+
+        .message-file {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0,0,0,0.05);
             border-radius: 12px;
             margin-top: 8px;
         }
 
+        .message.sent .message-file {
+            background: rgba(255,255,255,0.15);
+        }
+
         .message-time {
             font-size: 11px;
-            opacity: 0.6;
-            margin-top: 4px;
+            opacity: 0.65;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         /* 输入区域 */
         .chat-input {
-            padding: 20px;
+            padding: 20px 24px;
             background: white;
-            border-top: 1px solid #e0e4e8;
+            border-top: 2px solid #e8eaf6;
+            flex-shrink: 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
         }
 
         .input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: flex-end;
         }
 
@@ -229,44 +525,54 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         #messageInput {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 20px;
             border: 2px solid #e0e4e8;
-            border-radius: 24px;
-            font-size: 14px;
+            border-radius: 28px;
+            font-size: 15px;
             font-family: inherit;
             resize: none;
-            max-height: 120px;
-            transition: all 0.3s;
+            max-height: 140px;
+            transition: all 0.3s ease;
+            line-height: 1.5;
         }
 
         #messageInput:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .file-input-wrapper {
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .file-label {
-            padding: 8px 16px;
-            background: #f5f7fb;
-            border-radius: 20px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e8eaf6 100%);
+            border-radius: 24px;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.3s;
-            border: 1px solid #e0e4e8;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .file-label:hover {
-            background: #e8eaf6;
+            background: linear-gradient(135deg, #e8eaf6 0%, #d5d9f2 100%);
             border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
 
         .file-input {
@@ -274,64 +580,98 @@
         }
 
         .send-btn {
-            padding: 12px 28px;
+            padding: 14px 32px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 24px;
+            border-radius: 28px;
             cursor: pointer;
             font-size: 15px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            will-change: transform;
         }
 
         .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
         }
 
         .send-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .contacts-panel {
-                position: absolute;
-                left: -320px;
-                width: 280px;
+                position: fixed;
+                left: -100%;
+                width: 90%;
+                max-width: 340px;
                 height: 100vh;
                 z-index: 1000;
-                transition: left 0.3s;
-                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+                transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 20px rgba(0,0,0,0.3);
             }
 
             .contacts-panel.show {
                 left: 0;
             }
 
+            .chat-panel {
+                width: 100%;
+            }
+
             .message {
-                max-width: 85%;
+                max-width: 88%;
+            }
+
+            .chat-header {
+                padding-left: 70px;
             }
 
             .chat-input {
-                padding: 15px;
+                padding: 16px;
             }
 
             .input-wrapper {
                 flex-direction: column;
+                align-items: stretch;
             }
 
             .send-btn {
                 width: 100%;
+                justify-content: center;
+                padding: 16px;
+            }
+
+            .file-label {
+                flex: 1;
+                justify-content: center;
             }
         }
 
-        /* 加载动画 */
-        .loading {
+        /* 加载和空状态 */
+        .loading, .empty-state {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             color: #999;
         }
 
@@ -339,10 +679,10 @@
             border: 3px solid #f3f3f3;
             border-top: 3px solid #667eea;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
@@ -350,41 +690,120 @@
             100% { transform: rotate(360deg); }
         }
 
+        .empty-state h3 {
+            margin-bottom: 12px;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #999;
+        }
+
         /* 滚动条样式 */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+        }
+
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 打字指示器 */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
+    <!-- 移动端菜单按钮 -->
+    <button class="mobile-menu-btn" onclick="app.toggleSidebar()" aria-label="打开菜单">
+        ☰
+    </button>
+
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay" onclick="app.toggleSidebar()"></div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
     <div class="container">
         <!-- 联系人列表 -->
-        <div class="contacts-panel">
+        <div class="contacts-panel" id="contactsPanel">
             <div class="panel-header">
-                <h2>📱 聊天列表</h2>
-                <button class="refresh-btn" onclick="app.refreshContacts()">刷新</button>
+                <h2>💬 聊天</h2>
+                <button class="refresh-btn" onclick="app.refreshContacts()">
+                    🔄 刷新
+                </button>
             </div>
             <div class="status-bar">
-                <span class="status-indicator"></span>
-                <span id="statusText">机器人运行中</span>
+                <div class="status-left">
+                    <span class="status-indicator"></span>
+                    <span id="statusText">运行中</span>
+                </div>
+                <span id="contactCount">0 个对话</span>
+            </div>
+            <div class="bot-info" id="botInfo">
+                <span>🤖</span>
+                <span>加载机器人信息...</span>
             </div>
             <div class="contacts-list" id="contactsList">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>加载中...</p>
+                    <p>正在加载对话列表...</p>
                 </div>
             </div>
         </div>
@@ -392,38 +811,51 @@
         <!-- 聊天区域 -->
         <div class="chat-panel">
             <div class="chat-header">
-                <div class="chat-title" id="chatTitle">选择一个聊天</div>
-                <button class="refresh-btn" onclick="app.refreshMessages()">刷新消息</button>
+                <div class="chat-title-wrapper">
+                    <div class="chat-title" id="chatTitle">选择一个对话开始聊天</div>
+                    <div class="chat-actions">
+                        <button class="icon-btn" onclick="app.refreshMessages()" title="刷新消息">
+                            🔄 刷新
+                        </button>
+                        <button class="icon-btn" onclick="app.scrollToBottom()" title="滚动到底部">
+                            ⬇️ 底部
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-info" id="chatInfo"></div>
             </div>
             <div class="chat-messages" id="chatMessages">
-                <div style="text-align: center; color: #999; padding: 40px;">
-                    <h3>👈 请从左侧选择一个联系人开始聊天</h3>
+                <div class="empty-state">
+                    <h3>👋 欢迎使用 Telegram Bot</h3>
+                    <p>从左侧列表选择一个对话开始聊天</p>
                 </div>
             </div>
             <div class="chat-input">
                 <div class="input-wrapper">
                     <div class="input-box">
-                        <textarea id="messageInput" placeholder="输入消息..." rows="2"></textarea>
+                        <textarea id="messageInput" placeholder="输入消息... (按 Enter 发送，Shift + Enter 换行)" rows="2"></textarea>
                         <div class="file-input-wrapper">
-                            <label class="file-label">
+                            <label class="file-label" title="发送图片">
                                 📷 图片
                                 <input type="file" class="file-input" accept="image/*" onchange="app.handleFile(this, 'photo')">
                             </label>
-                            <label class="file-label">
+                            <label class="file-label" title="发送视频">
                                 🎥 视频
                                 <input type="file" class="file-input" accept="video/*" onchange="app.handleFile(this, 'video')">
                             </label>
-                            <label class="file-label">
+                            <label class="file-label" title="发送音频">
                                 🎵 音频
                                 <input type="file" class="file-input" accept="audio/*" onchange="app.handleFile(this, 'audio')">
                             </label>
-                            <label class="file-label">
+                            <label class="file-label" title="发送文件">
                                 📎 文件
                                 <input type="file" class="file-input" onchange="app.handleFile(this, 'document')">
                             </label>
                         </div>
                     </div>
-                    <button class="send-btn" onclick="app.sendMessage()">发送</button>
+                    <button class="send-btn" id="sendBtn" onclick="app.sendMessage()">
+                        ✉️ 发送
+                    </button>
                 </div>
             </div>
         </div>
@@ -440,20 +872,60 @@
             updateOffset: 0,
             contacts: new Map(),
             messages: new Map(),
+            botInfo: null,
+            lastMessageDate: null,
 
             async init() {
+                await this.getBotInfo();
                 await this.loadUpdates();
                 this.startPolling();
                 this.setupEnterKey();
+                this.setupInputAutoResize();
+            },
+
+            // 获取机器人信息
+            async getBotInfo() {
+                try {
+                    this.botInfo = await this.apiCall('getMe');
+                    document.getElementById('botInfo').innerHTML = `
+                        <span>🤖</span>
+                        <span><strong>${this.escapeHtml(this.botInfo.first_name)}</strong> (@${this.botInfo.username})</span>
+                    `;
+                } catch (error) {
+                    console.error('获取机器人信息失败:', error);
+                }
             },
 
             setupEnterKey() {
-                document.getElementById('messageInput').addEventListener('keydown', (e) => {
+                const input = document.getElementById('messageInput');
+                input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         this.sendMessage();
                     }
                 });
+            },
+
+            setupInputAutoResize() {
+                const input = document.getElementById('messageInput');
+                input.addEventListener('input', () => {
+                    input.style.height = 'auto';
+                    input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+                });
+            },
+
+            toggleSidebar() {
+                const panel = document.getElementById('contactsPanel');
+                const overlay = document.getElementById('overlay');
+                panel.classList.toggle('show');
+                overlay.classList.toggle('show');
+            },
+
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
             },
 
             async apiCall(method, params = {}) {
@@ -485,10 +957,14 @@
                     this.renderContacts();
                     if (this.currentChatId) {
                         this.renderMessages();
+                        this.updateChatInfo();
                     }
+                    
+                    document.getElementById('statusText').textContent = '运行中';
                 } catch (error) {
                     console.error('加载更新失败:', error);
                     document.getElementById('statusText').textContent = '连接失败';
+                    this.showToast('❌ 连接失败，请检查网络');
                 }
             },
 
@@ -496,13 +972,16 @@
                 const chatId = message.chat.id;
                 const chatName = message.chat.title || 
                                `${message.chat.first_name || ''} ${message.chat.last_name || ''}`.trim() ||
-                               'Unknown';
+                               'Unknown User';
 
                 if (!this.contacts.has(chatId)) {
                     this.contacts.set(chatId, {
                         id: chatId,
                         name: chatName,
+                        username: message.chat.username || '',
                         type: message.chat.type,
+                        firstName: message.chat.first_name || '',
+                        lastName: message.chat.last_name || '',
                         lastMessage: '',
                         lastTime: 0
                     });
@@ -512,7 +991,11 @@
                     this.messages.set(chatId, []);
                 }
 
-                this.messages.get(chatId).push(message);
+                // 避免重复添加消息
+                const existingMessages = this.messages.get(chatId);
+                if (!existingMessages.find(m => m.message_id === message.message_id)) {
+                    existingMessages.push(message);
+                }
                 
                 const contact = this.contacts.get(chatId);
                 contact.lastMessage = message.text || '[媒体文件]';
@@ -524,26 +1007,78 @@
                 const sortedContacts = Array.from(this.contacts.values())
                     .sort((a, b) => b.lastTime - a.lastTime);
 
+                document.getElementById('contactCount').textContent = `${sortedContacts.length} 个对话`;
+
                 if (sortedContacts.length === 0) {
-                    container.innerHTML = '<div class="loading"><p>暂无聊天记录</p></div>';
+                    container.innerHTML = '<div class="empty-state"><p>暂无对话记录</p></div>';
                     return;
                 }
 
-                container.innerHTML = sortedContacts.map(contact => `
-                    <div class="contact-item ${this.currentChatId === contact.id ? 'active' : ''}" 
-                         onclick="app.selectChat(${contact.id})">
-                        <div class="contact-name">${this.escapeHtml(contact.name)}</div>
-                        <div class="contact-preview">${this.escapeHtml(contact.lastMessage)}</div>
-                    </div>
-                `).join('');
+                const typeEmoji = {
+                    'private': '👤 私聊',
+                    'group': '👥 群组',
+                    'supergroup': '👥 超级群组',
+                    'channel': '📢 频道'
+                };
+
+                container.innerHTML = sortedContacts.map(contact => {
+                    const time = new Date(contact.lastTime * 1000);
+                    const timeStr = this.formatTime(time);
+                    
+                    return `
+                        <div class="contact-item ${this.currentChatId === contact.id ? 'active' : ''}" 
+                             onclick="app.selectChat(${contact.id})">
+                            <div class="contact-header">
+                                <div class="contact-name">${this.escapeHtml(contact.name)}</div>
+                                <div class="contact-id">${contact.id}</div>
+                            </div>
+                            <div class="contact-meta">
+                                <span class="contact-type">${typeEmoji[contact.type] || contact.type}</span>
+                                <span class="contact-time">${timeStr}</span>
+                            </div>
+                            <div class="contact-preview">${this.escapeHtml(contact.lastMessage)}</div>
+                        </div>
+                    `;
+                }).join('');
             },
 
             selectChat(chatId) {
                 this.currentChatId = chatId;
                 const contact = this.contacts.get(chatId);
                 document.getElementById('chatTitle').textContent = contact.name;
+                this.updateChatInfo();
                 this.renderMessages();
                 this.renderContacts();
+                
+                if (window.innerWidth <= 768) {
+                    this.toggleSidebar();
+                }
+            },
+
+            updateChatInfo() {
+                const contact = this.contacts.get(this.currentChatId);
+                if (!contact) return;
+
+                const typeEmoji = {
+                    'private': '👤',
+                    'group': '👥',
+                    'supergroup': '👥',
+                    'channel': '📢'
+                };
+
+                const infoItems = [
+                    `<span>🆔 ${contact.id}</span>`,
+                    `<span>${typeEmoji[contact.type] || ''} ${contact.type}</span>`
+                ];
+
+                if (contact.username) {
+                    infoItems.push(`<span>👤 @${contact.username}</span>`);
+                }
+
+                const messageCount = this.messages.get(this.currentChatId)?.length || 0;
+                infoItems.push(`<span>💬 ${messageCount} 条消息</span>`);
+
+                document.getElementById('chatInfo').innerHTML = infoItems.join('');
             },
 
             renderMessages() {
@@ -551,47 +1086,83 @@
                 const messages = this.messages.get(this.currentChatId) || [];
 
                 if (messages.length === 0) {
-                    container.innerHTML = '<div class="loading"><p>暂无消息</p></div>';
+                    container.innerHTML = '<div class="empty-state"><p>暂无消息</p></div>';
                     return;
                 }
 
-                container.innerHTML = messages.map(msg => {
+                let html = '';
+                let lastDate = null;
+
+                messages.forEach(msg => {
+                    const msgDate = new Date(msg.date * 1000);
+                    const dateStr = msgDate.toLocaleDateString('zh-CN');
+                    
+                    if (dateStr !== lastDate) {
+                        html += `
+                            <div class="date-divider">
+                                <span>${this.formatDate(msgDate)}</span>
+                            </div>
+                        `;
+                        lastDate = dateStr;
+                    }
+
                     const isSent = msg.from?.is_bot;
-                    const time = new Date(msg.date * 1000).toLocaleTimeString('zh-CN', {
+                    const time = msgDate.toLocaleTimeString('zh-CN', {
                         hour: '2-digit',
                         minute: '2-digit'
                     });
 
+                    const senderName = msg.from?.first_name || 'Unknown';
+                    const initial = senderName.charAt(0).toUpperCase();
+
                     let mediaHtml = '';
                     if (msg.photo) {
                         const photo = msg.photo[msg.photo.length - 1];
-                        mediaHtml = `<img src="https://api.telegram.org/file/bot${getToken()}/${photo.file_path}" class="message-media">`;
+                        mediaHtml = `<img src="https://api.telegram.org/file/bot${getToken()}/${photo.file_path}" class="message-media" alt="图片" loading="lazy">`;
                     } else if (msg.video) {
-                        mediaHtml = `<video controls class="message-media"><source src="https://api.telegram.org/file/bot${getToken()}/${msg.video.file_path}"></video>`;
+                        mediaHtml = `<video controls class="message-media" preload="metadata"><source src="https://api.telegram.org/file/bot${getToken()}/${msg.video.file_path}"></video>`;
                     } else if (msg.voice || msg.audio) {
                         const audio = msg.voice || msg.audio;
                         mediaHtml = `<audio controls class="message-media"><source src="https://api.telegram.org/file/bot${getToken()}/${audio.file_path}"></audio>`;
                     } else if (msg.document) {
-                        mediaHtml = `<div>📎 ${msg.document.file_name}</div>`;
+                        mediaHtml = `
+                            <div class="message-file">
+                                <span style="font-size: 24px;">📄</span>
+                                <span>${this.escapeHtml(msg.document.file_name)}</span>
+                            </div>
+                        `;
                     }
 
-                    return `
+                    html += `
                         <div class="message ${isSent ? 'sent' : 'received'}">
+                            <div class="message-avatar">${initial}</div>
                             <div class="message-content">
+                                ${!isSent ? `<div class="message-sender">${this.escapeHtml(senderName)}</div>` : ''}
                                 ${msg.text ? `<div class="message-text">${this.escapeHtml(msg.text)}</div>` : ''}
                                 ${mediaHtml}
-                                <div class="message-time">${time}</div>
+                                <div class="message-time">⏰ ${time}</div>
                             </div>
                         </div>
                     `;
-                }).join('');
+                });
 
-                container.scrollTop = container.scrollHeight;
+                container.innerHTML = html;
+                this.scrollToBottom();
+            },
+
+            scrollToBottom() {
+                const container = document.getElementById('chatMessages');
+                setTimeout(() => {
+                    container.scrollTo({
+                        top: container.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             },
 
             async sendMessage() {
                 if (!this.currentChatId) {
-                    alert('请先选择一个聊天');
+                    this.showToast('⚠️ 请先选择一个对话');
                     return;
                 }
 
@@ -600,6 +1171,10 @@
 
                 if (!text) return;
 
+                const sendBtn = document.getElementById('sendBtn');
+                sendBtn.disabled = true;
+                sendBtn.textContent = '发送中...';
+
                 try {
                     await this.apiCall('sendMessage', {
                         chat_id: this.currentChatId,
@@ -607,15 +1182,20 @@
                     });
 
                     input.value = '';
+                    input.style.height = 'auto';
                     await this.loadUpdates();
+                    this.showToast('✅ 发送成功');
                 } catch (error) {
-                    alert('发送失败: ' + error.message);
+                    this.showToast('❌ 发送失败: ' + error.message);
+                } finally {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '✉️ 发送';
                 }
             },
 
             async handleFile(input, type) {
                 if (!this.currentChatId) {
-                    alert('请先选择一个聊天');
+                    this.showToast('⚠️ 请先选择一个对话');
                     input.value = '';
                     return;
                 }
@@ -627,14 +1207,16 @@
                 formData.append('chat_id', this.currentChatId);
                 formData.append(type, file);
 
-                try {
-                    const methodMap = {
-                        'photo': 'sendPhoto',
-                        'video': 'sendVideo',
-                        'audio': 'sendAudio',
-                        'document': 'sendDocument'
-                    };
+                const methodMap = {
+                    'photo': 'sendPhoto',
+                    'video': 'sendVideo',
+                    'audio': 'sendAudio',
+                    'document': 'sendDocument'
+                };
 
+                this.showToast('📤 正在上传...');
+
+                try {
                     const response = await fetch(`${this.apiBase}${getToken()}/${methodMap[type]}`, {
                         method: 'POST',
                         body: formData
@@ -645,23 +1227,53 @@
 
                     input.value = '';
                     await this.loadUpdates();
+                    this.showToast('✅ 文件发送成功');
                 } catch (error) {
-                    alert('文件发送失败: ' + error.message);
+                    this.showToast('❌ 文件发送失败: ' + error.message);
                 }
             },
 
             async refreshContacts() {
+                this.showToast('🔄 刷新中...');
                 await this.loadUpdates();
+                this.showToast('✅ 刷新完成');
             },
 
             async refreshMessages() {
                 if (this.currentChatId) {
+                    this.showToast('🔄 刷新消息...');
                     await this.loadUpdates();
+                    this.showToast('✅ 刷新完成');
                 }
             },
 
             startPolling() {
                 setInterval(() => this.loadUpdates(), 3000);
+            },
+
+            formatTime(date) {
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                if (minutes < 1) return '刚刚';
+                if (minutes < 60) return `${minutes}分钟前`;
+                if (hours < 24) return `${hours}小时前`;
+                if (days < 7) return `${days}天前`;
+                return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+            },
+
+            formatDate(date) {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const yesterday = new Date(today - 86400000);
+                const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+                if (msgDate.getTime() === today.getTime()) return '今天';
+                if (msgDate.getTime() === yesterday.getTime()) return '昨天';
+                return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
             },
 
             escapeHtml(text) {
@@ -671,7 +1283,6 @@
             }
         };
 
-        // 启动应用
         window.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
