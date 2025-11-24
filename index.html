@@ -36,7 +36,7 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 100;
-            min-height: 60px;
+            flex-shrink: 0;
         }
 
         .bot-info {
@@ -104,6 +104,7 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            position: relative;
         }
 
         /* 左侧边栏 */
@@ -120,6 +121,7 @@
         .sidebar-header {
             padding: 15px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
         }
 
         .search-box {
@@ -154,9 +156,8 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .add-contact-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .add-contact-btn:active {
+            transform: scale(0.98);
         }
 
         .conversations-list {
@@ -178,10 +179,9 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
 
-        .conversation-item:hover {
+        .conversation-item:active {
             background: rgba(255, 255, 255, 0.95);
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: scale(0.98);
         }
 
         .conversation-item.active {
@@ -238,7 +238,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            min-height: 60px;
+            flex-shrink: 0;
         }
 
         .back-btn {
@@ -256,6 +256,7 @@
 
         .back-btn:active {
             background: rgba(102, 126, 234, 0.2);
+            transform: scale(0.95);
         }
 
         .chat-user-name {
@@ -327,7 +328,6 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* 媒体预览样式 */
         .message-media {
             max-width: 100%;
             border-radius: 12px;
@@ -363,16 +363,12 @@
             transition: all 0.3s;
         }
 
-        .message-document:hover {
+        .message-document:active {
             background: rgba(0, 0, 0, 0.08);
         }
 
         .message.sent .message-document {
             background: rgba(255, 255, 255, 0.2);
-        }
-
-        .message.sent .message-document:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .document-icon {
@@ -398,19 +394,13 @@
             opacity: 0.7;
         }
 
-        .media-loading {
-            text-align: center;
-            padding: 20px;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
         /* 输入区域 */
         .input-area {
             padding: 15px 20px;
             background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
         }
 
         .input-container {
@@ -459,13 +449,9 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .media-btn:hover {
+        .media-btn:active {
             background: #667eea;
             color: white;
-            transform: translateY(-2px);
-        }
-
-        .media-btn:active {
             transform: scale(0.95);
         }
 
@@ -481,11 +467,6 @@
             font-size: 18px;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             flex-shrink: 0;
-        }
-
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         .send-btn:active {
@@ -578,8 +559,8 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
+        .modal-btn-primary:active {
+            transform: scale(0.98);
         }
 
         .modal-btn-secondary {
@@ -695,14 +676,14 @@
                 border-radius: 50%;
             }
 
-            /* 移动端布局切换 */
+            /* 移动端布局 - 关键修复 */
             .sidebar {
-                position: fixed;
+                position: absolute;
                 left: 0;
-                top: 60px;
+                top: 0;
                 bottom: 0;
                 width: 100%;
-                z-index: 99;
+                z-index: 10;
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
@@ -710,12 +691,25 @@
                 transform: translateX(-100%);
             }
 
-            .chat-area.hidden {
-                display: none;
+            .chat-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                z-index: 5;
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .chat-area.show {
+                transform: translateX(0);
             }
 
             .back-btn {
                 display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .chat-header {
@@ -727,7 +721,7 @@
             }
 
             .message-content {
-                max-width: 80%;
+                max-width: 85%;
             }
 
             .input-area {
@@ -740,7 +734,25 @@
             }
 
             .message-input {
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+
+            .send-btn {
+                width: 44px;
+                height: 44px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .message-content {
+                max-width: 90%;
                 font-size: 13px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
             }
         }
     </style>
@@ -762,7 +774,7 @@
                     <span id="networkStatus">已连接</span>
                 </div>
                 <div class="status-indicator">
-                    <span>延迟: <strong id="latency">0ms</strong></span>
+                    <span><strong id="latency">0ms</strong></span>
                 </div>
             </div>
         </div>
@@ -786,7 +798,7 @@
             <!-- 聊天区域 -->
             <div class="chat-area" id="chatArea">
                 <div class="chat-header">
-                    <button class="back-btn" onclick="backToConversations()">◀</button>
+                    <button class="back-btn" id="backBtn" onclick="backToConversations()">◀</button>
                     <div class="chat-user-name" id="chatUserName">选择一个对话开始聊天</div>
                 </div>
                 <div class="messages-container" id="messagesContainer">
@@ -800,14 +812,14 @@
                         <textarea 
                             class="message-input" 
                             id="messageInput" 
-                            placeholder="输入消息... (Enter 发送)"
+                            placeholder="输入消息..."
                             rows="1"
                         ></textarea>
                         <div class="media-buttons">
-                            <button class="media-btn" onclick="selectFile('photo')" title="发送图片">📷</button>
-                            <button class="media-btn" onclick="selectFile('video')" title="发送视频">🎥</button>
-                            <button class="media-btn" onclick="selectFile('audio')" title="发送音频">🎵</button>
-                            <button class="media-btn" onclick="selectFile('document')" title="发送文件">📎</button>
+                            <button class="media-btn" onclick="selectFile('photo')" title="图片">📷</button>
+                            <button class="media-btn" onclick="selectFile('video')" title="视频">🎥</button>
+                            <button class="media-btn" onclick="selectFile('audio')" title="音频">🎵</button>
+                            <button class="media-btn" onclick="selectFile('document')" title="文件">📎</button>
                         </div>
                         <button class="send-btn" onclick="sendMessage()">📤</button>
                     </div>
@@ -951,17 +963,14 @@
                 from: 'received'
             };
 
-            // 处理不同类型的媒体
             if (message.photo && message.photo.length > 0) {
                 msgData.photo = message.photo[message.photo.length - 1].file_id;
             }
             if (message.video) {
                 msgData.video = message.video.file_id;
-                msgData.videoName = message.video.file_name || 'video.mp4';
             }
             if (message.audio) {
                 msgData.audio = message.audio.file_id;
-                msgData.audioName = message.audio.file_name || 'audio.mp3';
             }
             if (message.document) {
                 msgData.document = message.document.file_id;
@@ -1048,9 +1057,10 @@
             const conv = conversations[chatId];
             document.getElementById('chatUserName').textContent = conv.note || conv.name;
             
+            // 移动端切换界面
             if (isMobile) {
                 document.getElementById('sidebar').classList.add('hidden');
-                document.getElementById('chatArea').classList.remove('hidden');
+                document.getElementById('chatArea').classList.add('show');
             }
             
             renderConversations();
@@ -1059,10 +1069,9 @@
 
         // 返回对话列表（移动端）
         function backToConversations() {
-            if (isMobile) {
-                document.getElementById('sidebar').classList.remove('hidden');
-                document.getElementById('chatArea').classList.add('hidden');
-            }
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('chatArea').classList.remove('show');
+            currentChatId = null;
         }
 
         // 渲染消息
@@ -1074,7 +1083,7 @@
                 messagesContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">💬</div>
-                        <div class="empty-state-text">暂无消息</div>
+                        <div class="empty-state-text">暂无消息，发送一条消息开始聊天</div>
                     </div>
                 `;
                 return;
@@ -1093,7 +1102,6 @@
                 
                 let mediaHtml = '';
                 
-                // 图片预览
                 if (msg.photo) {
                     const url = await getFileUrl(msg.photo);
                     if (url) {
@@ -1101,23 +1109,20 @@
                     }
                 }
                 
-                // 视频预览
                 if (msg.video) {
                     const url = await getFileUrl(msg.video);
                     if (url) {
-                        mediaHtml = `<video controls class="message-media video"><source src="${url}" type="video/mp4">您的浏览器不支持视频播放</video>`;
+                        mediaHtml = `<video controls class="message-media video"><source src="${url}" type="video/mp4"></video>`;
                     }
                 }
                 
-                // 音频预览
                 if (msg.audio) {
                     const url = await getFileUrl(msg.audio);
                     if (url) {
-                        mediaHtml = `<audio controls class="message-media audio"><source src="${url}" type="audio/mpeg">您的浏览器不支持音频播放</audio>`;
+                        mediaHtml = `<audio controls class="message-media audio"><source src="${url}"></audio>`;
                     }
                 }
                 
-                // 文档预览
                 if (msg.document) {
                     const url = await getFileUrl(msg.document);
                     if (url) {
@@ -1236,7 +1241,6 @@
                 
                 const data = await response.json();
                 if (data.ok) {
-                    // 添加到消息列表
                     const msgData = {
                         id: data.result.message_id,
                         text: '',
@@ -1248,10 +1252,8 @@
                         msgData.photo = data.result.photo[data.result.photo.length - 1].file_id;
                     } else if (type === 'video' && data.result.video) {
                         msgData.video = data.result.video.file_id;
-                        msgData.videoName = file.name;
                     } else if (type === 'audio' && data.result.audio) {
                         msgData.audio = data.result.audio.file_id;
-                        msgData.audioName = file.name;
                     } else if (type === 'document' && data.result.document) {
                         msgData.document = data.result.document.file_id;
                         msgData.documentName = file.name;
