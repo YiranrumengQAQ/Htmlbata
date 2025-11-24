@@ -240,6 +240,13 @@
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
             font-size: 16px;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .conversation-info {
@@ -758,10 +765,13 @@
             font-weight: 500;
         }
 
-        .avatar-upload-container {
+        .avatar-display {
             display: flex;
             align-items: center;
             gap: 15px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 12px;
         }
 
         .avatar-preview {
@@ -785,29 +795,20 @@
             object-fit: cover;
         }
 
-        .upload-avatar-btn {
+        .avatar-info {
             flex: 1;
-            padding: 10px 16px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px dashed rgba(59, 130, 246, 0.3);
-            border-radius: 12px;
-            color: #3b82f6;
+        }
+
+        .avatar-info-title {
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
+            margin-bottom: 6px;
+            color: #1f1f1f;
         }
 
-        .upload-avatar-btn:hover {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: #3b82f6;
-        }
-
-        .sync-avatar-note {
-            font-size: 11px;
+        .avatar-info-text {
+            font-size: 12px;
             color: #6b7280;
-            margin-top: 6px;
-            font-style: italic;
+            line-height: 1.6;
         }
 
         /* ==================== 响应式设计 - 移动端 ==================== */
@@ -1030,13 +1031,13 @@
                 </div>
                 <div class="bot-info-section">
                     <div class="bot-info-label">机器人头像</div>
-                    <div class="avatar-upload-container">
+                    <div class="avatar-display">
                         <div class="avatar-preview" id="avatarPreview">🤖</div>
-                        <button class="upload-avatar-btn" id="uploadAvatarBtn">
-                            📷 点击上传头像图片
-                        </button>
+                        <div class="avatar-info">
+                            <div class="avatar-info-title">✅ 自动同步</div>
+                            <div class="avatar-info-text">机器人和联系人头像已自动从 Telegram 同步。</div>
+                        </div>
                     </div>
-                    <div class="sync-avatar-note">💡 头像已自动与 Telegram 同步</div>
                 </div>
                 <div class="bot-info-section">
                     <div class="bot-info-label">机器人用户名</div>
@@ -1067,7 +1068,6 @@
     <input type="file" class="file-input" id="photoInput" accept="image/*">
     <input type="file" class="file-input" id="videoInput" accept="video/*">
     <input type="file" class="file-input" id="fileInput" accept="*/*">
-    <input type="file" class="file-input" id="avatarInput" accept="image/*">
 
     <script>
         const botToken = '8259752323:AAEpaX-A3Ci2niG4DUdtZjubxL7Bmkba4Dc';
@@ -1085,10 +1085,8 @@
         let isMobile = window.innerWidth <= 768;
         let botSettings = {
             name: '',
-            avatar: '🤖',
-            avatarImage: '',
-            username: '',
-            botId: null
+            avatarUrl: null,
+            username: ''
         };
 
         function initFileInputs() {
@@ -1147,35 +1145,19 @@
                 }
                 e.target.value = '';
             });
-            
-            document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
-                document.getElementById('avatarInput').click();
-            });
-            
-            document.getElementById('avatarInput').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        botSettings.avatarImage = event.target.result;
-                        updateAvatarPreview();
-                    };
-                    reader.readAsDataURL(file);
-                }
-                e.target.value = '';
-            });
         }
 
-        // 获取机器人头像
-        async function getBotAvatar(botId) {
+        // 获取用户头像
+        async function getUserAvatar(userId) {
             try {
                 const response = await fetch(
-                    `https://api.telegram.org/bot${botToken}/getUserProfilePhotos?user_id=${botId}&limit=1`
+                    `https://api.telegram.org/bot${botToken}/getUserProfilePhotos?user_id=${userId}&limit=1`
                 );
                 const data = await response.json();
                 
                 if (data.ok && data.result.photos && data.result.photos.length > 0) {
-                    const photo = data.result.photos[0][0]; // 获取最小尺寸的头像
+                    const photo = data.result.photos[0][data.result.photos[0].length - 1];
+                    
                     const fileResponse = await fetch(
                         `https://api.telegram.org/bot${botToken}/getFile?file_id=${photo.file_id}`
                     );
@@ -1183,21 +1165,50 @@
                     
                     if (fileData.ok) {
                         const avatarUrl = `https://api.telegram.org/file/bot${botToken}/${fileData.result.file_path}`;
-                        
-                        // 将头像转换为 base64 并保存
-                        const imgResponse = await fetch(avatarUrl);
-                        const blob = await imgResponse.blob();
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                            botSettings.avatarImage = reader.result;
-                            saveBotSettingsToStorage();
-                            applyBotSettings();
-                        };
-                        reader.readAsDataURL(blob);
+                        return avatarUrl;
+                    }
+                }
+            } catch (error) {
+                console.error('获取用户头像失败:', userId, error);
+            }
+            return null;
+        }
+
+        // 获取机器人头像
+        async function getBotProfilePhoto() {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
+                const data = await response.json();
+                
+                if (data.ok && data.result) {
+                    const botId = data.result.id;
+                    const avatarUrl = await getUserAvatar(botId);
+                    if (avatarUrl) {
+                        botSettings.avatarUrl = avatarUrl;
+                        saveBotSettingsToStorage();
+                        updateBotAvatar();
+                        console.log('✅ 机器人头像已同步');
                     }
                 }
             } catch (error) {
                 console.error('获取机器人头像失败:', error);
+            }
+        }
+
+        function updateBotAvatar() {
+            const topAvatar = document.getElementById('botAvatar');
+            const previewAvatar = document.getElementById('avatarPreview');
+            
+            if (botSettings.avatarUrl) {
+                topAvatar.innerHTML = `<img src="${botSettings.avatarUrl}" alt="机器人头像">`;
+                if (previewAvatar) {
+                    previewAvatar.innerHTML = `<img src="${botSettings.avatarUrl}" alt="机器人头像">`;
+                }
+            } else {
+                topAvatar.textContent = '🤖';
+                if (previewAvatar) {
+                    previewAvatar.textContent = '🤖';
+                }
             }
         }
 
@@ -1216,19 +1227,6 @@
                 saveToStorage();
                 closeClearChatModal();
                 alert('聊天记录已清空！');
-            }
-        }
-
-        function updateAvatarPreview() {
-            const preview = document.getElementById('avatarPreview');
-            const topAvatar = document.getElementById('botAvatar');
-            
-            if (botSettings.avatarImage) {
-                preview.innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
-                topAvatar.innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
-            } else {
-                preview.textContent = botSettings.avatar;
-                topAvatar.textContent = botSettings.avatar;
             }
         }
 
@@ -1283,8 +1281,12 @@
             try {
                 const saved = localStorage.getItem(BOT_SETTINGS_KEY);
                 if (saved) {
-                    botSettings = JSON.parse(saved);
-                    applyBotSettings();
+                    const savedSettings = JSON.parse(saved);
+                    botSettings = { ...botSettings, ...savedSettings };
+                    updateBotAvatar();
+                    if (botSettings.name) {
+                        document.getElementById('botUsername').textContent = botSettings.name;
+                    }
                 }
             } catch (error) {
                 console.error('加载设置失败:', error);
@@ -1296,17 +1298,6 @@
                 localStorage.setItem(BOT_SETTINGS_KEY, JSON.stringify(botSettings));
             } catch (error) {
                 console.error('保存设置失败:', error);
-            }
-        }
-
-        function applyBotSettings() {
-            if (botSettings.avatarImage) {
-                document.getElementById('botAvatar').innerHTML = `<img src="${botSettings.avatarImage}" alt="头像">`;
-            } else if (botSettings.avatar) {
-                document.getElementById('botAvatar').textContent = botSettings.avatar;
-            }
-            if (botSettings.name) {
-                document.getElementById('botUsername').textContent = botSettings.name;
             }
         }
 
@@ -1347,19 +1338,17 @@
                 const data = await response.json();
                 if (data.ok) {
                     botSettings.username = '@' + data.result.username;
-                    botSettings.botId = data.result.id;
                     
                     if (!botSettings.name) {
                         botSettings.name = data.result.first_name || '@' + data.result.username;
                     }
-                    if (!botSettings.avatarImage) {
-                        // 获取机器人头像
-                        await getBotAvatar(data.result.id);
-                    }
                     
-                    applyBotSettings();
+                    document.getElementById('botUsername').textContent = botSettings.name;
                     document.getElementById('latency').textContent = latency + 'ms';
                     document.getElementById('networkStatus').textContent = '已连接';
+                    
+                    // 获取机器人头像
+                    await getBotProfilePhoto();
                     
                     addBuiltInAdmin();
                     startPolling();
@@ -1382,7 +1371,8 @@
                     note: '',
                     isAdmin: true,
                     lastMessageTime: Date.now(),
-                    messages: []
+                    messages: [],
+                    avatarUrl: null
                 };
             }
             renderConversations();
@@ -1404,12 +1394,12 @@
                 
                 const data = await response.json();
                 if (data.ok && data.result.length > 0) {
-                    data.result.forEach(update => {
+                    for (const update of data.result) {
                         if (update.message) {
-                            processMessage(update.message);
+                            await processMessage(update.message);
                         }
                         updateOffset = update.update_id + 1;
-                    });
+                    }
                     saveToStorage();
                 }
             } catch (error) {
@@ -1417,18 +1407,44 @@
             }
         }
 
-        function processMessage(message) {
+        async function processMessage(message) {
             const chatId = message.from.id.toString();
+            const fullName = message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : '');
+            const username = message.from.username ? '@' + message.from.username : '';
             
             if (!conversations[chatId]) {
                 conversations[chatId] = {
                     id: chatId,
-                    name: message.from.first_name + (message.from.last_name ? ' ' + message.from.last_name : ''),
+                    name: fullName,
+                    username: username,
                     note: '',
                     isAdmin: chatId === adminId,
                     lastMessageTime: message.date * 1000,
-                    messages: []
+                    messages: [],
+                    avatarUrl: null
                 };
+                
+                // 获取用户头像
+                const avatarUrl = await getUserAvatar(chatId);
+                if (avatarUrl) {
+                    conversations[chatId].avatarUrl = avatarUrl;
+                    console.log('✅ 已同步联系人头像:', fullName);
+                }
+            } else {
+                // 更新联系人名字（如果变了）
+                conversations[chatId].name = fullName;
+                if (username) {
+                    conversations[chatId].username = username;
+                }
+                
+                // 如果还没有头像，尝试获取
+                if (!conversations[chatId].avatarUrl) {
+                    const avatarUrl = await getUserAvatar(chatId);
+                    if (avatarUrl) {
+                        conversations[chatId].avatarUrl = avatarUrl;
+                        console.log('✅ 已同步联系人头像:', fullName);
+                    }
+                }
             }
             
             const msgData = {
@@ -1508,8 +1524,13 @@
                     minute: '2-digit'
                 });
                 
+                // 根据是否有头像显示不同内容
+                const avatarHtml = conv.avatarUrl 
+                    ? `<img src="${conv.avatarUrl}" alt="${displayName}">`
+                    : avatarLetter;
+                
                 div.innerHTML = `
-                    <div class="user-avatar">${avatarLetter}</div>
+                    <div class="user-avatar">${avatarHtml}</div>
                     <div class="conversation-info">
                         <div class="conversation-name">
                             ${displayName}
@@ -1528,7 +1549,6 @@
             const conv = conversations[chatId];
             document.getElementById('chatUserName').textContent = conv.note || conv.name;
             
-            // 显示清理按钮
             document.getElementById('clearChatBtn').style.display = 'flex';
             
             if (isMobile) {
@@ -1544,7 +1564,6 @@
             document.getElementById('sidebar').classList.remove('hidden');
             document.getElementById('chatArea').classList.remove('show');
             currentChatId = null;
-            // 隐藏清理按钮
             document.getElementById('clearChatBtn').style.display = 'none';
         }
 
@@ -1808,7 +1827,8 @@
                 note: note,
                 isAdmin: id === adminId,
                 lastMessageTime: Date.now(),
-                messages: []
+                messages: [],
+                avatarUrl: null
             };
             
             renderConversations();
@@ -1836,7 +1856,7 @@
                 document.getElementById('saveBtn').style.display = 'block';
                 
                 document.getElementById('botNameInput').value = botSettings.name;
-                updateAvatarPreview();
+                updateBotAvatar();
                 document.getElementById('botUsernameInput').value = botSettings.username;
             } else {
                 alert('密码错误！');
@@ -1845,8 +1865,7 @@
 
         function saveBotSettings() {
             botSettings.name = document.getElementById('botNameInput').value.trim() || botSettings.name;
-            
-            applyBotSettings();
+            document.getElementById('botUsername').textContent = botSettings.name;
             saveBotSettingsToStorage();
             closeBotSettingsModal();
             alert('设置已保存！');
