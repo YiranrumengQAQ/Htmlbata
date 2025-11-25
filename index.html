@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrix 客户端</title>
     <style>
+        /* 样式保持不变 - 此处省略，使用之前的完整样式 */
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +20,6 @@
             overflow: hidden;
         }
         
-        /* 登录界面 */
         #loginScreen {
             display: flex;
             justify-content: center;
@@ -197,13 +197,6 @@
             border: 1px solid #fca5a5;
         }
         
-        .example-text {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-        
-        /* 主界面样式 - 与之前相同 */
         #mainScreen {
             display: none;
             height: 100vh;
@@ -511,16 +504,14 @@
         <div class="login-box">
             <h1 class="login-title">Matrix 客户端</h1>
             <p class="login-subtitle">连接到去中心化的通讯网络</p>
-            <div class="status-text" id="loginStatus">准备就绪</div>
+            <div class="status-text" id="loginStatus">正在加载 SDK...</div>
             
             <form id="loginForm">
-                <!-- 登录方式切换 -->
                 <div class="login-method-toggle">
                     <button type="button" class="method-btn active" data-method="user">用户ID/用户名</button>
                     <button type="button" class="method-btn" data-method="email">邮箱</button>
                 </div>
                 
-                <!-- 用户标识符 -->
                 <div class="form-group">
                     <label id="identifierLabel">用户ID 或 用户名</label>
                     <div class="input-wrapper">
@@ -534,7 +525,6 @@
                     </div>
                 </div>
                 
-                <!-- 服务器地址 -->
                 <div class="form-group homeserver-group" id="homeserverGroup">
                     <label>服务器地址</label>
                     <input type="text" id="homeserver" value="https://matrix.org" placeholder="https://matrix.org">
@@ -543,13 +533,12 @@
                     </div>
                 </div>
                 
-                <!-- 密码 -->
                 <div class="form-group">
                     <label>密码</label>
                     <input type="password" id="password" placeholder="输入密码" required autocomplete="current-password">
                 </div>
                 
-                <button type="submit" class="login-btn" id="loginBtn">登录</button>
+                <button type="submit" class="login-btn" id="loginBtn" disabled>登录</button>
                 <div id="errorMsg" class="error-msg" style="display: none;"></div>
             </form>
         </div>
@@ -596,25 +585,84 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/matrix-js-sdk@30.0.0/lib/browser-matrix.js"></script>
+    <!-- Matrix JS SDK - 使用正确的 CDN -->
+    <script src="https://unpkg.com/matrix-js-sdk@30.0.0/lib/browser-index.js"></script>
     
     <script>
+        // 等待 SDK 加载完成
+        function waitForSDK() {
+            return new Promise((resolve, reject) => {
+                if (typeof window.matrixcs !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                
+                let attempts = 0;
+                const checkSDK = setInterval(() => {
+                    attempts++;
+                    if (typeof window.matrixcs !== 'undefined') {
+                        clearInterval(checkSDK);
+                        resolve();
+                    } else if (attempts > 50) {
+                        clearInterval(checkSDK);
+                        reject(new Error('SDK 加载超时'));
+                    }
+                }, 100);
+            });
+        }
+
+        // 初始化应用
+        waitForSDK().then(() => {
+            document.getElementById('loginStatus').textContent = '准备就绪';
+            document.getElementById('loginBtn').disabled = false;
+            initApp();
+        }).catch(error => {
+            document.getElementById('loginStatus').textContent = 'SDK 加载失败';
+            document.getElementById('errorMsg').textContent = 'Matrix SDK 加载失败，请刷新页面重试';
+            document.getElementById('errorMsg').style.display = 'block';
+        });
+
         let matrixClient = null;
         let currentRoomId = null;
         let pingInterval = null;
         let currentLoginMethod = 'user';
 
-        // 登录方式切换
-        document.querySelectorAll('.method-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentLoginMethod = this.dataset.method;
-                updateLoginInterface();
+        function initApp() {
+            // 登录方式切换
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLoginMethod = this.dataset.method;
+                    updateLoginInterface();
+                });
             });
-        });
 
-        // 更新登录界面
+            // 标识符输入监听
+            document.getElementById('identifier').addEventListener('input', checkIdentifier);
+
+            // 登录表单提交
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            // 消息发送
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // 输入框自动调整高度
+            document.getElementById('messageInput').addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // 退出登录
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        }
+
         function updateLoginInterface() {
             const identifierInput = document.getElementById('identifier');
             const identifierLabel = document.getElementById('identifierLabel');
@@ -635,9 +683,6 @@
             checkIdentifier();
         }
 
-        // 智能检测标识符类型
-        document.getElementById('identifier').addEventListener('input', checkIdentifier);
-
         function checkIdentifier() {
             const identifier = document.getElementById('identifier').value.trim();
             const homeserverGroup = document.getElementById('homeserverGroup');
@@ -645,12 +690,10 @@
             const homeserverInput = document.getElementById('homeserver');
             const identifierHint = document.getElementById('identifierHint');
             
-            // 检测完整的Matrix用户ID (@username:homeserver.com)
             const matrixIdRegex = /^@[a-z0-9._=-]+:([a-z0-9.-]+\.[a-z]{2,})$/i;
             const match = identifier.match(matrixIdRegex);
             
             if (match && currentLoginMethod === 'user') {
-                // 自动提取homeserver
                 const detectedServer = match[1];
                 homeserverInput.value = `https://${detectedServer}`;
                 homeserverGroup.classList.add('hidden');
@@ -672,8 +715,7 @@
             }
         }
 
-        // 登录处理
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        async function handleLogin(e) {
             e.preventDefault();
             
             const identifier = document.getElementById('identifier').value.trim();
@@ -689,26 +731,22 @@
             errorMsg.style.display = 'none';
             
             try {
-                const tempClient = matrixSdk.createClient({ baseUrl: homeserver });
+                const tempClient = window.matrixcs.createClient({ baseUrl: homeserver });
                 
-                // 构建登录标识符
                 let loginIdentifier;
                 
                 if (currentLoginMethod === 'email') {
-                    // 邮箱登录
                     loginIdentifier = {
                         type: 'm.id.thirdparty',
                         medium: 'email',
                         address: identifier
                     };
                 } else if (identifier.startsWith('@')) {
-                    // 完整用户ID
                     loginIdentifier = {
                         type: 'm.id.user',
                         user: identifier
                     };
                 } else {
-                    // 仅用户名
                     loginIdentifier = {
                         type: 'm.id.user',
                         user: identifier
@@ -724,7 +762,7 @@
                 
                 loginStatus.textContent = '正在同步数据...';
                 
-                matrixClient = matrixSdk.createClient({
+                matrixClient = window.matrixcs.createClient({
                     baseUrl: homeserver,
                     accessToken: loginResponse.access_token,
                     userId: loginResponse.user_id,
@@ -756,7 +794,6 @@
                     errorText += '未知错误';
                 }
                 
-                // 提供更友好的错误提示
                 if (error.data?.errcode === 'M_FORBIDDEN') {
                     errorText = '用户名、邮箱或密码错误，请检查后重试';
                 } else if (error.data?.errcode === 'M_USER_DEACTIVATED') {
@@ -771,7 +808,7 @@
                 loginBtn.disabled = false;
                 loginBtn.textContent = '登录';
             }
-        });
+        }
 
         function updateStatus(status, ping = null) {
             const indicator = document.getElementById('statusIndicator');
@@ -902,14 +939,6 @@
             return div;
         }
 
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
         async function sendMessage() {
             if (!currentRoomId) return;
             
@@ -926,11 +955,6 @@
                 console.error('发送失败:', error);
             }
         }
-
-        document.getElementById('messageInput').addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
 
         function setupListeners() {
             matrixClient.on('Room.timeline', (event, room) => {
@@ -957,7 +981,7 @@
             });
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
+        function handleLogout() {
             if (matrixClient) {
                 matrixClient.stopClient();
                 matrixClient = null;
@@ -970,7 +994,7 @@
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('mainScreen').style.display = 'none';
             document.getElementById('loginStatus').textContent = '准备就绪';
-        });
+        }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
