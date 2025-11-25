@@ -88,6 +88,14 @@
             margin-top: 5px;
         }
 
+        .user-preview {
+            font-size: 12px;
+            color: #667eea;
+            margin-top: 5px;
+            font-weight: bold;
+            min-height: 18px;
+        }
+
         .btn {
             width: 100%;
             padding: 15px;
@@ -112,7 +120,7 @@
             transform: none;
         }
 
-        /* 主界面 */
+        /* 主界面样式保持不变 */
         .main-container {
             display: none;
             min-height: 100vh;
@@ -355,6 +363,7 @@
         .file-actions {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -549,14 +558,15 @@
 
             <div class="input-group">
                 <label>Matrix 服务器地址</label>
-                <input type="text" id="homeserver" placeholder="https://matrix.org" value="https://matrix.org">
-                <div class="input-hint">确保地址格式正确，包含 https://</div>
+                <input type="text" id="homeserver" placeholder="https://matrix.org" value="https://matrix.org" oninput="updateUserPreview()">
+                <div class="input-hint">你的Matrix服务器地址</div>
             </div>
 
             <div class="input-group">
                 <label>用户名</label>
-                <input type="text" id="username" placeholder="@username:matrix.org">
-                <div class="input-hint">完整的Matrix ID，包含 @ 和域名</div>
+                <input type="text" id="username" placeholder="username" oninput="updateUserPreview()">
+                <div class="input-hint">只需输入用户名，不用带@符号</div>
+                <div class="user-preview" id="userPreview"></div>
             </div>
 
             <div class="input-group">
@@ -569,14 +579,6 @@
             <div class="loading" id="loginLoading">
                 <div class="spinner"></div>
                 <div class="loading-text">正在连接服务器...</div>
-            </div>
-
-            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px; font-size: 12px; color: #856404;">
-                <strong>常见登录问题：</strong><br>
-                • 确保服务器地址包含完整协议(https://)<br>
-                • 用户名需要完整格式: @user:domain<br>
-                • 检查服务器CORS配置是否正确<br>
-                • 确认账号密码正确无误
             </div>
         </div>
     </div>
@@ -638,6 +640,54 @@
         let uploadedFiles = [];
         let selectedFiles = [];
 
+        // 实时更新用户预览
+        function updateUserPreview() {
+            const homeserver = document.getElementById('homeserver').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const preview = document.getElementById('userPreview');
+
+            if (username && homeserver) {
+                const domain = extractDomain(homeserver);
+                if (domain) {
+                    preview.textContent = `完整ID: @${username}:${domain}`;
+                } else {
+                    preview.textContent = '';
+                }
+            } else {
+                preview.textContent = '';
+            }
+        }
+
+        // 从服务器URL提取域名
+        function extractDomain(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 自动补全完整的Matrix用户ID
+        function getFullUserId(username, homeserver) {
+            // 如果用户已经输入完整格式，直接返回
+            if (username.startsWith('@') && username.includes(':')) {
+                return username;
+            }
+
+            // 移除用户名中可能的@符号
+            username = username.replace(/^@/, '');
+
+            // 从服务器地址提取域名
+            const domain = extractDomain(homeserver);
+            if (!domain) {
+                throw new Error('无法从服务器地址提取域名');
+            }
+
+            // 组合完整的用户ID
+            return `@${username}:${domain}`;
+        }
+
         // 登录功能
         async function login() {
             const homeserver = document.getElementById('homeserver').value.trim();
@@ -656,12 +706,6 @@
                 return;
             }
 
-            // 验证用户名格式
-            if (!username.startsWith('@') || !username.includes(':')) {
-                showToast('用户名格式错误，应为: @username:domain', 'error');
-                return;
-            }
-
             const loginBtn = document.getElementById('loginBtn');
             const loading = document.getElementById('loginLoading');
             
@@ -671,6 +715,10 @@
             try {
                 // 移除末尾的斜杠
                 homeserverUrl = homeserver.replace(/\/$/, '');
+
+                // 自动补全完整的用户ID
+                const fullUserId = getFullUserId(username, homeserver);
+                console.log('尝试登录:', fullUserId);
 
                 // 获取登录flows
                 const flowsResponse = await fetch(`${homeserverUrl}/_matrix/client/r0/login`, {
@@ -694,7 +742,7 @@
                         type: 'm.login.password',
                         identifier: {
                             type: 'm.id.user',
-                            user: username
+                            user: fullUserId
                         },
                         password: password
                     })
@@ -702,7 +750,7 @@
 
                 if (!loginResponse.ok) {
                     const errorData = await loginResponse.json();
-                    throw new Error(errorData.error || '登录失败');
+                    throw new Error(errorData.error || '登录失败，请检查用户名和密码');
                 }
 
                 const loginData = await loginResponse.json();
@@ -881,7 +929,7 @@
 
             filesList.innerHTML = '';
             
-            uploadedFiles.reverse().forEach((file, index) => {
+            uploadedFiles.slice().reverse().forEach((file, index) => {
                 const actualIndex = uploadedFiles.length - 1 - index;
                 const item = document.createElement('div');
                 item.className = 'file-item';
@@ -910,7 +958,6 @@
 
         // 获取下载URL
         function getDownloadUrl(contentUri) {
-            // content_uri 格式: mxc://domain/mediaId
             const match = contentUri.match(/mxc:\/\/([^/]+)\/(.+)/);
             if (match) {
                 return `${homeserverUrl}/_matrix/media/r0/download/${match[1]}/${match[2]}`;
@@ -999,6 +1046,9 @@
                 homeserverUrl = savedHomeserver;
                 showMainInterface();
             }
+
+            // 初始化预览
+            updateUserPreview();
         };
     </script>
 </body>
