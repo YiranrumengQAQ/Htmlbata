@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatrixChat - 第三方 Matrix 客户端</title>
+    <title>Matrix 聊天客户端 - 现代化即时通讯</title>
     <style>
         * {
             margin: 0;
@@ -11,105 +11,317 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-bg: #1a1d29;
+            --darker-bg: #13151f;
+            --light-bg: #2a2d3a;
+            --hover-bg: #353845;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a3bd;
+            --border-color: #3a3d4a;
+            --message-sent: #0084ff;
+            --message-received: #3a3d4a;
+            --online-color: #10b981;
+            --sidebar-width: 320px;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1d29 0%, #13151f 100%);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
         }
 
-        .container {
+        /* 登录界面 */
+        .login-container {
             display: flex;
-            height: 100vh;
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
 
-        /* 侧边栏 - 房间列表 */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .options input[type="checkbox"] {
+            margin-right: 6px;
+        }
+
+        .options a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* 聊天主界面 */
+        .chat-container {
+            display: none;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-wrapper {
+            display: flex;
+            height: 100%;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--darker-bg);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #1a252f;
+            height: 100vh;
         }
 
         .sidebar-header {
             padding: 20px;
-            background: rgba(0,0,0,0.2);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar-header h1 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .user-info {
+            background: var(--dark-bg);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            justify-content: space-between;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: var(--online-color);
+            border: 2px solid var(--darker-bg);
+            border-radius: 50%;
+        }
+
+        .user-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
             font-size: 18px;
         }
 
-        .user-details {
-            flex: 1;
+        .icon-btn:hover {
+            background: var(--light-bg);
+            color: var(--text-primary);
         }
 
-        .username {
-            font-weight: 600;
-            font-size: 14px;
+        /* 搜索栏 */
+        .search-bar {
+            padding: 15px 20px;
+            background: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .user-id {
-            font-size: 12px;
-            opacity: 0.7;
+        .search-input-wrapper {
+            position: relative;
         }
 
-        /* 房间搜索 */
-        .search-box {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .search-box input {
+        .search-input-wrapper input {
             width: 100%;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            padding: 12px 40px 12px 40px;
+            background: var(--light-bg);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--text-primary);
             font-size: 14px;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
         }
 
-        .search-box input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .search-box input:focus {
+        .search-input-wrapper input:focus {
             outline: none;
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 0 0 2px rgba(102,126,234,0.5);
+            border-color: var(--primary-color);
+            background: var(--dark-bg);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
         }
 
         /* 房间列表 */
@@ -119,34 +331,44 @@
             padding: 10px 0;
         }
 
+        .room-category {
+            padding: 15px 20px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .room-item {
             padding: 12px 20px;
             cursor: pointer;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 12px;
+            position: relative;
         }
 
         .room-item:hover {
-            background: rgba(255,255,255,0.05);
+            background: var(--light-bg);
         }
 
         .room-item.active {
-            background: rgba(102,126,234,0.2);
-            border-left-color: #667eea;
+            background: var(--light-bg);
+            border-left: 3px solid var(--primary-color);
         }
 
         .room-avatar {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-weight: 600;
+            font-size: 18px;
             flex-shrink: 0;
         }
 
@@ -155,52 +377,68 @@
             min-width: 0;
         }
 
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
         .room-name {
             font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
+            font-size: 15px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .room-last-message {
-            font-size: 12px;
-            opacity: 0.7;
+        .room-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .room-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .room-badge {
-            background: #e74c3c;
+        .unread-badge {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: var(--primary-color);
             color: white;
             border-radius: 12px;
             padding: 2px 8px;
             font-size: 11px;
             font-weight: 600;
+            min-width: 20px;
+            text-align: center;
         }
 
         /* 主聊天区域 */
-        .main-content {
+        .main-chat {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #f5f7fa;
+            background: var(--dark-bg);
         }
 
-        /* 聊天头部 */
         .chat-header {
             padding: 20px 30px;
-            background: white;
-            border-bottom: 1px solid #e1e8ed;
+            background: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .chat-title {
+        .chat-header-left {
             display: flex;
             align-items: center;
             gap: 15px;
@@ -208,35 +446,18 @@
 
         .chat-title h2 {
             font-size: 18px;
-            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 3px;
         }
 
         .chat-subtitle {
             font-size: 13px;
-            color: #7f8c8d;
-            margin-top: 2px;
+            color: var(--text-secondary);
         }
 
         .chat-actions {
             display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            background: #ecf0f1;
-            color: #2c3e50;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-1px);
+            gap: 8px;
         }
 
         /* 消息区域 */
@@ -246,16 +467,16 @@
             padding: 20px 30px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
 
         .message {
             display: flex;
             gap: 12px;
-            animation: messageSlide 0.3s ease-out;
+            animation: messageAppear 0.3s ease-out;
         }
 
-        @keyframes messageSlide {
+        @keyframes messageAppear {
             from {
                 opacity: 0;
                 transform: translateY(10px);
@@ -266,87 +487,113 @@
             }
         }
 
+        .message.sent {
+            flex-direction: row-reverse;
+        }
+
         .message-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #3498db, #2ecc71);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            color: white;
+            font-weight: 600;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
         .message-content {
-            flex: 1;
-            background: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            max-width: 70%;
+            max-width: 60%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .message.sent .message-content {
+            align-items: flex-end;
         }
 
         .message-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
+            gap: 8px;
+            font-size: 13px;
         }
 
         .message-sender {
             font-weight: 600;
-            color: #2c3e50;
-            font-size: 14px;
+            color: var(--text-primary);
         }
 
-        .message-time {
-            font-size: 11px;
-            color: #95a5a6;
+        .message-timestamp {
+            color: var(--text-secondary);
+            font-size: 12px;
         }
 
-        .message-text {
-            color: #34495e;
-            line-height: 1.6;
-            font-size: 14px;
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
             word-wrap: break-word;
+            line-height: 1.5;
         }
 
-        .message.own {
-            flex-direction: row-reverse;
+        .message.received .message-bubble {
+            background: var(--message-received);
+            border-top-left-radius: 4px;
         }
 
-        .message.own .message-content {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .message.sent .message-bubble {
+            background: var(--message-sent);
+            border-top-right-radius: 4px;
         }
 
-        .message.own .message-sender,
-        .message.own .message-text {
-            color: white;
+        .message-reactions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
         }
 
-        .message.own .message-time {
-            color: rgba(255,255,255,0.8);
+        .reaction {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .message.own .message-avatar {
-            background: linear-gradient(135deg, #764ba2, #667eea);
+        .reaction:hover {
+            background: var(--hover-bg);
+        }
+
+        .reaction-count {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         /* 输入区域 */
         .input-area {
             padding: 20px 30px;
-            background: white;
-            border-top: 1px solid #e1e8ed;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            background: var(--darker-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .typing-indicator {
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            min-height: 30px;
         }
 
         .input-wrapper {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 12px;
+            align-items: flex-end;
         }
 
         .input-tools {
@@ -354,406 +601,726 @@
             gap: 8px;
         }
 
-        .tool-btn {
-            width: 38px;
-            height: 38px;
-            border: none;
-            border-radius: 8px;
-            background: #ecf0f1;
-            color: #7f8c8d;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tool-btn:hover {
-            background: #667eea;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .message-input {
+        .input-box {
             flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e1e8ed;
-            border-radius: 25px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s;
-            resize: none;
-            height: 44px;
-            max-height: 120px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .message-input:focus {
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            resize: none;
+            max-height: 120px;
+            line-height: 1.5;
+        }
+
+        .input-box textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .send-btn {
-            padding: 12px 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--primary-color);
             border: none;
-            border-radius: 25px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+            background: #0257d5;
+            transform: scale(1.05);
         }
 
         .send-btn:active {
-            transform: translateY(0);
+            transform: scale(0.95);
+        }
+
+        /* 右侧信息面板 */
+        .info-panel {
+            width: 320px;
+            background: var(--darker-bg);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: var(--light-bg);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .info-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .member-name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .member-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--online-color);
+        }
+
+        .member-status.offline {
+            background: var(--text-secondary);
+        }
+
+        /* 加密指示器 */
+        .encryption-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--success-color);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
         /* 滚动条样式 */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
+            background: var(--light-bg);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0,0,0,0.3);
-        }
-
-        /* 在线状态指示器 */
-        .online-indicator {
-            width: 10px;
-            height: 10px;
-            background: #2ecc71;
-            border-radius: 50%;
-            border: 2px solid white;
-            position: relative;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
+            background: var(--hover-bg);
         }
 
         /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .info-panel {
+                position: fixed;
+                right: -320px;
+                top: 0;
+                height: 100vh;
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .info-panel.active {
+                right: 0;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                position: absolute;
-                z-index: 100;
-                transform: translateX(-100%);
-                transition: transform 0.3s;
+                position: fixed;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.active {
+                left: 0;
+                box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+            }
+            
+            .message-content {
+                max-width: 80%;
+            }
+            
+            .messages-area {
+                padding: 15px;
+            }
+            
+            .input-area {
+                padding: 15px;
             }
 
-            .sidebar.open {
-                transform: translateX(0);
+            .chat-header {
+                padding: 15px;
             }
+        }
+
+        /* 附加功能样式 */
+        .file-upload-preview {
+            padding: 10px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: var(--darker-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 320px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-item {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .emoji-item:hover {
+            background: var(--light-bg);
+            transform: scale(1.2);
+        }
+
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--darker-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: slideInRight 0.3s ease-out;
+            z-index: 2000;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 侧边栏 - 房间列表 -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>✨ MatrixChat</h1>
-                <div class="user-info">
-                    <div class="avatar">Me</div>
-                    <div class="user-details">
-                        <div class="username">我的账号</div>
-                        <div class="user-id">@user:matrix.org</div>
-                    </div>
-                    <div class="online-indicator"></div>
-                </div>
+    <!-- 登录界面 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="logo">🔐</div>
+                <h1>欢迎使用 Matrix</h1>
+                <p>去中心化的安全即时通讯平台</p>
             </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="homeserver">主服务器 (Homeserver)</label>
+                    <select id="homeserver">
+                        <option value="matrix.org">matrix.org (官方)</option>
+                        <option value="custom">自定义服务器...</option>
+                    </select>
+                </div>
 
-            <div class="search-box">
-                <input type="text" placeholder="🔍 搜索房间或用户..." id="searchInput">
-            </div>
+                <div class="form-group hidden" id="customServerGroup">
+                    <label for="customServer">自定义服务器地址</label>
+                    <input type="text" id="customServer" placeholder="https://matrix.example.com">
+                </div>
 
-            <div class="room-list" id="roomList">
-                <div class="room-item active">
-                    <div class="room-avatar">🏠</div>
-                    <div class="room-info">
-                        <div class="room-name">Matrix 中文社区</div>
-                        <div class="room-last-message">欢迎加入 Matrix！</div>
-                    </div>
-                    <span class="room-badge">3</span>
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" placeholder="@username:matrix.org" required>
                 </div>
-                <div class="room-item">
-                    <div class="room-avatar">💻</div>
-                    <div class="room-info">
-                        <div class="room-name">开发者讨论组</div>
-                        <div class="room-last-message">如何使用 Matrix API？</div>
-                    </div>
-                </div>
-                <div class="room-item">
-                    <div class="room-avatar">🎮</div>
-                    <div class="room-info">
-                        <div class="room-name">游戏爱好者</div>
-                        <div class="room-last-message">今晚一起玩吗？</div>
-                    </div>
-                    <span class="room-badge">12</span>
-                </div>
-                <div class="room-item">
-                    <div class="room-avatar">📚</div>
-                    <div class="room-info">
-                        <div class="room-name">技术分享</div>
-                        <div class="room-last-message">分享了一篇好文章</div>
-                    </div>
-                </div>
-                <div class="room-item">
-                    <div class="room-avatar">🎨</div>
-                    <div class="room-info">
-                        <div class="room-name">设计交流</div>
-                        <div class="room-last-message">看看我的新作品</div>
-                    </div>
-                    <span class="room-badge">5</span>
-                </div>
-                <div class="room-item">
-                    <div class="room-avatar">🌍</div>
-                    <div class="room-info">
-                        <div class="room-name">国际交流</div>
-                        <div class="room-last-message">Hello everyone!</div>
-                    </div>
-                </div>
-                <div class="room-item">
-                    <div class="room-avatar">🎵</div>
-                    <div class="room-info">
-                        <div class="room-name">音乐分享</div>
-                        <div class="room-last-message">推荐一首好歌</div>
-                    </div>
-                </div>
-            </div>
-        </aside>
 
-        <!-- 主聊天区域 -->
-        <main class="main-content">
-            <header class="chat-header">
-                <div class="chat-title">
-                    <div class="room-avatar" style="width: 50px; height: 50px;">🏠</div>
-                    <div>
-                        <h2>Matrix 中文社区</h2>
-                        <div class="chat-subtitle">256 位成员 · 48 位在线</div>
-                    </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" placeholder="输入您的密码" required>
                 </div>
-                <div class="chat-actions">
-                    <button class="action-btn">🔔 通知</button>
-                    <button class="action-btn">👥 成员</button>
-                    <button class="action-btn">⚙️ 设置</button>
-                </div>
-            </header>
 
-            <div class="messages-area" id="messagesArea">
-                <div class="message">
-                    <div class="message-avatar">A</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">Alice</span>
-                            <span class="message-time">10:30</span>
+                <div class="options">
+                    <label>
+                        <input type="checkbox" id="rememberMe">
+                        记住我
+                    </label>
+                    <a href="#">忘记密码？</a>
+                </div>
+
+                <button type="submit" class="btn-primary">登录</button>
+
+                <div class="register-link">
+                    还没有账户？<a href="#">立即注册</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 聊天主界面 -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-wrapper">
+            <!-- 左侧边栏 -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="user-profile">
+                        <div class="avatar online">您</div>
+                        <div class="user-info">
+                            <h3 id="currentUser">用户名</h3>
+                            <p>在线</p>
                         </div>
-                        <div class="message-text">大家好！欢迎来到 Matrix 中文社区 🎉</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn" title="设置">⚙️</button>
+                        <button class="icon-btn" title="新建对话">➕</button>
                     </div>
                 </div>
 
-                <div class="message">
-                    <div class="message-avatar">B</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">Bob</span>
-                            <span class="message-time">10:32</span>
+                <div class="search-bar">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="搜索房间或用户..." id="searchInput">
+                    </div>
+                </div>
+
+                <div class="room-list" id="roomList">
+                    <div class="room-category">收藏</div>
+                    <div class="room-item active" data-room="general">
+                        <div class="room-avatar">🏠</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-name">通用讨论室</span>
+                                <span class="room-time">刚刚</span>
+                            </div>
+                            <div class="room-preview">欢迎来到 Matrix！</div>
                         </div>
-                        <div class="message-text">Matrix 是一个很棒的去中心化通信协议！</div>
+                        <span class="unread-badge">3</span>
                     </div>
-                </div>
 
-                <div class="message own">
-                    <div class="message-avatar">Me</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">我</span>
-                            <span class="message-time">10:35</span>
+                    <div class="room-category">最近</div>
+                    <div class="room-item" data-room="tech">
+                        <div class="room-avatar">💻</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-name">技术交流</span>
+                                <span class="room-time">10:30</span>
+                            </div>
+                            <div class="room-preview">讨论最新的技术趋势</div>
                         </div>
-                        <div class="message-text">确实！而且支持端到端加密，非常安全 🔒</div>
                     </div>
-                </div>
 
-                <div class="message">
-                    <div class="message-avatar">C</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">Carol</span>
-                            <span class="message-time">10:38</span>
+                    <div class="room-item" data-room="team">
+                        <div class="room-avatar">👥</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-name">团队协作</span>
+                                <span class="room-time">昨天</span>
+                            </div>
+                            <div class="room-preview">项目进度更新</div>
                         </div>
-                        <div class="message-text">有人在用 Element 客户端吗？体验怎么样？</div>
+                        <span class="unread-badge">1</span>
                     </div>
-                </div>
 
-                <div class="message own">
-                    <div class="message-avatar">Me</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">我</span>
-                            <span class="message-time">10:40</span>
+                    <div class="room-item" data-room="crypto">
+                        <div class="room-avatar">🔐</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-name">加密讨论组</span>
+                                <span class="room-time">11/23</span>
+                            </div>
+                            <div class="room-preview">🔒 加密消息</div>
                         </div>
-                        <div class="message-text">我用过 Element 和 Cinny，都很不错！这个是我自己做的第三方客户端界面 😊</div>
                     </div>
-                </div>
 
-                <div class="message">
-                    <div class="message-avatar">D</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">David</span>
-                            <span class="message-time">10:42</span>
+                    <div class="room-category">直接消息</div>
+                    <div class="room-item" data-room="alice">
+                        <div class="room-avatar">👤</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-name">Alice</span>
+                                <span class="room-time">14:22</span>
+                            </div>
+                            <div class="room-preview">好的，我知道了</div>
                         </div>
-                        <div class="message-text">界面看起来很漂亮！👍 可以分享代码吗？</div>
                     </div>
                 </div>
-            </div>
+            </aside>
 
-            <div class="input-area">
-                <div class="input-wrapper">
-                    <div class="input-tools">
-                        <button class="tool-btn" title="表情">😊</button>
-                        <button class="tool-btn" title="附件">📎</button>
-                        <button class="tool-btn" title="图片">🖼️</button>
+            <!-- 主聊天区 -->
+            <main class="main-chat">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <div class="avatar">🏠</div>
+                        <div class="chat-title">
+                            <h2>通用讨论室</h2>
+                            <div class="chat-subtitle">
+                                <span class="encryption-badge">🔒 端到端加密</span>
+                                <span> · 125 位成员 · 23 位在线</span>
+                            </div>
+                        </div>
                     </div>
-                    <textarea class="message-input" id="messageInput" placeholder="输入消息... (Ctrl+Enter 发送)" rows="1"></textarea>
-                    <button class="send-btn" id="sendBtn">发送 ✈️</button>
+                    <div class="chat-actions">
+                        <button class="icon-btn" title="语音通话">📞</button>
+                        <button class="icon-btn" title="视频通话">📹</button>
+                        <button class="icon-btn" title="搜索">🔍</button>
+                        <button class="icon-btn" id="toggleInfo" title="信息面板">ℹ️</button>
+                    </div>
                 </div>
-            </div>
-        </main>
+
+                <div class="messages-area" id="messagesArea">
+                    <div class="message received">
+                        <div class="message-avatar">A</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Alice</span>
+                                <span class="message-timestamp">09:30</span>
+                            </div>
+                            <div class="message-bubble">
+                                大家好！欢迎来到Matrix聊天室！👋
+                            </div>
+                            <div class="message-reactions">
+                                <div class="reaction">
+                                    👋 <span class="reaction-count">5</span>
+                                </div>
+                                <div class="reaction">
+                                    ❤️ <span class="reaction-count">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message received">
+                        <div class="message-avatar">B</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Bob</span>
+                                <span class="message-timestamp">09:32</span>
+                            </div>
+                            <div class="message-bubble">
+                                Matrix 真的很棒！端到端加密让通讯更安全 🔐
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message sent">
+                        <div class="message-avatar">您</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">您</span>
+                                <span class="message-timestamp">09:35</span>
+                            </div>
+                            <div class="message-bubble">
+                                完全同意！而且还是开源的，太棒了！✨
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message received">
+                        <div class="message-avatar">C</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Charlie</span>
+                                <span class="message-timestamp">09:40</span>
+                            </div>
+                            <div class="message-bubble">
+                                有人试过Matrix的语音通话功能吗？质量怎么样？
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="typing-indicator" id="typingIndicator"></div>
+                    <div class="input-wrapper">
+                        <div class="input-tools">
+                            <button class="icon-btn" title="表情符号" id="emojiBtn">😊</button>
+                            <button class="icon-btn" title="附件">📎</button>
+                            <button class="icon-btn" title="图片">🖼️</button>
+                            <button class="icon-btn" title="GIF">🎬</button>
+                        </div>
+                        <div class="input-box">
+                            <textarea id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+                            <div class="input-actions">
+                                <button class="icon-btn" title="格式化">📝</button>
+                                <button class="icon-btn" title="代码">💻</button>
+                                <button class="icon-btn" title="引用">💬</button>
+                            </div>
+                        </div>
+                        <button class="send-btn" id="sendBtn" title="发送">➤</button>
+                    </div>
+
+                    <!-- 表情选择器 -->
+                    <div class="emoji-picker" id="emojiPicker">
+                        <div class="emoji-grid">
+                            <div class="emoji-item">😀</div>
+                            <div class="emoji-item">😂</div>
+                            <div class="emoji-item">😍</div>
+                            <div class="emoji-item">🤔</div>
+                            <div class="emoji-item">👍</div>
+                            <div class="emoji-item">👎</div>
+                            <div class="emoji-item">❤️</div>
+                            <div class="emoji-item">🎉</div>
+                            <div class="emoji-item">🔥</div>
+                            <div class="emoji-item">✨</div>
+                            <div class="emoji-item">🚀</div>
+                            <div class="emoji-item">💯</div>
+                            <div class="emoji-item">🙌</div>
+                            <div class="emoji-item">👏</div>
+                            <div class="emoji-item">🎯</div>
+                            <div class="emoji-item">💪</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 右侧信息面板 -->
+            <aside class="info-panel" id="infoPanel">
+                <div class="info-section">
+                    <h3>关于房间</h3>
+                    <div class="info-item">
+                        <strong>房间名称:</strong> 通用讨论室<br>
+                        <strong>主题:</strong> 欢迎大家交流讨论<br>
+                        <strong>创建时间:</strong> 2025年1月15日
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>成员 (125)</h3>
+                    <div class="member-item info-item">
+                        <div class="avatar">A</div>
+                        <div class="member-name">Alice</div>
+                        <div class="member-status"></div>
+                    </div>
+                    <div class="member-item info-item">
+                        <div class="avatar">B</div>
+                        <div class="member-name">Bob</div>
+                        <div class="member-status"></div>
+                    </div>
+                    <div class="member-item info-item">
+                        <div class="avatar">C</div>
+                        <div class="member-name">Charlie</div>
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-item info-item">
+                        <div class="avatar">D</div>
+                        <div class="member-name">David</div>
+                        <div class="member-status"></div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>共享文件</h3>
+                    <div class="info-item">
+                        📄 项目文档.pdf<br>
+                        <small>2.5 MB · 昨天</small>
+                    </div>
+                    <div class="info-item">
+                        🖼️ 设计稿.png<br>
+                        <small>1.8 MB · 2天前</small>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>设置</h3>
+                    <div class="info-item">🔔 通知设置</div>
+                    <div class="info-item">🔐 加密密钥管理</div>
+                    <div class="info-item">👥 邀请成员</div>
+                    <div class="info-item">🚪 离开房间</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="notification-toast" id="notificationToast">
+        <strong>新消息</strong><br>
+        <span id="notificationText">您有一条新消息</span>
     </div>
 
     <script>
-        // 自动调整输入框高度
-        const messageInput = document.getElementById('messageInput');
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        // 登录功能
+        const loginForm = document.getElementById('loginForm');
+        const loginContainer = document.getElementById('loginContainer');
+        const chatContainer = document.getElementById('chatContainer');
+        const homeserverSelect = document.getElementById('homeserver');
+        const customServerGroup = document.getElementById('customServerGroup');
+
+        homeserverSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customServerGroup.classList.remove('hidden');
+            } else {
+                customServerGroup.classList.add('hidden');
+            }
         });
 
-        // 发送消息功能
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            
+            // 模拟登录
+            document.getElementById('currentUser').textContent = username;
+            loginContainer.style.display = 'none';
+            chatContainer.style.display = 'block';
+            
+            showNotification('登录成功！欢迎使用 Matrix');
+        });
+
+        // 消息发送功能
+        const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const messagesArea = document.getElementById('messagesArea');
 
         function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message) {
-                const now = new Date();
-                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                               now.getMinutes().toString().padStart(2, '0');
-                
-                const messageHTML = `
-                    <div class="message own">
-                        <div class="message-avatar">Me</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">我</span>
-                                <span class="message-time">${timeStr}</span>
-                            </div>
-                            <div class="message-text">${escapeHtml(message)}</div>
-                        </div>
-                    </div>
-                `;
-                
-                messagesArea.insertAdjacentHTML('beforeend', messageHTML);
-                messagesArea.scrollTop = messagesArea.scrollHeight;
-                
-                messageInput.value = '';
-                messageInput.style.height = '44px';
-                
-                // 模拟收到回复
-                setTimeout(autoReply, 1500);
-            }
-        }
+            const text = messageInput.value.trim();
+            if (text === '') return;
 
-        // 转义 HTML 特殊字符
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // 自动回复
-        function autoReply() {
-            const replies = [
-                '收到！👍',
-                '好的，了解了',
-                '有道理！',
-                '赞同 ✨',
-                '这个想法不错',
-                '继续讨论吧',
-                '我也这么认为',
-                '说得对！'
-            ];
-            
-            const senders = ['Alice', 'Bob', 'Carol', 'David'];
-            const sender = senders[Math.floor(Math.random() * senders.length)];
-            const reply = replies[Math.floor(Math.random() * replies.length)];
-            
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                           now.getMinutes().toString().padStart(2, '0');
-            
             const messageHTML = `
-                <div class="message">
-                    <div class="message-avatar">${sender[0]}</div>
+                <div class="message sent">
+                    <div class="message-avatar">您</div>
                     <div class="message-content">
                         <div class="message-header">
-                            <span class="message-sender">${sender}</span>
-                            <span class="message-time">${timeStr}</span>
+                            <span class="message-sender">您</span>
+                            <span class="message-timestamp">${getCurrentTime()}</span>
                         </div>
-                        <div class="message-text">${reply}</div>
+                        <div class="message-bubble">
+                            ${escapeHtml(text)}
+                        </div>
                     </div>
                 </div>
             `;
             
             messagesArea.insertAdjacentHTML('beforeend', messageHTML);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            scrollToBottom();
+
+            // 模拟接收回复
+            setTimeout(() => {
+                simulateReply();
+            }, 2000);
         }
 
         sendBtn.addEventListener('click', sendMessage);
 
-        // Ctrl+Enter 发送
         messageInput.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
 
-        // 房间切换
-        const roomItems = document.querySelectorAll('.room-item');
-        roomItems.forEach(item => {
+        // 自动调整输入框高度
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // 表情选择器
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiPicker = document.getElementById('emojiPicker');
+
+        emojiBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('.emoji-item').forEach(item => {
             item.addEventListener('click', function() {
-                roomItems.forEach(r => r.classList.remove('active'));
+                messageInput.value += this.textContent;
+                messageInput.focus();
+                emojiPicker.style.display = 'none';
+            });
+        });
+
+        document.addEventListener('click', function() {
+            emojiPicker.style.display = 'none';
+        });
+
+        // 信息面板切换
+        const toggleInfoBtn = document.getElementById('toggleInfo');
+        const infoPanel = document.getElementById('infoPanel');
+
+        toggleInfoBtn.addEventListener('click', function() {
+            infoPanel.classList.toggle('active');
+        });
+
+        // 房间切换
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.room-item').forEach(r => r.classList.remove('active'));
                 this.classList.add('active');
                 
-                // 移除未读徽章
-                const badge = this.querySelector('.room-badge');
-                if (badge) {
-                    badge.remove();
-                }
+                const roomName = this.querySelector('.room-name').textContent;
+                document.querySelector('.chat-title h2').textContent = roomName;
+                
+                // 移除未读标记
+                const badge = this.querySelector('.unread-badge');
+                if (badge) badge.remove();
             });
         });
 
@@ -761,18 +1328,100 @@
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
-            roomItems.forEach(item => {
-                const roomName = item.querySelector('.room-name').textContent.toLowerCase();
-                if (roomName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
+            document.querySelectorAll('.room-item').forEach(room => {
+                const roomName = room.querySelector('.room-name').textContent.toLowerCase();
+                room.style.display = roomName.includes(searchTerm) ? 'flex' : 'none';
             });
         });
 
-        // 自动滚动到最新消息
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+        // 工具函数
+        function getCurrentTime() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function simulateReply() {
+            const replies = [
+                '收到！我会尽快处理的 ✅',
+                '好的，明白了！👍',
+                '这个想法很不错！💡',
+                '让我考虑一下...',
+                '同意你的观点！',
+                '谢谢分享！🙏'
+            ];
+            
+            const reply = replies[Math.floor(Math.random() * replies.length)];
+            const names = ['Alice', 'Bob', 'Charlie', 'David'];
+            const name = names[Math.floor(Math.random() * names.length)];
+            const avatar = name[0];
+
+            const messageHTML = `
+                <div class="message received">
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">${name}</span>
+                            <span class="message-timestamp">${getCurrentTime()}</span>
+                        </div>
+                        <div class="message-bubble">
+                            ${reply}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            messagesArea.insertAdjacentHTML('beforeend', messageHTML);
+            scrollToBottom();
+            showNotification(`${name}: ${reply}`);
+        }
+
+        function showNotification(text) {
+            const toast = document.getElementById('notificationToast');
+            document.getElementById('notificationText').textContent = text;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // 模拟打字指示器
+        let typingTimer;
+        messageInput.addEventListener('input', function() {
+            clearTimeout(typingTimer);
+            
+            typingTimer = setTimeout(() => {
+                // 模拟其他人正在打字
+                const typingIndicator = document.getElementById('typingIndicator');
+                typingIndicator.textContent = '';
+            }, 1000);
+        });
+
+        // 初始化滚动到底部
+        scrollToBottom();
+
+        // 响应式侧边栏切换
+        if (window.innerWidth <= 768) {
+            const menuBtn = document.createElement('button');
+            menuBtn.className = 'icon-btn';
+            menuBtn.innerHTML = '☰';
+            menuBtn.style.position = 'absolute';
+            menuBtn.style.left = '15px';
+            menuBtn.onclick = function() {
+                document.querySelector('.sidebar').classList.toggle('active');
+            };
+            document.querySelector('.chat-header-left').prepend(menuBtn);
+        }
     </script>
 </body>
 </html>
