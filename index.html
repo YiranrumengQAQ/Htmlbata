@@ -3,78 +3,682 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signal机器人管理系统</title>
+    <title>Signal Bot Manager - 智能机器人管理系统</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #2e86de; margin-bottom: 30px; }
-        .section { margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 5px; }
-        .section h2 { font-size: 18px; margin-bottom: 15px; color: #333; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; }
-        button { background: #2e86de; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-        button:hover { background: #1e6bb8; }
-        button.danger { background: #e74c3c; }
-        button.danger:hover { background: #c0392b; }
-        .status { padding: 10px; margin-top: 10px; border-radius: 4px; display: none; }
-        .status.success { background: #d4edda; color: #155724; display: block; }
-        .status.error { background: #f8d7da; color: #721c24; display: block; }
-        .messages { max-height: 300px; overflow-y: auto; background: white; padding: 10px; border: 1px solid #ddd; }
-        .message-item { padding: 8px; margin-bottom: 8px; background: #e3f2fd; border-radius: 4px; }
-        .bot-status { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
-        .bot-status.running { background: #27ae60; }
-        .bot-status.stopped { background: #e74c3c; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3797f0;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-main: #fafafa;
+            --bg-card: #ffffff;
+            --text-primary: #262626;
+            --text-secondary: #8e8e8e;
+            --border: #dbdbdb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 15px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-card);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(55, 151, 240, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid var(--primary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+        }
+
+        .status-dot.offline {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .rule-item {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .rule-item:hover {
+            background: #f0f0f0;
+        }
+
+        .rule-content {
+            flex: 1;
+        }
+
+        .rule-keyword {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .rule-reply {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .message-item {
+            background: var(--bg-main);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--primary);
+            animation: slideIn 0.3s ease;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .message-text {
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .messages-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--bg-main);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .qr-code-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .qr-code-container img {
+            max-width: 300px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📱 Signal机器人管理系统</h1>
-        
-        <!-- API配置 -->
-        <div class="section">
-            <h2>⚙️ API服务配置</h2>
-            <label>Signal CLI REST API地址:</label>
-            <input type="text" id="apiUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
-            <label>机器人号码 (国际格式):</label>
-            <input type="text" id="botNumber" value="+8613800138000" placeholder="+8613800138000">
-            <button onclick="saveConfig()">保存配置</button>
-            <div id="configStatus" class="status"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span>📱</span>
+                Signal Bot Manager
+            </h1>
+            <p>智能化Signal机器人管理平台 - 安全、高效、易用</p>
         </div>
 
-        <!-- 自动回复规则 -->
-        <div class="section">
-            <h2>🤖 自动回复规则</h2>
-            <label>关键词:</label>
-            <input type="text" id="keyword" placeholder="例如: 你好">
-            <label>回复内容:</label>
-            <textarea id="replyText" rows="3" placeholder="例如: 您好！我是自动机器人"></textarea>
-            <button onclick="addRule()">添加规则</button>
-            <div id="rulesList" style="margin-top: 15px;"></div>
-        </div>
-
-        <!-- 机器人控制 -->
-        <div class="section">
-            <h2>🎮 机器人控制</h2>
-            <p>状态: <span class="bot-status stopped" id="botStatusIndicator"></span><span id="botStatusText">未运行</span></p>
-            <button onclick="startBot()">启动机器人</button>
-            <button onclick="stopBot()" class="danger">停止机器人</button>
-            <button onclick="sendTestMessage()">发送测试消息</button>
-            <div id="controlStatus" class="status"></div>
-        </div>
-
-        <!-- 消息监控 -->
-        <div class="section">
-            <h2>💬 接收的消息</h2>
-            <div id="messagesContainer" class="messages">
-                <p style="color: #999;">暂无消息</p>
+        <!-- Stats Dashboard -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="statMessages">0</div>
+                <div class="stat-label">已接收消息</div>
             </div>
-            <button onclick="clearMessages()">清空消息</button>
+            <div class="stat-card">
+                <div class="stat-value" id="statRules">0</div>
+                <div class="stat-label">回复规则</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statReplies">0</div>
+                <div class="stat-label">自动回复数</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-grid">
+            <!-- Setup Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🚀</div>
+                    <h2>创建&配置机器人</h2>
+                </div>
+
+                <div class="tab-container">
+                    <button class="tab active" onclick="switchTab(0)">注册新号</button>
+                    <button class="tab" onclick="switchTab(1)">链接设备</button>
+                    <button class="tab" onclick="switchTab(2)">API配置</button>
+                </div>
+
+                <!-- Tab 0: Register -->
+                <div class="tab-content active" id="tab0">
+                    <div class="form-group">
+                        <label>📞 手机号码 (国际格式)</label>
+                        <input type="text" id="registerPhone" placeholder="+8613800138000">
+                    </div>
+                    <div class="form-group">
+                        <label>🔐 验证方式</label>
+                        <select id="verifyMethod">
+                            <option value="sms">短信验证</option>
+                            <option value="voice">语音验证</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="registerNumber()">
+                            <span>发送验证码</span>
+                        </button>
+                    </div>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>验证码</label>
+                        <input type="text" id="verifyCode" placeholder="输入收到的6位验证码">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="verifyNumber()">
+                            <span>✓ 验证并激活</span>
+                        </button>
+                    </div>
+                    <div id="registerAlert" class="alert"></div>
+                </div>
+
+                <!-- Tab 1: Link Device -->
+                <div class="tab-content" id="tab1">
+                    <p style="margin-bottom: 16px; color: var(--text-secondary);">
+                        使用现有Signal账号扫描二维码链接设备
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateQRCode()">
+                            <span>生成二维码</span>
+                        </button>
+                    </div>
+                    <div id="qrContainer" class="qr-code-container"></div>
+                    <div id="linkAlert" class="alert"></div>
+                </div>
+
+                <!-- Tab 2: API Config -->
+                <div class="tab-content" id="tab2">
+                    <div class="form-group">
+                        <label>🔗 API服务地址</label>
+                        <input type="text" id="apiUrl" value="http://localhost:8080">
+                    </div>
+                    <div class="form-group">
+                        <label>📱 机器人号码</label>
+                        <input type="text" id="botNumber" value="+8613800138000">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="saveConfig()">
+                            <span>💾 保存配置</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="testConnection()">
+                            <span>🔍 测试连接</span>
+                        </button>
+                    </div>
+                    <div id="configAlert" class="alert"></div>
+                </div>
+            </div>
+
+            <!-- Auto Reply Rules -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🤖</div>
+                    <h2>自动回复规则</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>触发关键词</label>
+                    <input type="text" id="ruleKeyword" placeholder="例如: 你好、帮助、价格">
+                </div>
+                <div class="form-group">
+                    <label>回复内容</label>
+                    <textarea id="ruleReply" rows="3" placeholder="例如: 您好！我是自动助手，很高兴为您服务"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="addRule()">
+                        <span>➕ 添加规则</span>
+                    </button>
+                </div>
+
+                <div id="rulesList" style="margin-top: 24px;"></div>
+            </div>
+
+            <!-- Bot Control -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    <h2>机器人控制</h2>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <span class="status-badge" id="botStatusBadge">
+                        <span class="status-dot offline"></span>
+                        <span>离线</span>
+                    </span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="startBot()">
+                        <span>▶ 启动机器人</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="stopBot()">
+                        <span>⏹ 停止机器人</span>
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>测试发送消息</label>
+                        <input type="text" id="testRecipient" placeholder="接收者号码 +8613900139000">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="testMessage" rows="2" placeholder="测试消息内容"></textarea>
+                    </div>
+                    <button class="btn btn-secondary" onclick="sendTestMessage()">
+                        <span>📤 发送测试</span>
+                    </button>
+                </div>
+
+                <div id="controlAlert" class="alert"></div>
+            </div>
+
+            <!-- Messages Monitor -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon">💬</div>
+                    <h2>消息监控</h2>
+                    <button class="btn btn-secondary" onclick="clearMessages()">
+                        <span>🗑 清空</span>
+                    </button>
+                </div>
+
+                <div id="messagesContainer" class="messages-container">
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <p>暂无消息</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // 全局配置
+        // Global State
         let config = {
             apiUrl: 'http://localhost:8080',
             botNumber: '+8613800138000'
@@ -82,20 +686,32 @@
         let rules = [];
         let botRunning = false;
         let pollInterval = null;
-        let receivedMessages = [];
+        let messages = [];
+        let stats = { messages: 0, replies: 0 };
 
-        // 初始化
+        // Initialize
         window.onload = function() {
             loadConfig();
             loadRules();
+            updateStats();
         };
 
-        // 保存配置
+        // Tab Switching
+        function switchTab(index) {
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tab-content').forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+        }
+
+        // Config Management
         function saveConfig() {
-            config.apiUrl = document.getElementById('apiUrl').value;
-            config.botNumber = document.getElementById('botNumber').value;
+            config.apiUrl = document.getElementById('apiUrl').value.trim();
+            config.botNumber = document.getElementById('botNumber').value.trim();
             localStorage.setItem('signalBotConfig', JSON.stringify(config));
-            showStatus('configStatus', '配置已保存', 'success');
+            showAlert('configAlert', '✓ 配置已保存', 'success');
         }
 
         function loadConfig() {
@@ -107,19 +723,133 @@
             }
         }
 
-        // 添加回复规则
-        function addRule() {
-            const keyword = document.getElementById('keyword').value;
-            const reply = document.getElementById('replyText').value;
-            if (!keyword || !reply) {
-                alert('请填写关键词和回复内容');
+        async function testConnection() {
+            showAlert('configAlert', '正在测试连接...', 'info');
+            try {
+                const response = await fetch(`${config.apiUrl}/v1/about`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert('configAlert', `✓ 连接成功！版本: ${data.versions?.['signal-cli-rest-api'] || 'unknown'}`, 'success');
+                } else {
+                    showAlert('configAlert', '✗ 连接失败，请检查API地址', 'error');
+                }
+            } catch (error) {
+                showAlert('configAlert', '✗ 无法连接到API服务: ' + error.message, 'error');
+            }
+        }
+
+        // Registration
+        async function registerNumber() {
+            const phone = document.getElementById('registerPhone').value.trim();
+            const method = document.getElementById('verifyMethod').value;
+            
+            if (!phone) {
+                showAlert('registerAlert', '请输入手机号码', 'error');
                 return;
             }
+
+            showAlert('registerAlert', '正在发送验证码...', 'info');
+            
+            try {
+                const body = method === 'voice' ? JSON.stringify({ use_voice: true }) : '';
+                const response = await fetch(`${config.apiUrl}/v1/register/${encodeURIComponent(phone)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body
+                });
+
+                if (response.ok) {
+                    config.botNumber = phone;
+                    document.getElementById('botNumber').value = phone;
+                    saveConfig();
+                    showAlert('registerAlert', `✓ 验证码已发送到 ${phone}，请查收`, 'success');
+                } else {
+                    const error = await response.text();
+                    showAlert('registerAlert', '✗ 发送失败: ' + error, 'error');
+                }
+            } catch (error) {
+                showAlert('registerAlert', '✗ 请求失败: ' + error.message, 'error');
+            }
+        }
+
+        async function verifyNumber() {
+            const phone = document.getElementById('registerPhone').value.trim();
+            const code = document.getElementById('verifyCode').value.trim();
+            
+            if (!code) {
+                showAlert('registerAlert', '请输入验证码', 'error');
+                return;
+            }
+
+            showAlert('registerAlert', '正在验证...', 'info');
+            
+            try {
+                const response = await fetch(`${config.apiUrl}/v1/register/${encodeURIComponent(phone)}/verify/${code}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    showAlert('registerAlert', '✓ 验证成功！机器人账号已激活', 'success');
+                    setTimeout(() => switchTab(2), 2000);
+                } else {
+                    const error = await response.text();
+                    showAlert('registerAlert', '✗ 验证失败: ' + error, 'error');
+                }
+            } catch (error) {
+                showAlert('registerAlert', '✗ 验证请求失败: ' + error.message, 'error');
+            }
+        }
+
+        // QR Code Linking
+        async function generateQRCode() {
+            showAlert('linkAlert', '正在生成二维码...', 'info');
+            try {
+                const deviceName = 'SignalBot_' + Date.now();
+                const response = await fetch(`${config.apiUrl}/v1/qrcodelink?device_name=${deviceName}`);
+                
+                if (response.ok) {
+                    const data = await response.text();
+                    const qrContainer = document.getElementById('qrContainer');
+                    
+                    // Parse the URL from response
+                    const urlMatch = data.match(/tsdevice:\/\?[^\s"]+/);
+                    if (urlMatch) {
+                        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlMatch[0])}`;
+                        qrContainer.innerHTML = `
+                            <img src="${qrUrl}" alt="QR Code">
+                            <p style="color: var(--text-secondary); font-size: 14px;">
+                                请使用Signal手机App扫描二维码<br>
+                                设置 → 关联的设备 → 链接新设备
+                            </p>
+                        `;
+                        showAlert('linkAlert', '✓ 二维码已生成，请扫描', 'success');
+                    }
+                } else {
+                    showAlert('linkAlert', '✗ 生成失败', 'error');
+                }
+            } catch (error) {
+                showAlert('linkAlert', '✗ 请求失败: ' + error.message, 'error');
+            }
+        }
+
+        // Rules Management
+        function addRule() {
+            const keyword = document.getElementById('ruleKeyword').value.trim();
+            const reply = document.getElementById('ruleReply').value.trim();
+            
+            if (!keyword || !reply) {
+                alert('⚠️ 请填写关键词和回复内容');
+                return;
+            }
+
             rules.push({ keyword, reply });
             localStorage.setItem('signalBotRules', JSON.stringify(rules));
-            document.getElementById('keyword').value = '';
-            document.getElementById('replyText').value = '';
+            
+            document.getElementById('ruleKeyword').value = '';
+            document.getElementById('ruleReply').value = '';
+            
             displayRules();
+            updateStats();
         }
 
         function loadRules() {
@@ -132,94 +862,103 @@
 
         function displayRules() {
             const container = document.getElementById('rulesList');
+            
             if (rules.length === 0) {
-                container.innerHTML = '<p style="color: #999;">暂无规则</p>';
+                container.innerHTML = '<div class="empty-state"><p>暂无规则，添加第一条规则开始自动回复</p></div>';
                 return;
             }
-            container.innerHTML = rules.map((rule, index) => 
-                `<div style="background: white; padding: 10px; margin-bottom: 8px; border-radius: 4px;">
-                    <strong>关键词:</strong> ${rule.keyword} → <strong>回复:</strong> ${rule.reply}
-                    <button onclick="deleteRule(${index})" style="float: right; padding: 5px 10px; font-size: 12px;" class="danger">删除</button>
-                </div>`
-            ).join('');
+
+            container.innerHTML = rules.map((rule, index) => `
+                <div class="rule-item">
+                    <div class="rule-content">
+                        <div class="rule-keyword">🔑 ${rule.keyword}</div>
+                        <div class="rule-reply">💬 ${rule.reply}</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteRule(${index})" style="padding: 8px 16px;">删除</button>
+                </div>
+            `).join('');
         }
 
         function deleteRule(index) {
             rules.splice(index, 1);
             localStorage.setItem('signalBotRules', JSON.stringify(rules));
             displayRules();
+            updateStats();
         }
 
-        // 启动机器人
+        // Bot Control
         function startBot() {
             if (botRunning) {
-                showStatus('controlStatus', '机器人已在运行中', 'error');
+                showAlert('controlAlert', '⚠️ 机器人已在运行中', 'error');
                 return;
             }
+
             botRunning = true;
             updateBotStatus();
-            showStatus('controlStatus', '机器人已启动，正在监听消息...', 'success');
+            showAlert('controlAlert', '✓ 机器人已启动，正在监听消息...', 'success');
             
-            // 开始轮询接收消息
             pollInterval = setInterval(receiveMessages, 3000);
         }
 
-        // 停止机器人
         function stopBot() {
             botRunning = false;
             updateBotStatus();
+            
             if (pollInterval) {
                 clearInterval(pollInterval);
                 pollInterval = null;
             }
-            showStatus('controlStatus', '机器人已停止', 'success');
+            
+            showAlert('controlAlert', '✓ 机器人已停止', 'success');
         }
 
         function updateBotStatus() {
-            const indicator = document.getElementById('botStatusIndicator');
-            const text = document.getElementById('botStatusText');
+            const badge = document.getElementById('botStatusBadge');
+            
             if (botRunning) {
-                indicator.className = 'bot-status running';
-                text.textContent = '运行中';
+                badge.innerHTML = '<span class="status-dot online"></span><span>运行中</span>';
+                badge.className = 'status-badge online';
             } else {
-                indicator.className = 'bot-status stopped';
-                text.textContent = '未运行';
+                badge.innerHTML = '<span class="status-dot offline"></span><span>离线</span>';
+                badge.className = 'status-badge offline';
             }
         }
 
-        // 接收消息
+        // Messages
         async function receiveMessages() {
             try {
                 const response = await fetch(`${config.apiUrl}/v1/receive/${encodeURIComponent(config.botNumber)}`);
-                if (!response.ok) throw new Error('接收消息失败');
                 
-                const messages = await response.json();
-                if (messages && messages.length > 0) {
-                    messages.forEach(msg => {
-                        if (msg.envelope && msg.envelope.dataMessage) {
-                            const text = msg.envelope.dataMessage.message;
-                            const sender = msg.envelope.source || msg.envelope.sourceNumber;
-                            displayMessage(sender, text);
-                            
-                            // 自动回复处理
-                            processAutoReply(sender, text);
-                        }
-                    });
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(msg => {
+                            if (msg.envelope && msg.envelope.dataMessage) {
+                                const text = msg.envelope.dataMessage.message;
+                                const sender = msg.envelope.source || msg.envelope.sourceNumber;
+                                
+                                displayMessage(sender, text);
+                                processAutoReply(sender, text);
+                            }
+                        });
+                    }
                 }
             } catch (error) {
                 console.error('接收消息错误:', error);
             }
         }
 
-        // 处理自动回复
         function processAutoReply(sender, message) {
             const matchedRule = rules.find(rule => message.includes(rule.keyword));
+            
             if (matchedRule && botRunning) {
                 sendMessage(sender, matchedRule.reply);
+                stats.replies++;
+                updateStats();
             }
         }
 
-        // 发送消息
         async function sendMessage(recipient, message) {
             try {
                 const response = await fetch(`${config.apiUrl}/v2/send`, {
@@ -231,49 +970,84 @@
                         recipients: [recipient]
                     })
                 });
-                if (!response.ok) throw new Error('发送失败');
-                console.log('已自动回复:', recipient);
+
+                if (response.ok) {
+                    console.log('✓ 已自动回复:', recipient);
+                }
             } catch (error) {
-                console.error('发送消息错误:', error);
+                console.error('发送失败:', error);
             }
         }
 
-        // 发送测试消息
         async function sendTestMessage() {
-            const recipient = prompt('请输入接收者号码 (国际格式, 如 +8613800138000):');
-            if (!recipient) return;
+            const recipient = document.getElementById('testRecipient').value.trim();
+            const message = document.getElementById('testMessage').value.trim();
             
+            if (!recipient || !message) {
+                showAlert('controlAlert', '⚠️ 请填写接收者和消息内容', 'error');
+                return;
+            }
+
             try {
-                await sendMessage(recipient, '这是来自Signal机器人的测试消息！');
-                showStatus('controlStatus', '测试消息已发送', 'success');
+                await sendMessage(recipient, message);
+                showAlert('controlAlert', '✓ 测试消息已发送', 'success');
+                document.getElementById('testMessage').value = '';
             } catch (error) {
-                showStatus('controlStatus', '发送失败: ' + error.message, 'error');
+                showAlert('controlAlert', '✗ 发送失败: ' + error.message, 'error');
             }
         }
 
-        // 显示消息
         function displayMessage(sender, text) {
-            receivedMessages.unshift({ sender, text, time: new Date().toLocaleString() });
+            stats.messages++;
+            updateStats();
+            
+            messages.unshift({
+                sender,
+                text,
+                time: new Date().toLocaleString('zh-CN')
+            });
+
             const container = document.getElementById('messagesContainer');
-            container.innerHTML = receivedMessages.map(msg => 
-                `<div class="message-item">
-                    <strong>${msg.sender}</strong> <small style="color: #999;">${msg.time}</small><br>
-                    ${msg.text}
-                </div>`
-            ).join('');
+            container.innerHTML = messages.map(msg => `
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="message-sender">${msg.sender}</span>
+                        <span class="message-time">${msg.time}</span>
+                    </div>
+                    <div class="message-text">${msg.text}</div>
+                </div>
+            `).join('');
         }
 
         function clearMessages() {
-            receivedMessages = [];
-            document.getElementById('messagesContainer').innerHTML = '<p style="color: #999;">暂无消息</p>';
+            messages = [];
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <p>暂无消息</p>
+                </div>
+            `;
         }
 
-        // 显示状态提示
-        function showStatus(elementId, message, type) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.className = `status ${type}`;
-            setTimeout(() => el.className = 'status', 3000);
+        // Stats
+        function updateStats() {
+            document.getElementById('statMessages').textContent = stats.messages;
+            document.getElementById('statRules').textContent = rules.length;
+            document.getElementById('statReplies').textContent = stats.replies;
+        }
+
+        // Alert Helper
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
         }
     </script>
 </body>
