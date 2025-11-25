@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrix 客户端</title>
     <style>
-        /* 样式保持不变 - 此处省略，使用之前的完整样式 */
         * {
             margin: 0;
             padding: 0;
@@ -73,10 +72,6 @@
             font-weight: 500;
         }
         
-        .input-wrapper {
-            position: relative;
-        }
-        
         .form-group input {
             width: 100%;
             padding: 14px 16px;
@@ -97,12 +92,6 @@
             font-size: 12px;
             color: #6b7280;
             margin-top: 6px;
-            line-height: 1.4;
-        }
-        
-        .input-hint.detected {
-            color: #059669;
-            font-weight: 500;
         }
         
         .server-auto-detected {
@@ -120,41 +109,9 @@
             display: block;
         }
         
-        .homeserver-group {
-            transition: all 0.3s;
-        }
-        
         .homeserver-group.hidden {
             opacity: 0.5;
             pointer-events: none;
-        }
-        
-        .login-method-toggle {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: #f3f4f6;
-            padding: 4px;
-            border-radius: 10px;
-        }
-        
-        .method-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7280;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .method-btn.active {
-            background: white;
-            color: #2a5298;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .login-btn {
@@ -174,10 +131,6 @@
         .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(42, 82, 152, 0.5);
-        }
-        
-        .login-btn:active {
-            transform: translateY(0);
         }
         
         .login-btn:disabled {
@@ -255,10 +208,12 @@
             height: 7px;
             border-radius: 50%;
             background: #10b981;
+            animation: pulse 2s infinite;
         }
         
-        .status-indicator.connecting {
-            background: #f59e0b;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
         
         .logout-btn {
@@ -459,10 +414,6 @@
             box-shadow: 0 6px 16px rgba(42, 82, 152, 0.4);
         }
         
-        .send-btn:active {
-            transform: translateY(0);
-        }
-        
         .empty-state {
             display: flex;
             align-items: center;
@@ -481,7 +432,6 @@
         
         ::-webkit-scrollbar {
             width: 6px;
-            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
@@ -492,10 +442,6 @@
             background: #2a5298;
             border-radius: 3px;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3a62b8;
-        }
     </style>
 </head>
 <body>
@@ -503,22 +449,15 @@
     <div id="loginScreen">
         <div class="login-box">
             <h1 class="login-title">Matrix 客户端</h1>
-            <p class="login-subtitle">连接到去中心化的通讯网络</p>
-            <div class="status-text" id="loginStatus">正在加载 SDK...</div>
+            <p class="login-subtitle">基于 Matrix HTTP API 开发</p>
+            <div class="status-text" id="loginStatus">准备就绪</div>
             
             <form id="loginForm">
-                <div class="login-method-toggle">
-                    <button type="button" class="method-btn active" data-method="user">用户ID/用户名</button>
-                    <button type="button" class="method-btn" data-method="email">邮箱</button>
-                </div>
-                
                 <div class="form-group">
-                    <label id="identifierLabel">用户ID 或 用户名</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="identifier" placeholder="@username:matrix.org" required autocomplete="username">
-                        <div class="server-auto-detected" id="serverDetected">
-                            ✓ 已自动检测服务器
-                        </div>
+                    <label>用户ID 或 用户名</label>
+                    <input type="text" id="identifier" placeholder="@username:matrix.org" required>
+                    <div class="server-auto-detected" id="serverDetected">
+                        ✓ 已自动检测服务器
                     </div>
                     <div class="input-hint" id="identifierHint">
                         完整格式: @username:matrix.org 或仅输入用户名
@@ -528,17 +467,15 @@
                 <div class="form-group homeserver-group" id="homeserverGroup">
                     <label>服务器地址</label>
                     <input type="text" id="homeserver" value="https://matrix.org" placeholder="https://matrix.org">
-                    <div class="input-hint">
-                        官方服务器: matrix.org
-                    </div>
+                    <div class="input-hint">官方服务器: matrix.org</div>
                 </div>
                 
                 <div class="form-group">
                     <label>密码</label>
-                    <input type="password" id="password" placeholder="输入密码" required autocomplete="current-password">
+                    <input type="password" id="password" placeholder="输入密码" required>
                 </div>
                 
-                <button type="submit" class="login-btn" id="loginBtn" disabled>登录</button>
+                <button type="submit" class="login-btn" id="loginBtn">登录</button>
                 <div id="errorMsg" class="error-msg" style="display: none;"></div>
             </form>
         </div>
@@ -552,10 +489,8 @@
                 <div class="user-details">
                     <div class="user-name" id="userName">Matrix 用户</div>
                     <div class="connection-info">
-                        <span class="status-indicator" id="statusIndicator"></span>
-                        <span id="connectionStatus">已连接</span>
-                        <span>•</span>
-                        <span>延迟: <span id="pingValue">--</span>ms</span>
+                        <span class="status-indicator"></span>
+                        <span>已连接</span>
                     </div>
                 </div>
             </div>
@@ -585,106 +520,165 @@
         </div>
     </div>
 
-    <!-- Matrix JS SDK - 使用正确的 CDN -->
-    <script src="https://unpkg.com/matrix-js-sdk@30.0.0/lib/browser-index.js"></script>
-    
     <script>
-        // 等待 SDK 加载完成
-        function waitForSDK() {
-            return new Promise((resolve, reject) => {
-                if (typeof window.matrixcs !== 'undefined') {
-                    resolve();
-                    return;
+        // Matrix 客户端 - 使用原生 HTTP API
+        class MatrixClient {
+            constructor(baseUrl, accessToken, userId) {
+                this.baseUrl = baseUrl;
+                this.accessToken = accessToken;
+                this.userId = userId;
+                this.rooms = new Map();
+                this.syncToken = null;
+                this.syncing = false;
+            }
+
+            async request(method, endpoint, data = null) {
+                const url = `${this.baseUrl}/_matrix/client/r0${endpoint}`;
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
                 }
                 
-                let attempts = 0;
-                const checkSDK = setInterval(() => {
-                    attempts++;
-                    if (typeof window.matrixcs !== 'undefined') {
-                        clearInterval(checkSDK);
-                        resolve();
-                    } else if (attempts > 50) {
-                        clearInterval(checkSDK);
-                        reject(new Error('SDK 加载超时'));
-                    }
-                }, 100);
-            });
-        }
-
-        // 初始化应用
-        waitForSDK().then(() => {
-            document.getElementById('loginStatus').textContent = '准备就绪';
-            document.getElementById('loginBtn').disabled = false;
-            initApp();
-        }).catch(error => {
-            document.getElementById('loginStatus').textContent = 'SDK 加载失败';
-            document.getElementById('errorMsg').textContent = 'Matrix SDK 加载失败，请刷新页面重试';
-            document.getElementById('errorMsg').style.display = 'block';
-        });
-
-        let matrixClient = null;
-        let currentRoomId = null;
-        let pingInterval = null;
-        let currentLoginMethod = 'user';
-
-        function initApp() {
-            // 登录方式切换
-            document.querySelectorAll('.method-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentLoginMethod = this.dataset.method;
-                    updateLoginInterface();
-                });
-            });
-
-            // 标识符输入监听
-            document.getElementById('identifier').addEventListener('input', checkIdentifier);
-
-            // 登录表单提交
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-            // 消息发送
-            document.getElementById('sendBtn').addEventListener('click', sendMessage);
-            document.getElementById('messageInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Request failed');
                 }
-            });
-
-            // 输入框自动调整高度
-            document.getElementById('messageInput').addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-            });
-
-            // 退出登录
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-        }
-
-        function updateLoginInterface() {
-            const identifierInput = document.getElementById('identifier');
-            const identifierLabel = document.getElementById('identifierLabel');
-            const identifierHint = document.getElementById('identifierHint');
-            
-            if (currentLoginMethod === 'email') {
-                identifierLabel.textContent = '邮箱地址';
-                identifierInput.placeholder = 'user@example.com';
-                identifierInput.type = 'email';
-                identifierHint.textContent = '使用您在服务器上绑定的邮箱地址登录';
-            } else {
-                identifierLabel.textContent = '用户ID 或 用户名';
-                identifierInput.placeholder = '@username:matrix.org';
-                identifierInput.type = 'text';
-                identifierHint.textContent = '完整格式: @username:matrix.org 或仅输入用户名';
+                return response.json();
             }
-            
-            checkIdentifier();
+
+            async login(homeserver, identifier, password) {
+                const url = `${homeserver}/_matrix/client/r0/login`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'm.login.password',
+                        identifier: {
+                            type: 'm.id.user',
+                            user: identifier
+                        },
+                        password: password
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '登录失败');
+                }
+                
+                return response.json();
+            }
+
+            async sync(timeout = 30000) {
+                const params = new URLSearchParams({
+                    timeout: timeout.toString()
+                });
+                
+                if (this.syncToken) {
+                    params.append('since', this.syncToken);
+                }
+                
+                const data = await this.request('GET', `/sync?${params}`);
+                this.syncToken = data.next_batch;
+                return data;
+            }
+
+            async getRooms() {
+                const data = await this.sync(0);
+                const rooms = [];
+                
+                if (data.rooms && data.rooms.join) {
+                    for (const [roomId, roomData] of Object.entries(data.rooms.join)) {
+                        const room = {
+                            roomId,
+                            name: this.getRoomName(roomData),
+                            timeline: roomData.timeline?.events || []
+                        };
+                        this.rooms.set(roomId, room);
+                        rooms.push(room);
+                    }
+                }
+                
+                return rooms;
+            }
+
+            getRoomName(roomData) {
+                const nameEvent = roomData.state?.events?.find(e => e.type === 'm.room.name');
+                if (nameEvent) return nameEvent.content.name;
+                
+                const canonicalAliasEvent = roomData.state?.events?.find(e => e.type === 'm.room.canonical_alias');
+                if (canonicalAliasEvent) return canonicalAliasEvent.content.alias;
+                
+                return '未命名房间';
+            }
+
+            async sendMessage(roomId, message) {
+                const txnId = Date.now();
+                return this.request('PUT', `/rooms/${encodeURIComponent(roomId)}/send/m.room.message/${txnId}`, {
+                    msgtype: 'm.text',
+                    body: message
+                });
+            }
+
+            async getMessages(roomId, limit = 50) {
+                const room = this.rooms.get(roomId);
+                if (!room) return [];
+                
+                try {
+                    const params = new URLSearchParams({
+                        dir: 'b',
+                        limit: limit.toString()
+                    });
+                    
+                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?${params}`);
+                    return data.chunk.reverse();
+                } catch (error) {
+                    console.error('获取消息失败:', error);
+                    return room.timeline || [];
+                }
+            }
+
+            startSync(callback) {
+                if (this.syncing) return;
+                this.syncing = true;
+                
+                const doSync = async () => {
+                    try {
+                        const data = await this.sync();
+                        if (data.rooms && data.rooms.join) {
+                            callback(data);
+                        }
+                    } catch (error) {
+                        console.error('同步错误:', error);
+                    }
+                    
+                    if (this.syncing) {
+                        setTimeout(doSync, 1000);
+                    }
+                };
+                
+                doSync();
+            }
+
+            stopSync() {
+                this.syncing = false;
+            }
         }
 
-        function checkIdentifier() {
-            const identifier = document.getElementById('identifier').value.trim();
+        let client = null;
+        let currentRoomId = null;
+
+        // 智能检测标识符
+        document.getElementById('identifier').addEventListener('input', function() {
+            const identifier = this.value.trim();
             const homeserverGroup = document.getElementById('homeserverGroup');
             const serverDetected = document.getElementById('serverDetected');
             const homeserverInput = document.getElementById('homeserver');
@@ -693,29 +687,20 @@
             const matrixIdRegex = /^@[a-z0-9._=-]+:([a-z0-9.-]+\.[a-z]{2,})$/i;
             const match = identifier.match(matrixIdRegex);
             
-            if (match && currentLoginMethod === 'user') {
-                const detectedServer = match[1];
-                homeserverInput.value = `https://${detectedServer}`;
+            if (match) {
+                homeserverInput.value = `https://${match[1]}`;
                 homeserverGroup.classList.add('hidden');
                 serverDetected.classList.add('show');
                 identifierHint.textContent = `✓ 已识别完整用户ID`;
-                identifierHint.classList.add('detected');
             } else {
                 homeserverGroup.classList.remove('hidden');
                 serverDetected.classList.remove('show');
-                identifierHint.classList.remove('detected');
-                
-                if (currentLoginMethod === 'email') {
-                    identifierHint.textContent = '使用您在服务器上绑定的邮箱地址登录';
-                } else if (identifier && !identifier.startsWith('@')) {
-                    identifierHint.textContent = '已识别为用户名，需要指定服务器';
-                } else {
-                    identifierHint.textContent = '完整格式: @username:matrix.org 或仅输入用户名';
-                }
+                identifierHint.textContent = '完整格式: @username:matrix.org 或仅输入用户名';
             }
-        }
+        });
 
-        async function handleLogin(e) {
+        // 登录处理
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const identifier = document.getElementById('identifier').value.trim();
@@ -731,74 +716,24 @@
             errorMsg.style.display = 'none';
             
             try {
-                const tempClient = window.matrixcs.createClient({ baseUrl: homeserver });
+                const tempClient = new MatrixClient(homeserver, '', '');
+                const loginResponse = await tempClient.login(homeserver, identifier, password);
                 
-                let loginIdentifier;
+                loginStatus.textContent = '正在加载数据...';
                 
-                if (currentLoginMethod === 'email') {
-                    loginIdentifier = {
-                        type: 'm.id.thirdparty',
-                        medium: 'email',
-                        address: identifier
-                    };
-                } else if (identifier.startsWith('@')) {
-                    loginIdentifier = {
-                        type: 'm.id.user',
-                        user: identifier
-                    };
-                } else {
-                    loginIdentifier = {
-                        type: 'm.id.user',
-                        user: identifier
-                    };
-                }
+                client = new MatrixClient(homeserver, loginResponse.access_token, loginResponse.user_id);
                 
-                loginStatus.textContent = '正在验证身份...';
-                
-                const loginResponse = await tempClient.login('m.login.password', {
-                    identifier: loginIdentifier,
-                    password: password
-                });
-                
-                loginStatus.textContent = '正在同步数据...';
-                
-                matrixClient = window.matrixcs.createClient({
-                    baseUrl: homeserver,
-                    accessToken: loginResponse.access_token,
-                    userId: loginResponse.user_id,
-                    deviceId: loginResponse.device_id
-                });
-                
-                await matrixClient.startClient({ initialSyncLimit: 10 });
-                
-                matrixClient.once('sync', (state) => {
-                    if (state === 'PREPARED') {
-                        showMainScreen();
-                        loadRooms();
-                        setupListeners();
-                        
-                        measurePing();
-                        pingInterval = setInterval(measurePing, 5000);
-                    }
-                });
+                showMainScreen(loginResponse.user_id);
+                await loadRooms();
+                startSync();
                 
             } catch (error) {
                 console.error('登录失败:', error);
-                let errorText = '登录失败: ';
+                let errorText = '登录失败: ' + error.message;
                 
-                if (error.data?.error) {
-                    errorText += error.data.error;
-                } else if (error.message) {
-                    errorText += error.message;
-                } else {
-                    errorText += '未知错误';
-                }
-                
-                if (error.data?.errcode === 'M_FORBIDDEN') {
-                    errorText = '用户名、邮箱或密码错误，请检查后重试';
-                } else if (error.data?.errcode === 'M_USER_DEACTIVATED') {
-                    errorText = '该账号已被停用';
-                } else if (error.message?.includes('fetch')) {
+                if (error.message.includes('M_FORBIDDEN')) {
+                    errorText = '用户名或密码错误';
+                } else if (error.message.includes('fetch')) {
                     errorText = '无法连接到服务器，请检查服务器地址';
                 }
                 
@@ -808,121 +743,91 @@
                 loginBtn.disabled = false;
                 loginBtn.textContent = '登录';
             }
-        }
+        });
 
-        function updateStatus(status, ping = null) {
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('connectionStatus');
-            const pingValue = document.getElementById('pingValue');
-            
-            indicator.className = 'status-indicator';
-            if (status === 'connecting') {
-                indicator.classList.add('connecting');
-                statusText.textContent = '连接中';
-            } else {
-                statusText.textContent = '已连接';
-            }
-            
-            if (ping !== null) {
-                pingValue.textContent = ping;
-            }
-        }
-
-        async function measurePing() {
-            if (!matrixClient) return;
-            try {
-                const start = Date.now();
-                await matrixClient.getVersions();
-                const ping = Date.now() - start;
-                updateStatus('connected', ping);
-            } catch (error) {
-                updateStatus('connected', '--');
-            }
-        }
-
-        function showMainScreen() {
+        function showMainScreen(userId) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'flex';
             
-            const userId = matrixClient.getUserId();
             const displayName = userId.substring(1, userId.indexOf(':')) || userId;
-            
             document.getElementById('userName').textContent = displayName;
             document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
         }
 
-        function loadRooms() {
+        async function loadRooms() {
             const roomsList = document.getElementById('roomsList');
-            const rooms = matrixClient.getRooms();
             
-            if (rooms.length === 0) {
-                roomsList.innerHTML = '<div class="loading">暂无房间</div>';
-                return;
+            try {
+                const rooms = await client.getRooms();
+                
+                if (rooms.length === 0) {
+                    roomsList.innerHTML = '<div class="loading">暂无房间</div>';
+                    return;
+                }
+                
+                roomsList.innerHTML = '';
+                
+                rooms.forEach(room => {
+                    const roomDiv = document.createElement('div');
+                    roomDiv.className = 'room-item';
+                    roomDiv.dataset.roomId = room.roomId;
+                    
+                    const lastMsg = room.timeline.reverse().find(e => e.type === 'm.room.message');
+                    const preview = lastMsg ? (lastMsg.content.body || '').substring(0, 40) : '暂无消息';
+                    
+                    roomDiv.innerHTML = `
+                        <div class="room-name">${escapeHtml(room.name)}</div>
+                        <div class="room-preview">${escapeHtml(preview)}</div>
+                    `;
+                    
+                    roomDiv.addEventListener('click', () => openRoom(room.roomId, room.name));
+                    roomsList.appendChild(roomDiv);
+                });
+            } catch (error) {
+                console.error('加载房间失败:', error);
+                roomsList.innerHTML = '<div class="loading">加载失败</div>';
             }
-            
-            roomsList.innerHTML = '';
-            
-            rooms.forEach(room => {
-                const roomDiv = document.createElement('div');
-                roomDiv.className = 'room-item';
-                roomDiv.dataset.roomId = room.roomId;
-                
-                const roomName = room.name || '未命名房间';
-                const lastEvent = room.timeline[room.timeline.length - 1];
-                const preview = lastEvent ? 
-                    (lastEvent.getContent().body || '').substring(0, 40) : 
-                    '暂无消息';
-                
-                roomDiv.innerHTML = `
-                    <div class="room-name">${escapeHtml(roomName)}</div>
-                    <div class="room-preview">${escapeHtml(preview)}</div>
-                `;
-                
-                roomDiv.addEventListener('click', () => openRoom(room.roomId));
-                roomsList.appendChild(roomDiv);
-            });
         }
 
-        function openRoom(roomId) {
+        async function openRoom(roomId, roomName) {
             currentRoomId = roomId;
-            const room = matrixClient.getRoom(roomId);
             
-            document.querySelectorAll('.room-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-room-id="${roomId}"]`).classList.add('active');
+            document.querySelectorAll('.room-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-room-id="${roomId}"]`)?.classList.add('active');
             
-            document.getElementById('chatHeader').textContent = room.name || '未命名房间';
+            document.getElementById('chatHeader').textContent = roomName;
             document.getElementById('messageInputArea').style.display = 'block';
             
-            loadMessages(roomId);
+            await loadMessages(roomId);
         }
 
-        function loadMessages(roomId) {
+        async function loadMessages(roomId) {
             const container = document.getElementById('messagesContainer');
-            const room = matrixClient.getRoom(roomId);
+            container.innerHTML = '<div class="loading">加载消息中...</div>';
             
-            container.innerHTML = '';
-            
-            room.timeline.forEach(event => {
-                if (event.getType() === 'm.room.message') {
-                    const msgDiv = createMessageElement(event);
-                    container.appendChild(msgDiv);
-                }
-            });
-            
-            container.scrollTop = container.scrollHeight;
+            try {
+                const messages = await client.getMessages(roomId);
+                container.innerHTML = '';
+                
+                messages.forEach(event => {
+                    if (event.type === 'm.room.message') {
+                        const msgDiv = createMessageElement(event);
+                        container.appendChild(msgDiv);
+                    }
+                });
+                
+                container.scrollTop = container.scrollHeight;
+            } catch (error) {
+                console.error('加载消息失败:', error);
+                container.innerHTML = '<div class="loading">加载失败</div>';
+            }
         }
 
         function createMessageElement(event) {
-            const sender = event.getSender();
+            const sender = event.sender;
             const senderName = sender.substring(1, sender.indexOf(':')) || sender;
-            const content = event.getContent();
-            const time = new Date(event.getTs());
-            const timeStr = time.toLocaleTimeString('zh-CN', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
+            const time = new Date(event.origin_server_ts);
+            const timeStr = time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
             
             const div = document.createElement('div');
             div.className = 'message';
@@ -933,11 +838,19 @@
                         <span class="message-sender">${escapeHtml(senderName)}</span>
                         <span class="message-time">${timeStr}</span>
                     </div>
-                    <div class="message-body">${escapeHtml(content.body)}</div>
+                    <div class="message-body">${escapeHtml(event.content.body)}</div>
                 </div>
             `;
             return div;
         }
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
         async function sendMessage() {
             if (!currentRoomId) return;
@@ -948,53 +861,51 @@
             if (!message) return;
             
             try {
-                await matrixClient.sendTextMessage(currentRoomId, message);
+                await client.sendMessage(currentRoomId, message);
                 input.value = '';
                 input.style.height = 'auto';
+                
+                // 刷新消息列表
+                setTimeout(() => loadMessages(currentRoomId), 500);
             } catch (error) {
                 console.error('发送失败:', error);
+                alert('发送消息失败');
             }
         }
 
-        function setupListeners() {
-            matrixClient.on('Room.timeline', (event, room) => {
-                if (event.getType() === 'm.room.message') {
-                    if (room.roomId === currentRoomId) {
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        function startSync() {
+            client.startSync((data) => {
+                if (data.rooms && data.rooms.join && currentRoomId) {
+                    const roomData = data.rooms.join[currentRoomId];
+                    if (roomData && roomData.timeline) {
                         const container = document.getElementById('messagesContainer');
-                        const msgDiv = createMessageElement(event);
-                        container.appendChild(msgDiv);
-                        container.scrollTop = container.scrollHeight;
-                    }
-                    
-                    const roomItem = document.querySelector(`[data-room-id="${room.roomId}"]`);
-                    if (roomItem) {
-                        const preview = roomItem.querySelector('.room-preview');
-                        if (preview) {
-                            preview.textContent = event.getContent().body?.substring(0, 40) || '';
-                        }
+                        roomData.timeline.events.forEach(event => {
+                            if (event.type === 'm.room.message') {
+                                const msgDiv = createMessageElement(event);
+                                container.appendChild(msgDiv);
+                                container.scrollTop = container.scrollHeight;
+                            }
+                        });
                     }
                 }
             });
-
-            matrixClient.on('Room', () => {
-                loadRooms();
-            });
         }
 
-        function handleLogout() {
-            if (matrixClient) {
-                matrixClient.stopClient();
-                matrixClient = null;
-            }
-            if (pingInterval) {
-                clearInterval(pingInterval);
-                pingInterval = null;
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (client) {
+                client.stopSync();
+                client = null;
             }
             currentRoomId = null;
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('mainScreen').style.display = 'none';
             document.getElementById('loginStatus').textContent = '准备就绪';
-        }
+        });
 
         function escapeHtml(text) {
             const div = document.createElement('div');
