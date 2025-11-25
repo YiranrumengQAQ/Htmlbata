@@ -2,177 +2,294 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>纯 HTTP Matrix 客户端示例</title>
+  <title>Matrix 登录 · 玻璃拟态</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background: #020617;
-      color: #e5e7eb;
       min-height: 100vh;
       display: flex;
-      align-items: stretch;
+      align-items: center;
       justify-content: center;
-      padding: 16px;
+      background: radial-gradient(circle at top, #e0f2ff 0, #eef2ff 40%, #f9fafb 100%);
+      color: #111827;
+      overflow: hidden;
     }
-    .card {
-      width: 100%;
-      max-width: 480px;
-      background: #020617;
-      border-radius: 14px;
-      border: 1px solid #1f2937;
-      padding: 16px 16px 18px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-    }
-    h1 { font-size: 18px; margin-bottom: 4px; }
-    p.desc { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
 
-    .field { margin-bottom: 10px; font-size: 13px; }
-    .field label { display: block; margin-bottom: 4px; }
-    .field input, .field textarea {
+    /* 背景装饰圆 */
+    .orb {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(30px);
+      opacity: 0.7;
+      pointer-events: none;
+      animation: float 16s ease-in-out infinite alternate;
+    }
+    .orb.orb-1 {
+      width: 260px; height: 260px;
+      background: #bfdbfe;
+      top: -40px; left: -60px;
+    }
+    .orb.orb-2 {
+      width: 320px; height: 320px;
+      background: #fecaca;
+      bottom: -80px; right: -40px;
+      animation-duration: 20s;
+    }
+    @keyframes float {
+      0% { transform: translate3d(0,0,0) scale(1); }
+      100% { transform: translate3d(20px, -16px, 0) scale(1.05); }
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      padding: 16px;
       width: 100%;
-      border-radius: 8px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: #e5e7eb;
-      padding: 7px 8px;
+      max-width: 420px;
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 18px;
+      box-shadow:
+        0 22px 35px rgba(15, 23, 42, 0.15),
+        0 0 0 1px rgba(148, 163, 184, 0.3);
+      padding: 22px 20px 24px;
+      backdrop-filter: blur(18px);
+      transform: translateY(10px);
+      opacity: 0;
+      animation: card-in 0.55s ease-out forwards;
+    }
+
+    @keyframes card-in {
+      0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .logo-badge {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 160deg, #3b82f6, #a855f7, #ec4899, #3b82f6);
+      padding: 2px;
+    }
+    .logo-inner {
+      width: 100%; height: 100%;
+      border-radius: 10px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #1f2937;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 2px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .fields {
+      margin-top: 14px;
+    }
+    .field {
+      margin-bottom: 10px;
       font-size: 13px;
     }
-    .field textarea { resize: vertical; min-height: 52px; }
+    .field label {
+      display: block;
+      margin-bottom: 4px;
+      color: #374151;
+    }
+    .field input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid #d1d5db;
+      background: rgba(255, 255, 255, 0.85);
+      color: #111827;
+      font-size: 13px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease,
+                  transform 0.08s ease;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .hint-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
 
     .btn {
       width: 100%;
-      padding: 8px 0;
-      border-radius: 8px;
+      margin-top: 10px;
+      padding: 9px 0;
+      border-radius: 999px;
       border: none;
-      background: #2563eb;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
       color: white;
       font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      margin-top: 4px;
+      box-shadow: 0 12px 20px rgba(79,70,229,0.3);
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, filter 0.1s ease-out;
     }
-    .btn:active { transform: scale(0.98); }
-
-    .btn-small {
-      width: auto;
-      padding: 5px 10px;
-      font-size: 12px;
-      border-radius: 6px;
-      border: none;
-      background: #22c55e;
-      color: white;
-      cursor: pointer;
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(79,70,229,0.35);
+      filter: brightness(1.02);
+    }
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 6px 16px rgba(79,70,229,0.25);
     }
 
-    .error { margin-top: 6px; font-size: 12px; color: #f97373; min-height: 16px; }
-    .status { margin-top: 6px; font-size: 12px; color: #a5b4fc; min-height: 16px; }
-    .token-box {
+    .status {
       margin-top: 8px;
+      font-size: 12px;
+      min-height: 18px;
+    }
+    .status.error { color: #dc2626; }
+    .status.ok { color: #16a34a; }
+    .status.info { color: #6b7280; }
+
+    .token-box {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #6b7280;
+      word-break: break-all;
+      background: rgba(249, 250, 251, 0.9);
+      border-radius: 10px;
+      border: 1px dashed #d1d5db;
+      padding: 6px 7px;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 10px;
       font-size: 11px;
       color: #9ca3af;
-      word-break: break-all;
-      background: #020617;
-      border-radius: 8px;
-      border: 1px solid #1f2937;
-      padding: 6px 7px;
+      text-align: center;
     }
-    .section-title {
-      margin-top: 12px;
-      margin-bottom: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      border-top: 1px dashed #1f2937;
-      padding-top: 8px;
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 16px 22px; }
+      h1 { font-size: 17px; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Matrix 纯 HTTP 登录</h1>
-    <p class="desc">不使用 SDK，直接用 fetch 调 Matrix Client‑Server API 登录并发消息。</p>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-    <!-- 登录表单 -->
-    <div id="loginPart">
-      <div class="field">
-        <label>Homeserver 地址</label>
-        <input id="hs" value="https://matrix.org" />
-      </div>
-      <div class="field">
-        <label>用户名（完整 MXID 或本地名）</label>
-        <input id="user" placeholder="@你:matrix.org 或 仅本地名" />
-      </div>
-      <div class="field">
-        <label>密码</label>
-        <input id="pass" type="password" />
-      </div>
-      <button class="btn" id="loginBtn">HTTP 登录</button>
-      <div class="error" id="loginError"></div>
-      <div class="status" id="loginStatus"></div>
-    </div>
-
-    <!-- 登录后操作 -->
-    <div id="afterLogin" style="display:none;">
-      <div class="section-title">登录信息</div>
-      <div class="status" id="meInfo"></div>
-      <div class="token-box">
-        <strong>access_token：</strong>
-        <span id="tokenSpan"></span>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="logo-badge">
+          <div class="logo-inner">M</div>
+        </div>
+        <div>
+          <h1>登录 Matrix</h1>
+          <div class="subtitle">连接到你的 homeserver，开始 HTTP 聊天</div>
+        </div>
       </div>
 
-      <div class="section-title">向房间发文本消息</div>
-      <div class="field">
-        <label>房间 ID（例如：!xxxxxxx:matrix.org）</label>
-        <input id="roomId" />
+      <div class="fields">
+        <div class="field">
+          <label>Homeserver 地址</label>
+          <input id="hs" value="https://matrix.org" />
+        </div>
+        <div class="field">
+          <label>用户名（完整 MXID 或本地名）</label>
+          <input id="user" placeholder="@你:matrix.org 或 仅本地名" />
+        </div>
+        <div class="field">
+          <label>密码</label>
+          <input id="pass" type="password" />
+        </div>
+        <div class="hint-row">
+          <span>密码登录使用 m.login.password 流程</span>
+          <span id="flowHint"></span>
+        </div>
       </div>
-      <div class="field">
-        <label>消息内容</label>
-        <textarea id="msg"></textarea>
+
+      <button class="btn" id="loginBtn">登录</button>
+
+      <div class="status info" id="statusText"></div>
+      <div class="status error" id="errorText"></div>
+
+      <div class="token-box" id="tokenBox">
+        <strong>登录成功</strong><br />
+        user_id: <span id="userIdSpan"></span><br />
+        access_token: <span id="tokenSpan"></span>
       </div>
-      <button class="btn-small" id="sendBtn">发送消息</button>
-      <div class="status" id="sendStatus"></div>
+
+      <div class="footer">
+        登录成功后，请把 access_token 传给你的聊天页面，用纯 HTTP 调 Matrix API 发送/接收消息。[仅示例界面]
+      </div>
     </div>
   </div>
 
   <script>
+    const $ = id => document.getElementById(id);
     let accessToken = null;
     let userId = null;
-    let hsUrl = null;
-
-    const $ = id => document.getElementById(id);
 
     $('loginBtn').onclick = async () => {
-      const hs = $('hs').value.trim();
-      let user = $('user').value.trim();
+      const hsRaw = $('hs').value.trim();
+      const user = $('user').value.trim();
       const pass = $('pass').value;
 
-      $('loginError').textContent = '';
-      $('loginStatus').textContent = '';
+      $('statusText').textContent = '';
+      $('errorText').textContent = '';
+      $('tokenBox').style.display = 'none';
 
-      if (!hs || !user || !pass) {
-        $('loginError').textContent = '请把三项填完整。';
+      if (!hsRaw || !user || !pass) {
+        $('errorText').textContent = '请把 homeserver / 用户名 / 密码 填完整。';
         return;
       }
 
-      hsUrl = hs.replace(/\/+$/,''); // 去掉末尾 /
-
-      // 如果用户没写 @，就当本地用户名来用
-      const identifierUser = user;
+      const hs = hsRaw.replace(/\/+$/, '');
+      $('statusText').className = 'status info';
+      $('statusText').textContent = '正在登录到 ' + hs + ' …';
 
       const body = {
         type: "m.login.password",
         identifier: {
           type: "m.id.user",
-          user: identifierUser
+          user: user
         },
         password: pass
-      };
+      }; // 按 Matrix Client‑Server 规范的密码登录格式。[web:9][web:101]
 
       try {
-        $('loginStatus').textContent = '正在发送 /login 请求…';
-
-        // 直接 HTTP POST /_matrix/client/v3/login。[web:9][web:73]
-        const res = await fetch(hsUrl + "/_matrix/client/v3/login", {
+        const res = await fetch(hs + "/_matrix/client/v3/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -181,76 +298,27 @@
         const data = await res.json();
 
         if (!res.ok) {
-          $('loginError').textContent =
-            '登录失败：' + (data.error || (res.status + ' ' + res.statusText));
-          console.log('login error', data);
+          const msg = data.error || (res.status + " " + res.statusText);
+          $('errorText').textContent = '登录失败：' + msg;
+          $('statusText').textContent = '';
           return;
         }
 
         accessToken = data.access_token;
         userId = data.user_id;
 
-        $('loginStatus').textContent = '登录成功。';
-        $('meInfo').textContent = "当前用户：" + userId;
+        $('statusText').className = 'status ok';
+        $('statusText').textContent = '登录成功。你可以把 token 用在后续 HTTP 请求中。';
+        $('userIdSpan').textContent = userId || '(未知)';
         $('tokenSpan').textContent = accessToken || '(服务器未返回 token)';
+        $('tokenBox').style.display = 'block';
 
-        // 切换界面
-        $('loginPart').style.display = 'none';
-        $('afterLogin').style.display = 'block';
+        // 这里你可以：window.postMessage / localStorage / 跳转到聊天页并带上 token
+        // 例如：location.href = "chat.html?hs=" + encodeURIComponent(hs) + "&access_token=" + encodeURIComponent(accessToken);
       } catch (e) {
         console.error(e);
-        $('loginError').textContent = '网络或跨域错误：' + e.message;
-      }
-    };
-
-    $('sendBtn').onclick = async () => {
-      if (!accessToken) {
-        $('sendStatus').textContent = '还没登录。';
-        return;
-      }
-      const roomId = $('roomId').value.trim();
-      const msg = $('msg').value.trim();
-      if (!roomId || !msg) {
-        $('sendStatus').textContent = '房间 ID 和消息不能为空。';
-        return;
-      }
-
-      $('sendStatus').textContent = '发送中…';
-
-      const content = {
-        msgtype: "m.text",
-        body: msg
-      }; // 标准 m.room.message 文本事件内容。[web:71][web:74]
-
-      // 按规范：PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.message/{txnId}?access_token=...[web:9][web:71]
-      const txnId = "mweb_" + Date.now();
-
-      const url =
-        hsUrl +
-        "/_matrix/client/v3/rooms/" +
-        encodeURIComponent(roomId) +
-        "/send/m.room.message/" +
-        encodeURIComponent(txnId) +
-        "?access_token=" +
-        encodeURIComponent(accessToken);
-
-      try {
-        const res = await fetch(url, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(content)
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          $('sendStatus').textContent =
-            '发送失败：' + (data.error || (res.status + ' ' + res.statusText));
-          console.log('send error', data);
-          return;
-        }
-        $('sendStatus').textContent = '发送成功，event_id=' + (data.event_id || '');
-      } catch (e) {
-        console.error(e);
-        $('sendStatus').textContent = '网络错误：' + e.message;
+        $('errorText').textContent = '网络或跨域错误：' + e.message;
+        $('statusText').textContent = '';
       }
     };
   </script>
