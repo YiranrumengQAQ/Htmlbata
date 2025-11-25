@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix 云存储</title>
+    <title>Discord 机器人控制面板</title>
     <style>
         * {
             margin: 0;
@@ -11,1431 +11,693 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-blue: #0078d4;
-            --dark-blue: #005a9e;
-            --light-blue: #50e6ff;
-            --hover-blue: #106ebe;
-            --background: #f3f3f3;
-            --surface: #ffffff;
-            --text-primary: #323130;
-            --text-secondary: #605e5c;
-            --border: #edebe9;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
-
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        /* 登录界面 */
         .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: white;
-            padding: 48px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
             width: 100%;
-            max-width: 440px;
-            animation: slideUp 0.4s ease;
+            animation: slideIn 0.5s ease;
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .login-logo {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .login-subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .form-input {
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            font-size: 14px;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 1px var(--primary-blue);
-        }
-
-        .form-hint {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-
-        .user-preview {
-            font-size: 12px;
-            color: var(--primary-blue);
-            font-weight: 600;
-            margin-top: 6px;
-            min-height: 18px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 2px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: var(--hover-blue);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary:disabled {
-            background: #f3f2f1;
-            color: #a19f9d;
-            cursor: not-allowed;
-        }
-
-        /* 主界面 */
-        .main-container {
             display: none;
-            min-height: 100vh;
-        }
-
-        .main-container.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 顶部导航栏 */
-        .top-nav {
-            background: var(--primary-blue);
-            color: white;
-            padding: 0 24px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .nav-logo {
-            font-size: 24px;
-        }
-
-        .nav-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            font-size: 13px;
-        }
-
-        .btn-logout {
-            padding: 6px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* 工具栏 */
-        .toolbar {
-            background: var(--surface);
-            padding: 12px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-upload {
-            padding: 8px 20px;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-upload:hover {
-            background: var(--hover-blue);
-        }
-
-        .toolbar-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border);
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 4px;
-        }
-
-        .view-btn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .view-btn:hover {
-            background: var(--background);
-        }
-
-        .view-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
-        /* 内容区域 */
-        .content-area {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-        }
-
-        /* 网格视图 */
-        .files-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-        }
-
-        .file-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .file-card:hover {
-            border-color: var(--primary-blue);
-            box-shadow: 0 2px 8px var(--shadow);
-            transform: translateY(-2px);
-        }
-
-        .file-icon-large {
-            font-size: 64px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .file-card-name {
-            font-size: 13px;
-            color: var(--text-primary);
-            font-weight: 600;
-            margin-bottom: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .file-card-info {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .file-card-actions {
-            margin-top: 8px;
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        /* 列表视图 */
-        .files-list {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-
-        .list-header {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 16px;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .file-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 16px;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s;
-            align-items: center;
-            animation: slideIn 0.3s ease;
-        }
-
-        .file-row:hover {
-            background: var(--background);
-        }
-
-        .file-row:last-child {
-            border-bottom: none;
-        }
-
-        .file-cell {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .file-icon-small {
-            font-size: 24px;
-        }
-
-        .file-name-cell {
-            font-size: 14px;
-            color: var(--text-primary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .file-info-cell {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .file-actions-cell {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* 按钮样式 */
-        .btn-action {
-            padding: 4px 12px;
-            background: transparent;
-            color: var(--primary-blue);
-            border: 1px solid var(--primary-blue);
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-action:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        .btn-danger {
-            color: #d13438;
-            border-color: #d13438;
-        }
-
-        .btn-danger:hover {
-            background: #d13438;
-            color: white;
-        }
-
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .empty-icon {
-            font-size: 96px;
-            margin-bottom: 24px;
-            opacity: 0.3;
-        }
-
-        .empty-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .empty-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        /* 上传区域 */
-        .upload-zone {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .upload-zone.active {
-            display: flex;
-        }
-
-        .upload-modal {
-            background: white;
-            border-radius: 4px;
-            padding: 32px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s ease;
-        }
-
-        .upload-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .upload-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 0;
-            width: 32px;
-            height: 32px;
-        }
-
-        .btn-close:hover {
-            color: var(--text-primary);
-        }
-
-        .drop-area {
-            border: 2px dashed var(--border);
-            border-radius: 4px;
-            padding: 48px 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--background);
-        }
-
-        .drop-area:hover, .drop-area.dragover {
-            border-color: var(--primary-blue);
-            background: rgba(0, 120, 212, 0.05);
-        }
-
-        .drop-icon {
-            font-size: 48px;
-            color: var(--primary-blue);
-            margin-bottom: 16px;
-        }
-
-        .drop-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .drop-hint {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .preview-list {
-            margin-top: 24px;
-        }
-
-        .preview-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--background);
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .preview-icon {
-            font-size: 32px;
-        }
-
-        .preview-info {
-            flex: 1;
-        }
-
-        .preview-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .preview-size {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .upload-actions {
-            margin-top: 24px;
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .btn-secondary {
-            padding: 8px 20px;
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn-secondary:hover {
-            background: var(--background);
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary-blue);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        .loading-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        /* 提示消息 */
-        .toast {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            background: white;
-            padding: 16px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid var(--primary-blue);
-            display: none;
-            z-index: 2000;
-            animation: slideInRight 0.3s ease;
-            max-width: 400px;
-        }
-
-        .toast.active {
-            display: block;
-        }
-
-        .toast.success {
-            border-left-color: #107c10;
-        }
-
-        .toast.error {
-            border-left-color: #d13438;
-        }
-
-        /* 图片预览 */
-        .preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .preview-modal.active {
-            display: flex;
-        }
-
-        .preview-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .preview-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 4px;
-        }
-
-        .btn-close-preview {
-            position: absolute;
-            top: -48px;
-            right: 0;
-            background: white;
-            color: var(--text-primary);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .files-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-
-            .list-header {
-                display: none;
-            }
-
-            .file-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .file-actions-cell {
-                justify-content: flex-start;
-            }
-
-            .toolbar {
-                flex-wrap: wrap;
-            }
-
-            .nav-title {
-                display: none;
-            }
-        }
-
-        /* 动画 */
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            animation: slideIn 0.5s ease;
         }
 
         @keyframes slideIn {
             from {
-                transform: translateX(-20px);
                 opacity: 0;
+                transform: translateY(-30px);
             }
             to {
-                transform: translateX(0);
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        @keyframes slideInRight {
-            from {
-                transform: translateX(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        h1 {
+            color: #5865F2;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #5865F2;
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #f04747;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #43b581;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .bot-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.online {
+            background: #43b581;
+            color: white;
+        }
+
+        .status.offline {
+            background: #f04747;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #5865F2, #7289DA);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
-        input[type="file"] {
-            display: none;
+        .control-card {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .control-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .control-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .control-card button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #5865F2;
+            padding-left: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #5865F2;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #f04747, #c0392b);
+            padding: 10px 20px;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .message-preview {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #5865F2;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 登录界面 -->
+    <!-- 登录页面 -->
     <div class="login-container" id="loginContainer">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">☁️</div>
-                <div class="login-title">Matrix 云存储</div>
-                <div class="login-subtitle">登录以访问您的文件</div>
-            </div>
-
-            <form onsubmit="login(event)">
-                <div class="form-group">
-                    <label class="form-label">服务器地址</label>
-                    <input type="text" class="form-input" id="homeserver" placeholder="https://matrix.org" value="https://matrix.org" oninput="updateUserPreview()">
-                    <div class="form-hint">您的Matrix服务器地址</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">用户名</label>
-                    <input type="text" class="form-input" id="username" placeholder="username" oninput="updateUserPreview()">
-                    <div class="form-hint">输入用户名即可</div>
-                    <div class="user-preview" id="userPreview"></div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">密码</label>
-                    <input type="password" class="form-input" id="password" placeholder="输入密码">
-                </div>
-
-                <button type="submit" class="btn-primary" id="loginBtn">登录</button>
-
-                <div class="loading" id="loginLoading">
-                    <div class="spinner"></div>
-                    <div class="loading-text">正在连接服务器...</div>
-                </div>
-            </form>
+        <div class="logo">🤖</div>
+        <h1>Discord 机器人控制面板</h1>
+        <div class="input-group">
+            <label for="token">机器人令牌 (Token)</label>
+            <input type="password" id="token" placeholder="请输入您的机器人令牌">
         </div>
+        <button onclick="login()">🚀 登录控制面板</button>
+        <div id="loginError" class="error"></div>
     </div>
 
-    <!-- 主界面 -->
-    <div class="main-container" id="mainContainer">
-        <!-- 顶部导航 -->
-        <div class="top-nav">
-            <div class="nav-left">
-                <div class="nav-logo">☁️</div>
-                <div class="nav-title">Matrix 云存储</div>
-            </div>
-            <div class="nav-right">
-                <div class="user-badge">
-                    <span>👤</span>
-                    <span id="userIdDisplay">未登录</span>
+    <!-- 控制面板 -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <div class="header">
+            <div class="bot-info">
+                <div class="bot-avatar" id="botAvatar">B</div>
+                <div>
+                    <h2 id="botName">机器人名称</h2>
+                    <span class="status online" id="botStatus">在线</span>
                 </div>
-                <button class="btn-logout" onclick="logout()">退出</button>
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">📊 服务器数量</div>
+                <div class="stat-value" id="serverCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">👥 用户数量</div>
+                <div class="stat-value" id="userCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">💬 消息处理</div>
+                <div class="stat-value" id="messageCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">⏱️ 运行时间</div>
+                <div class="stat-value" id="uptime">0h</div>
             </div>
         </div>
 
-        <!-- 工具栏 -->
-        <div class="toolbar">
-            <button class="btn-upload" onclick="showUploadZone()">
-                <span>⬆️</span>
-                <span>上传</span>
-            </button>
-            <div class="toolbar-divider"></div>
-            <div class="view-toggle">
-                <button class="view-btn active" onclick="switchView('grid')" id="gridViewBtn">
-                    ◻️ 网格
-                </button>
-                <button class="view-btn" onclick="switchView('list')" id="listViewBtn">
-                    ☰ 列表
-                </button>
+        <!-- 选项卡 -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('control')">⚙️ 控制中心</button>
+            <button class="tab" onclick="switchTab('messages')">💬 消息管理</button>
+            <button class="tab" onclick="switchTab('servers')">🏠 服务器管理</button>
+            <button class="tab" onclick="switchTab('logs')">📋 日志查看</button>
+        </div>
+
+        <!-- 控制中心 -->
+        <div class="tab-content active" id="control">
+            <div class="control-panel">
+                <div class="control-card">
+                    <h3>🎮 机器人状态</h3>
+                    <button onclick="startBot()">启动机器人</button>
+                    <button onclick="stopBot()">停止机器人</button>
+                    <button onclick="restartBot()">重启机器人</button>
+                </div>
+                <div class="control-card">
+                    <h3>🎯 活动状态</h3>
+                    <select id="activityType">
+                        <option value="PLAYING">正在玩</option>
+                        <option value="STREAMING">直播中</option>
+                        <option value="LISTENING">正在听</option>
+                        <option value="WATCHING">正在看</option>
+                    </select>
+                    <input type="text" id="activityText" placeholder="活动内容" style="margin-top: 10px;">
+                    <button onclick="setActivity()">设置活动</button>
+                </div>
+                <div class="control-card">
+                    <h3>🔧 快速操作</h3>
+                    <button onclick="clearCache()">清除缓存</button>
+                    <button onclick="syncCommands()">同步命令</button>
+                    <button onclick="refreshData()">刷新数据</button>
+                </div>
+                <div class="control-card">
+                    <h3>📊 性能监控</h3>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">CPU: <span id="cpu">0%</span></p>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">内存: <span id="memory">0MB</span></p>
+                    <p style="color: #666; font-size: 14px;">延迟: <span id="ping">0ms</span></p>
+                </div>
             </div>
         </div>
 
-        <!-- 内容区域 -->
-        <div class="content-area" id="contentArea">
-            <!-- 网格视图 -->
-            <div class="files-grid" id="filesGrid">
-                <div class="empty-state">
-                    <div class="empty-icon">📁</div>
-                    <div class="empty-title">还没有文件</div>
-                    <div class="empty-text">点击上传按钮添加您的第一个文件</div>
+        <!-- 消息管理 -->
+        <div class="tab-content" id="messages">
+            <div class="control-card">
+                <h3>📤 发送消息</h3>
+                <div class="input-group">
+                    <label>频道ID</label>
+                    <input type="text" id="channelId" placeholder="输入频道ID">
+                </div>
+                <div class="input-group">
+                    <label>消息内容</label>
+                    <textarea id="messageContent" rows="4" placeholder="输入要发送的消息"></textarea>
+                </div>
+                <button onclick="sendMessage()">发送消息</button>
+                <div class="message-preview" id="messagePreview" style="display: none;">
+                    <strong>消息预览：</strong>
+                    <p id="previewText"></p>
                 </div>
             </div>
+            <div id="messageStatus" class="success"></div>
+        </div>
 
-            <!-- 列表视图 -->
-            <div class="files-list" id="filesList" style="display: none;">
-                <div class="list-header">
-                    <div>名称</div>
-                    <div>大小</div>
-                    <div>上传时间</div>
-                    <div>操作</div>
+        <!-- 服务器管理 -->
+        <div class="tab-content" id="servers">
+            <div class="control-card">
+                <h3>🏠 服务器列表</h3>
+                <div id="serverList" style="max-height: 300px; overflow-y: auto;">
+                    <p style="color: #666;">加载中...</p>
                 </div>
-                <div class="empty-state">
-                    <div class="empty-icon">📁</div>
-                    <div class="empty-title">还没有文件</div>
-                    <div class="empty-text">点击上传按钮添加您的第一个文件</div>
-                </div>
+                <button onclick="loadServers()">刷新服务器列表</button>
             </div>
+        </div>
+
+        <!-- 日志查看 -->
+        <div class="tab-content" id="logs">
+            <h3>📋 实时日志</h3>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">[系统] 控制面板已初始化</div>
+            </div>
+            <button onclick="clearLogs()" style="margin-top: 15px;">清除日志</button>
         </div>
     </div>
-
-    <!-- 上传对话框 -->
-    <div class="upload-zone" id="uploadZone" onclick="closeUploadZone(event)">
-        <div class="upload-modal" onclick="event.stopPropagation()">
-            <div class="upload-header">
-                <div class="upload-title">上传文件</div>
-                <button class="btn-close" onclick="closeUploadZone()">✕</button>
-            </div>
-
-            <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
-                <div class="drop-icon">📤</div>
-                <div class="drop-text">选择文件或拖放到此处</div>
-                <div class="drop-hint">支持所有文件类型</div>
-            </div>
-            <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)">
-
-            <div class="preview-list" id="previewList" style="display: none;">
-            </div>
-
-            <div class="upload-actions" id="uploadActions" style="display: none;">
-                <button class="btn-secondary" onclick="closeUploadZone()">取消</button>
-                <button class="btn-primary" onclick="uploadFiles()">开始上传</button>
-            </div>
-
-            <div class="loading" id="uploadLoading">
-                <div class="spinner"></div>
-                <div class="loading-text">正在上传文件...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 图片预览 -->
-    <div class="preview-modal" id="previewModal" onclick="closePreview()">
-        <div class="preview-content" onclick="event.stopPropagation()">
-            <button class="btn-close-preview" onclick="closePreview()">✕ 关闭</button>
-            <img id="previewImage" src="" alt="预览">
-        </div>
-    </div>
-
-    <!-- 提示消息 -->
-    <div class="toast" id="toast"></div>
 
     <script>
-        let accessToken = null;
-        let userId = null;
-        let homeserverUrl = null;
-        let uploadedFiles = [];
-        let selectedFiles = [];
-        let currentView = 'grid';
+        let botToken = '';
+        let logCount = 1;
 
-        function updateUserPreview() {
-            const homeserver = document.getElementById('homeserver').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const preview = document.getElementById('userPreview');
+        // 登录功能
+        function login() {
+            const token = document.getElementById('token').value.trim();
+            const errorDiv = document.getElementById('loginError');
 
-            if (username && homeserver) {
-                const domain = extractDomain(homeserver);
-                if (domain) {
-                    preview.textContent = `完整ID: @${username}:${domain}`;
-                } else {
-                    preview.textContent = '';
-                }
-            } else {
-                preview.textContent = '';
-            }
-        }
-
-        function extractDomain(url) {
-            try {
-                const urlObj = new URL(url);
-                return urlObj.hostname;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function getFullUserId(username, homeserver) {
-            if (username.startsWith('@') && username.includes(':')) {
-                return username;
-            }
-            username = username.replace(/^@/, '');
-            const domain = extractDomain(homeserver);
-            if (!domain) {
-                throw new Error('无法从服务器地址提取域名');
-            }
-            return `@${username}:${domain}`;
-        }
-
-        async function login(event) {
-            if (event) event.preventDefault();
-
-            const homeserver = document.getElementById('homeserver').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            if (!homeserver || !username || !password) {
-                showToast('请填写所有字段', 'error');
+            if (!token) {
+                errorDiv.textContent = '❌ 请输入机器人令牌';
                 return;
             }
 
-            if (!homeserver.startsWith('http://') && !homeserver.startsWith('https://')) {
-                showToast('服务器地址必须包含 http:// 或 https://', 'error');
+            // 简单的token格式验证
+            if (token.split('.').length !== 3) {
+                errorDiv.textContent = '❌ 令牌格式无效';
                 return;
             }
 
-            const loginBtn = document.getElementById('loginBtn');
-            const loading = document.getElementById('loginLoading');
+            botToken = token;
+            addLog('成功登录控制面板', 'success');
             
-            loginBtn.disabled = true;
-            loading.classList.add('active');
-
-            try {
-                homeserverUrl = homeserver.replace(/\/$/, '');
-                const fullUserId = getFullUserId(username, homeserver);
-
-                const loginResponse = await fetch(`${homeserverUrl}/_matrix/client/r0/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        type: 'm.login.password',
-                        identifier: {
-                            type: 'm.id.user',
-                            user: fullUserId
-                        },
-                        password: password
-                    })
-                });
-
-                if (!loginResponse.ok) {
-                    const errorData = await loginResponse.json();
-                    throw new Error(errorData.error || '登录失败');
-                }
-
-                const loginData = await loginResponse.json();
-                accessToken = loginData.access_token;
-                userId = loginData.user_id;
-
-                // 保持登录状态
-                localStorage.setItem('matrix_token', accessToken);
-                localStorage.setItem('matrix_user_id', userId);
-                localStorage.setItem('matrix_homeserver', homeserverUrl);
-                localStorage.setItem('matrix_login_time', new Date().toISOString());
-
-                showMainInterface();
-                showToast('登录成功', 'success');
-
-            } catch (error) {
-                console.error('登录错误:', error);
-                showToast('登录失败: ' + error.message, 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loading.classList.remove('active');
-            }
-        }
-
-        function showMainInterface() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('mainContainer').classList.add('active');
-            document.getElementById('userIdDisplay').textContent = userId;
-            loadUploadedFiles();
-        }
-
-        function switchView(view) {
-            currentView = view;
-            const gridView = document.getElementById('filesGrid');
-            const listView = document.getElementById('filesList');
-            const gridBtn = document.getElementById('gridViewBtn');
-            const listBtn = document.getElementById('listViewBtn');
-
-            if (view === 'grid') {
-                gridView.style.display = 'grid';
-                listView.style.display = 'none';
-                gridBtn.classList.add('active');
-                listBtn.classList.remove('active');
-            } else {
-                gridView.style.display = 'none';
-                listView.style.display = 'block';
-                gridBtn.classList.remove('active');
-                listBtn.classList.add('active');
-            }
-
-            displayFiles();
-        }
-
-        function showUploadZone() {
-            document.getElementById('uploadZone').classList.add('active');
-        }
-
-        function closeUploadZone(event) {
-            if (event && event.target !== document.getElementById('uploadZone')) return;
-            document.getElementById('uploadZone').classList.remove('active');
-            selectedFiles = [];
-            document.getElementById('previewList').style.display = 'none';
-            document.getElementById('uploadActions').style.display = 'none';
-            document.getElementById('fileInput').value = '';
-        }
-
-        const dropArea = document.getElementById('dropArea');
-        
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropArea.classList.add('dragover');
-        });
-
-        dropArea.addEventListener('dragleave', () => {
-            dropArea.classList.remove('dragover');
-        });
-
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
-
-        function handleFileSelect(event) {
-            handleFiles(event.target.files);
-        }
-
-        function handleFiles(files) {
-            selectedFiles = Array.from(files);
-            const previewList = document.getElementById('previewList');
-            const uploadActions = document.getElementById('uploadActions');
-
-            previewList.innerHTML = '';
-
-            selectedFiles.forEach((file) => {
-                const item = document.createElement('div');
-                item.className = 'preview-item';
-                
-                const icon = getFileIcon(file.type);
-                const size = formatFileSize(file.size);
-
-                item.innerHTML = `
-                    <div class="preview-icon">${icon}</div>
-                    <div class="preview-info">
-                        <div class="preview-name">${file.name}</div>
-                        <div class="preview-size">${size}</div>
-                    </div>
-                `;
-                
-                previewList.appendChild(item);
-            });
-
-            previewList.style.display = 'block';
-            uploadActions.style.display = 'flex';
-        }
-
-        async function uploadFiles() {
-            if (selectedFiles.length === 0) return;
-
-            const loading = document.getElementById('uploadLoading');
-            const uploadActions = document.getElementById('uploadActions');
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboardContainer').style.display = 'block';
             
-            uploadActions.style.display = 'none';
-            loading.classList.add('active');
-
-            try {
-                for (const file of selectedFiles) {
-                    await uploadSingleFile(file);
-                }
-
-                showToast(`成功上传 ${selectedFiles.length} 个文件`, 'success');
-                closeUploadZone();
-                loadUploadedFiles();
-
-            } catch (error) {
-                console.error('上传错误:', error);
-                showToast('上传失败: ' + error.message, 'error');
-                uploadActions.style.display = 'flex';
-            } finally {
-                loading.classList.remove('active');
-            }
+            // 初始化数据
+            initializeDashboard();
         }
 
-        async function uploadSingleFile(file) {
-            const versions = ['v3', 'r0', 'v1'];
-
-            for (const version of versions) {
-                try {
-                    const uploadUrl = `${homeserverUrl}/_matrix/media/${version}/upload?filename=${encodeURIComponent(file.name)}`;
-
-                    const response = await fetch(uploadUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                            'Content-Type': file.type || 'application/octet-stream'
-                        },
-                        body: file
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        const fileInfo = {
-                            content_uri: data.content_uri,
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            uploadTime: new Date().toISOString()
-                        };
-
-                        uploadedFiles.push(fileInfo);
-                        saveUploadedFiles();
-                        return data;
-                    }
-                } catch (error) {
-                    continue;
-                }
-            }
-
-            throw new Error('上传失败');
+        // 初始化控制面板
+        function initializeDashboard() {
+            document.getElementById('botName').textContent = '传话机器人bot';
+            document.getElementById('botAvatar').textContent = '传';
+            
+            // 模拟数据（实际应用需要连接后端API）
+            updateStats();
+            startPerformanceMonitor();
         }
 
-        function loadUploadedFiles() {
-            const savedFiles = localStorage.getItem(`matrix_files_${userId}`);
-            if (savedFiles) {
-                uploadedFiles = JSON.parse(savedFiles);
-            }
-            displayFiles();
+        // 更新统计数据
+        function updateStats() {
+            document.getElementById('serverCount').textContent = Math.floor(Math.random() * 100);
+            document.getElementById('userCount').textContent = Math.floor(Math.random() * 10000);
+            document.getElementById('messageCount').textContent = Math.floor(Math.random() * 50000);
         }
 
-        function saveUploadedFiles() {
-            localStorage.setItem(`matrix_files_${userId}`, JSON.stringify(uploadedFiles));
-        }
-
-        function displayFiles() {
-            if (uploadedFiles.length === 0) {
-                document.getElementById('filesGrid').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📁</div>
-                        <div class="empty-title">还没有文件</div>
-                        <div class="empty-text">点击上传按钮添加您的第一个文件</div>
-                    </div>
-                `;
-                document.getElementById('filesList').innerHTML = `
-                    <div class="list-header">
-                        <div>名称</div>
-                        <div>大小</div>
-                        <div>上传时间</div>
-                        <div>操作</div>
-                    </div>
-                    <div class="empty-state">
-                        <div class="empty-icon">📁</div>
-                        <div class="empty-title">还没有文件</div>
-                        <div class="empty-text">点击上传按钮添加您的第一个文件</div>
-                    </div>
-                `;
-                return;
-            }
-
-            if (currentView === 'grid') {
-                displayGridView();
-            } else {
-                displayListView();
-            }
-        }
-
-        function displayGridView() {
-            const container = document.getElementById('filesGrid');
-            container.innerHTML = '';
-
-            uploadedFiles.slice().reverse().forEach((file, index) => {
-                const actualIndex = uploadedFiles.length - 1 - index;
-                const card = document.createElement('div');
-                card.className = 'file-card';
+        // 性能监控
+        function startPerformanceMonitor() {
+            setInterval(() => {
+                document.getElementById('cpu').textContent = (Math.random() * 30 + 5).toFixed(1) + '%';
+                document.getElementById('memory').textContent = (Math.random() * 200 + 100).toFixed(0) + 'MB';
+                document.getElementById('ping').textContent = (Math.random() * 50 + 20).toFixed(0) + 'ms';
                 
-                const icon = getFileIcon(file.type);
-                const size = formatFileSize(file.size);
-                const time = new Date(file.uploadTime).toLocaleString('zh-CN', {
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                const downloadUrl = getDownloadUrl(file.content_uri);
-                const isImage = file.type && file.type.startsWith('image/');
-
-                card.innerHTML = `
-                    <div class="file-icon-large">${icon}</div>
-                    <div class="file-card-name" title="${file.name}">${file.name}</div>
-                    <div class="file-card-info">${size} • ${time}</div>
-                    <div class="file-card-actions">
-                        ${isImage ? `<button class="btn-action" onclick="viewImage('${downloadUrl}')">查看</button>` : ''}
-                        <button class="btn-action" onclick="copyFileUrl('${downloadUrl}')">复制链接</button>
-                        <button class="btn-action" onclick="downloadFile('${file.content_uri}', '${file.name}')">下载</button>
-                        <button class="btn-action btn-danger" onclick="deleteFile(${actualIndex})">删除</button>
-                    </div>
-                `;
-                
-                container.appendChild(card);
-            });
-        }
-
-        function displayListView() {
-            const container = document.getElementById('filesList');
-            container.innerHTML = `
-                <div class="list-header">
-                    <div>名称</div>
-                    <div>大小</div>
-                    <div>上传时间</div>
-                    <div>操作</div>
-                </div>
-            `;
-
-            uploadedFiles.slice().reverse().forEach((file, index) => {
-                const actualIndex = uploadedFiles.length - 1 - index;
-                const row = document.createElement('div');
-                row.className = 'file-row';
-                
-                const icon = getFileIcon(file.type);
-                const size = formatFileSize(file.size);
-                const time = new Date(file.uploadTime).toLocaleString('zh-CN');
-                const downloadUrl = getDownloadUrl(file.content_uri);
-                const isImage = file.type && file.type.startsWith('image/');
-
-                row.innerHTML = `
-                    <div class="file-cell">
-                        <div class="file-icon-small">${icon}</div>
-                        <div class="file-name-cell" title="${file.name}">${file.name}</div>
-                    </div>
-                    <div class="file-info-cell">${size}</div>
-                    <div class="file-info-cell">${time}</div>
-                    <div class="file-actions-cell">
-                        ${isImage ? `<button class="btn-action" onclick="viewImage('${downloadUrl}')">查看</button>` : ''}
-                        <button class="btn-action" onclick="downloadFile('${file.content_uri}', '${file.name}')">下载</button>
-                        <button class="btn-action btn-danger" onclick="deleteFile(${actualIndex})">删除</button>
-                    </div>
-                `;
-                
-                container.appendChild(row);
-            });
-        }
-
-        function getDownloadUrl(contentUri) {
-            const match = contentUri.match(/mxc:\/\/([^/]+)\/(.+)/);
-            if (match) {
-                return `${homeserverUrl}/_matrix/media/v3/download/${match[1]}/${match[2]}?access_token=${accessToken}`;
-            }
-            return '';
-        }
-
-        function viewImage(url) {
-            document.getElementById('previewImage').src = url;
-            document.getElementById('previewModal').classList.add('active');
-        }
-
-        function closePreview() {
-            document.getElementById('previewModal').classList.remove('active');
-        }
-
-        function copyFileUrl(url) {
-            navigator.clipboard.writeText(url).then(() => {
-                showToast('链接已复制', 'success');
-            }).catch(() => {
-                showToast('复制失败', 'error');
-            });
-        }
-
-        async function downloadFile(contentUri, filename) {
-            try {
-                const match = contentUri.match(/mxc:\/\/([^/]+)\/(.+)/);
-                if (!match) throw new Error('无效的URI');
-
-                const endpoints = [
-                    `/_matrix/client/v1/media/download/${match[1]}/${match[2]}`,
-                    `/_matrix/media/v3/download/${match[1]}/${match[2]}`
-                ];
-
-                for (const endpoint of endpoints) {
-                    try {
-                        const response = await fetch(`${homeserverUrl}${endpoint}`, {
-                            headers: { 'Authorization': `Bearer ${accessToken}` }
-                        });
-
-                        if (response.ok) {
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = filename;
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            showToast('下载成功', 'success');
-                            return;
-                        }
-                    } catch (e) {
-                        continue;
-                    }
-                }
-
-                throw new Error('下载失败');
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
-        }
-
-        function deleteFile(index) {
-            if (confirm('确定要删除这个文件吗？')) {
-                uploadedFiles.splice(index, 1);
-                saveUploadedFiles();
-                displayFiles();
-                showToast('文件已删除', 'success');
-            }
-        }
-
-        function getFileIcon(mimeType) {
-            if (!mimeType) return '📄';
-            if (mimeType.startsWith('image/')) return '🖼️';
-            if (mimeType.startsWith('video/')) return '🎥';
-            if (mimeType.startsWith('audio/')) return '🎵';
-            if (mimeType.includes('pdf')) return '📕';
-            if (mimeType.includes('zip') || mimeType.includes('rar')) return '📦';
-            if (mimeType.includes('word')) return '📘';
-            if (mimeType.includes('excel') || mimeType.includes('sheet')) return '📗';
-            if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📙';
-            return '📄';
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('matrix_token');
-                localStorage.removeItem('matrix_user_id');
-                localStorage.removeItem('matrix_homeserver');
-                localStorage.removeItem('matrix_login_time');
-                location.reload();
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} active`;
-            setTimeout(() => {
-                toast.classList.remove('active');
+                // 更新运行时间
+                const hours = Math.floor(Math.random() * 100);
+                document.getElementById('uptime').textContent = hours + 'h';
             }, 3000);
         }
 
-        // 页面加载时自动登录
-        window.onload = function() {
-            const savedToken = localStorage.getItem('matrix_token');
-            const savedUserId = localStorage.getItem('matrix_user_id');
-            const savedHomeserver = localStorage.getItem('matrix_homeserver');
+        // 切换选项卡
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            addLog(`切换到 ${tabName} 页面`);
+        }
 
-            if (savedToken && savedUserId && savedHomeserver) {
-                accessToken = savedToken;
-                userId = savedUserId;
-                homeserverUrl = savedHomeserver;
-                showMainInterface();
+        // 机器人控制
+        function startBot() {
+            addLog('正在启动机器人...', 'info');
+            setTimeout(() => {
+                document.getElementById('botStatus').textContent = '在线';
+                document.getElementById('botStatus').className = 'status online';
+                addLog('✅ 机器人已启动', 'success');
+            }, 1000);
+        }
+
+        function stopBot() {
+            addLog('正在停止机器人...', 'info');
+            setTimeout(() => {
+                document.getElementById('botStatus').textContent = '离线';
+                document.getElementById('botStatus').className = 'status offline';
+                addLog('⛔ 机器人已停止', 'warning');
+            }, 1000);
+        }
+
+        function restartBot() {
+            addLog('正在重启机器人...', 'info');
+            stopBot();
+            setTimeout(() => startBot(), 2000);
+        }
+
+        // 设置活动状态
+        function setActivity() {
+            const type = document.getElementById('activityType').value;
+            const text = document.getElementById('activityText').value;
+            
+            if (!text) {
+                addLog('❌ 请输入活动内容', 'error');
+                return;
+            }
+            
+            addLog(`✅ 已设置活动: ${type} ${text}`, 'success');
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const channelId = document.getElementById('channelId').value;
+            const content = document.getElementById('messageContent').value;
+            const statusDiv = document.getElementById('messageStatus');
+            const preview = document.getElementById('messagePreview');
+            
+            if (!channelId || !content) {
+                statusDiv.textContent = '❌ 请填写完整信息';
+                statusDiv.className = 'error';
+                return;
             }
 
-            updateUserPreview();
-        };
+            // 显示预览
+            document.getElementById('previewText').textContent = content;
+            preview.style.display = 'block';
+            
+            addLog(`📤 发送消息到频道 ${channelId}: ${content.substring(0, 30)}...`, 'info');
+            
+            setTimeout(() => {
+                statusDiv.textContent = '✅ 消息发送成功！';
+                statusDiv.className = 'success';
+                document.getElementById('messageCount').textContent = 
+                    parseInt(document.getElementById('messageCount').textContent) + 1;
+            }, 500);
+        }
+
+        // 加载服务器列表
+        function loadServers() {
+            const serverList = document.getElementById('serverList');
+            serverList.innerHTML = '<p style="color: #666;">正在加载...</p>';
+            
+            setTimeout(() => {
+                const servers = [
+                    { name: '服务器 1', members: 1234, icon: '🎮' },
+                    { name: '服务器 2', members: 567, icon: '🎨' },
+                    { name: '服务器 3', members: 890, icon: '🎵' }
+                ];
+                
+                let html = '';
+                servers.forEach(server => {
+                    html += `
+                        <div style="padding: 15px; background: #f5f5f5; border-radius: 10px; margin-bottom: 10px;">
+                            <strong>${server.icon} ${server.name}</strong>
+                            <p style="color: #666; font-size: 14px; margin-top: 5px;">成员: ${server.members}</p>
+                        </div>
+                    `;
+                });
+                
+                serverList.innerHTML = html;
+                addLog('✅ 服务器列表已刷新', 'success');
+            }, 1000);
+        }
+
+        // 快速操作
+        function clearCache() {
+            addLog('🗑️ 正在清除缓存...', 'info');
+            setTimeout(() => addLog('✅ 缓存已清除', 'success'), 800);
+        }
+
+        function syncCommands() {
+            addLog('🔄 正在同步命令...', 'info');
+            setTimeout(() => addLog('✅ 命令同步完成', 'success'), 1200);
+        }
+
+        function refreshData() {
+            addLog('🔄 正在刷新数据...', 'info');
+            updateStats();
+            setTimeout(() => addLog('✅ 数据刷新完成', 'success'), 500);
+        }
+
+        // 日志功能
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString('zh-CN');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            let color = '#00ff00';
+            if (type === 'error') color = '#ff0000';
+            if (type === 'warning') color = '#ffaa00';
+            if (type === 'success') color = '#00ff00';
+            
+            logEntry.innerHTML = `<span style="color: #888;">[${timestamp}]</span> <span style="color: ${color};">${message}</span>`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            logCount++;
+            if (logCount > 100) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '<div class="log-entry">[系统] 日志已清除</div>';
+            logCount = 1;
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                botToken = '';
+                document.getElementById('dashboardContainer').style.display = 'none';
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('token').value = '';
+                document.getElementById('loginError').textContent = '';
+            }
+        }
+
+        // 初始化
+        document.getElementById('messageContent').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('previewText').textContent = this.value;
+                document.getElementById('messagePreview').style.display = 'block';
+            } else {
+                document.getElementById('messagePreview').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
