@@ -13,12 +13,13 @@
         }
         
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-light: rgba(99, 102, 241, 0.1);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
             --success: #10b981;
             --danger: #ef4444;
-            --bg: #f8fafc;
+            --warning: #f59e0b;
+            --bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             --surface: #ffffff;
             --text: #1e293b;
             --text-muted: #64748b;
@@ -32,6 +33,8 @@
             color: var(--text);
             height: 100vh;
             overflow: hidden;
+            position: fixed;
+            width: 100%;
         }
 
         /* 登录界面 */
@@ -41,7 +44,8 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg);
+            overflow-y: auto;
             animation: fadeIn 0.5s ease;
         }
         
@@ -52,30 +56,37 @@
         
         .login-container {
             background: var(--surface);
-            padding: 50px 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 45px 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow);
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
+            border: 1px solid var(--border);
             animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .login-logo {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
         
         .login-logo h1 {
-            font-size: 36px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-size: 34px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 900;
+            font-weight: 800;
             margin-bottom: 12px;
         }
         
@@ -85,66 +96,72 @@
         }
         
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 22px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
             font-size: 14px;
         }
         
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input {
             width: 100%;
-            padding: 15px 20px;
+            padding: 14px 18px;
             border: 2px solid var(--border);
             border-radius: 12px;
             font-size: 15px;
             font-family: inherit;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .form-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-light);
+            transform: translateY(-1px);
         }
         
         .btn-login {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
         }
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45);
         }
         
-        /* 主界面 - 全屏布局 */
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        /* 主界面 */
         #mainScreen {
             display: none;
             height: 100vh;
             flex-direction: column;
+            animation: fadeIn 0.5s ease;
         }
         
-        /* 顶部导航栏 */
-        .top-navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 16px 20px;
+        .navbar {
+            background: var(--surface);
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px var(--shadow);
+            border-bottom: 2px solid var(--primary-light);
             z-index: 100;
         }
         
@@ -156,63 +173,63 @@
         }
         
         .app-title {
-            font-size: 26px;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .search-box {
             position: relative;
             flex: 1;
-            max-width: 400px;
+            max-width: 360px;
         }
         
         .search-box input {
             width: 100%;
-            padding: 12px 20px 12px 50px;
-            border: none;
-            border-radius: 25px;
-            font-size: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 11px 18px 11px 44px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            font-size: 14px;
+            background: var(--bg);
             transition: all 0.3s;
         }
         
         .search-box input:focus {
             outline: none;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            transform: translateY(-1px);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
         
         .search-icon {
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 18px;
             color: var(--text-muted);
+            font-size: 16px;
         }
         
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
         
         .user-avatar-nav {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: white;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
-            font-weight: 800;
+            color: white;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
             overflow: hidden;
         }
         
@@ -224,202 +241,172 @@
         
         .user-avatar-nav:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45);
         }
         
         .btn-icon {
-            background: rgba(255, 255, 255, 0.2);
+            background: transparent;
             border: none;
             padding: 10px;
             cursor: pointer;
             border-radius: 12px;
-            font-size: 24px;
-            color: white;
+            font-size: 22px;
+            color: var(--text-muted);
             transition: all 0.3s;
         }
         
         .btn-icon:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--primary-light);
+            color: var(--primary);
             transform: scale(1.1);
         }
         
-        /* 房间列表视图 */
-        #roomsView {
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 侧边栏 - 优化布局 */
+        .sidebar {
+            width: 340px;
+            background: var(--surface);
+            border-right: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 16px var(--shadow);
+            flex-shrink: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary-light), transparent);
+        }
+        
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .rooms-list {
             flex: 1;
             overflow-y: auto;
-            background: var(--bg);
         }
         
-        .room-list-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-        
-        .section-header {
-            padding: 20px 20px 12px;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: var(--bg);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .room-card {
-            background: var(--surface);
-            margin: 8px 12px;
-            padding: 16px;
-            border-radius: 16px;
+        .room-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
             display: flex;
-            gap: 16px;
+            gap: 14px;
             align-items: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 2px solid transparent;
-            animation: fadeInItem 0.4s ease;
         }
         
-        @keyframes fadeInItem {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .room-item:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
         }
         
-        .room-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-            border-color: var(--primary-light);
+        .room-item.active {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
         }
         
-        .room-card:active {
-            transform: translateY(-1px);
-        }
-        
-        .room-card-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .room-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 27px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 800;
-            font-size: 22px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-weight: 700;
+            font-size: 20px;
             position: relative;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            flex-shrink: 0;
         }
         
         .unread-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            top: -6px;
+            right: -6px;
+            background: linear-gradient(135deg, var(--danger), #dc2626);
             color: white;
             border-radius: 12px;
-            padding: 3px 8px;
+            padding: 3px 9px;
             font-size: 11px;
             font-weight: 700;
-            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
             border: 2px solid var(--surface);
         }
         
-        .room-card-info {
+        .room-info {
             flex: 1;
             min-width: 0;
         }
         
-        .room-card-header {
+        .room-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             align-items: center;
         }
         
-        .room-card-name {
+        .room-name {
             font-weight: 700;
-            font-size: 17px;
-            color: var(--text);
+            font-size: 16px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         
-        .room-card-time {
-            font-size: 13px;
+        .room-time {
+            font-size: 12px;
             color: var(--text-muted);
             font-weight: 500;
         }
         
-        .room-card-preview {
-            font-size: 15px;
+        .room-preview {
+            font-size: 14px;
             color: var(--text-muted);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         
-        /* 聊天视图 */
-        #chatView {
-            display: none;
+        /* 聊天区域 - 确保不重叠 */
+        .chat-container {
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            height: 100%;
             background: var(--bg);
+            min-width: 0;
         }
         
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--surface);
             padding: 16px 20px;
+            border-bottom: 2px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px var(--shadow);
         }
         
-        .chat-header-left {
+        .chat-header-info {
             display: flex;
             align-items: center;
             gap: 14px;
             flex: 1;
         }
         
-        .btn-back {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 12px;
-            font-size: 24px;
-            color: white;
-            transition: all 0.3s;
-        }
-        
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .chat-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
         .chat-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: white;
+            font-size: 18px;
+            font-weight: 700;
         }
         
         .messages-area {
@@ -431,46 +418,53 @@
         .message {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             animation: messageSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .message-avatar {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 700;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 15px;
             flex-shrink: 0;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
         }
         
         .message-content {
             flex: 1;
-            max-width: 70%;
         }
         
         .message-header {
             display: flex;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             align-items: center;
         }
         
         .message-sender {
             font-weight: 700;
             font-size: 15px;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .message-time {
@@ -481,110 +475,25 @@
         .message-bubble {
             background: var(--surface);
             padding: 14px 18px;
-            border-radius: 18px;
+            border-radius: 16px;
             border-top-left-radius: 4px;
             font-size: 15px;
             line-height: 1.6;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px var(--shadow);
+            border: 1px solid var(--border);
             transition: all 0.3s;
         }
         
         .message-bubble:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 20px var(--shadow);
             transform: translateY(-2px);
-        }
-        
-        .message-image-container {
-            margin-top: 8px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            max-width: 400px;
-            transition: all 0.3s;
-        }
-        
-        .message-image-container:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-        
-        .message-image {
-            width: 100%;
-            display: block;
-        }
-        
-        .message-file-container {
-            margin-top: 8px;
-            background: var(--primary-light);
-            padding: 16px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .message-file-container:hover {
-            background: rgba(99, 102, 241, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        .file-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
-        }
-        
-        .file-info {
-            flex: 1;
-        }
-        
-        .file-name {
-            font-weight: 600;
-            font-size: 15px;
-        }
-        
-        .file-size {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        
-        .message-audio-container {
-            margin-top: 8px;
-            background: var(--primary-light);
-            padding: 16px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .audio-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
         }
         
         .message-input-container {
             background: var(--surface);
             padding: 18px 20px;
             border-top: 2px solid var(--border);
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 -4px 12px var(--shadow);
         }
         
         .input-wrapper {
@@ -593,78 +502,16 @@
             align-items: flex-end;
         }
         
-        .attach-menu {
-            position: relative;
-        }
-        
-        .btn-attach-icon {
-            background: var(--primary-light);
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 22px;
-            color: var(--primary);
-            transition: all 0.3s;
-        }
-        
-        .btn-attach-icon:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .attach-popup {
-            position: absolute;
-            bottom: 65px;
-            left: 0;
-            background: var(--surface);
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            display: none;
-            min-width: 200px;
-            border: 2px solid var(--border);
-            overflow: hidden;
-        }
-        
-        .attach-popup.show {
-            display: block;
-            animation: popupSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes popupSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .attach-option {
-            padding: 16px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .attach-option:last-child {
-            border-bottom: none;
-        }
-        
-        .attach-option:hover {
-            background: var(--primary-light);
-        }
-        
         .message-input {
             flex: 1;
             padding: 14px 20px;
             border: 2px solid var(--border);
-            border-radius: 25px;
+            border-radius: 24px;
             font-size: 15px;
             resize: none;
             max-height: 120px;
             font-family: inherit;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .message-input:focus {
@@ -674,62 +521,21 @@
         }
         
         .btn-send {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            padding: 14px 32px;
-            border-radius: 25px;
+            padding: 14px 30px;
+            border-radius: 24px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
         }
         
         .btn-send:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-        
-        .preview-container {
-            padding: 12px 0;
-            display: none;
-        }
-        
-        .preview-container.show {
-            display: block;
-        }
-        
-        .preview-item {
-            background: var(--primary-light);
-            padding: 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .preview-thumbnail {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: var(--surface);
-        }
-        
-        .preview-info {
-            flex: 1;
-        }
-        
-        .preview-remove {
-            background: var(--danger);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
         }
         
         .empty-state {
@@ -739,66 +545,7 @@
             justify-content: center;
             height: 100%;
             color: var(--text-muted);
-        }
-        
-        /* FAB按钮 */
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 68px;
-            height: 68px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 32px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
-            transition: all 0.3s;
-            z-index: 99;
-        }
-        
-        .fab:hover {
-            transform: scale(1.15) rotate(90deg);
-            box-shadow: 0 14px 40px rgba(102, 126, 234, 0.6);
-        }
-        
-        .menu-popup {
-            position: fixed;
-            bottom: 120px;
-            right: 30px;
-            background: var(--surface);
-            border-radius: 18px;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.2);
-            display: none;
-            min-width: 240px;
-            z-index: 98;
-            border: 2px solid var(--border);
-            overflow: hidden;
-        }
-        
-        .menu-popup.show {
-            display: block;
-            animation: popupSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .menu-popup-item {
-            padding: 18px 22px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .menu-popup-item:last-child {
-            border-bottom: none;
-        }
-        
-        .menu-popup-item:hover {
-            background: var(--primary-light);
+            text-align: center;
         }
         
         /* 模态框 */
@@ -814,6 +561,7 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
         }
         
         .modal.show { display: flex; }
@@ -821,18 +569,25 @@
         .modal-content {
             background: var(--surface);
             padding: 32px;
-            border-radius: 24px;
+            border-radius: 20px;
             width: 90%;
             max-width: 540px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary-light);
             animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes modalSlide {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
         
         .modal-header {
@@ -842,17 +597,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .modal-close {
             background: var(--primary-light);
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
             color: var(--primary);
+            line-height: 1;
             transition: all 0.3s;
         }
         
@@ -883,29 +642,32 @@
         .btn-secondary:hover {
             background: var(--primary);
             color: white;
+            transform: translateY(-2px);
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
             padding: 13px 26px;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
             transition: all 0.3s;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
         }
         
+        /* 个人资料 */
         .profile-avatar-large {
             width: 130px;
             height: 130px;
             border-radius: 65px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -914,7 +676,7 @@
             font-weight: 700;
             margin: 0 auto 28px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
@@ -928,6 +690,7 @@
         
         .profile-avatar-large:hover {
             transform: scale(1.05);
+            box-shadow: 0 14px 40px rgba(79, 70, 229, 0.5);
         }
         
         .profile-avatar-large::after {
@@ -940,6 +703,7 @@
             color: white;
             padding: 10px;
             font-size: 13px;
+            text-align: center;
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -957,6 +721,9 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .profile-id {
@@ -964,28 +731,214 @@
             color: var(--text-muted);
         }
         
-        .image-viewer {
-            display: none;
-            position: fixed;
+        /* 设置界面 */
+        .settings-container {
+            display: flex;
+            height: 680px;
+            gap: 0;
+        }
+        
+        .settings-menu {
+            width: 260px;
+            border-right: 2px solid var(--border);
+            overflow-y: auto;
+            background: linear-gradient(135deg, var(--primary-light), transparent);
+        }
+        
+        .settings-menu-item {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        
+        .settings-menu-item:hover {
+            background: var(--surface);
+            transform: translateX(5px);
+        }
+        
+        .settings-menu-item.active {
+            background: var(--primary-light);
+            border-left-color: var(--primary);
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .settings-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: var(--surface);
+        }
+        
+        .settings-section {
+            margin-bottom: 40px;
+        }
+        
+        .settings-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .settings-item {
+            padding: 20px 24px;
+            background: var(--bg);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .settings-item:hover {
+            box-shadow: 0 4px 20px var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--primary-light);
+        }
+        
+        .settings-item-info {
+            flex: 1;
+        }
+        
+        .settings-item-info h4 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        
+        .settings-item-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .switch {
+            position: relative;
+            width: 56px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.4s;
+            border-radius: 32px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* FAB按钮 - 唯一的新建按钮 */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 32px;
             cursor: pointer;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99;
         }
         
-        .image-viewer.show {
+        .fab:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 14px 40px rgba(79, 70, 229, 0.6);
+        }
+        
+        .menu-popup {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            background: var(--surface);
+            border-radius: 18px;
+            box-shadow: 0 14px 40px var(--shadow);
+            display: none;
+            min-width: 240px;
+            animation: popupSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 98;
+            border: 2px solid var(--primary-light);
+        }
+        
+        @keyframes popupSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .menu-popup.show {
+            display: block;
+        }
+        
+        .menu-popup-item {
+            padding: 18px 22px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
             display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 16px;
         }
         
-        .image-viewer img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
+        .menu-popup-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-popup-item:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
         }
         
         .loading {
@@ -1008,15 +961,35 @@
             to { transform: rotate(360deg); }
         }
         
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 4px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
         }
 
         @media (max-width: 768px) {
+            .sidebar { 
+                position: absolute;
+                z-index: 90;
+                height: 100%;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.show { transform: translateX(0); }
             .search-box { display: none; }
+            .settings-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .settings-menu {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid var(--border);
+            }
         }
     </style>
 </head>
@@ -1060,8 +1033,7 @@
 
     <!-- 主界面 -->
     <div id="mainScreen">
-        <!-- 顶部导航栏 -->
-        <nav class="top-navbar">
+        <nav class="navbar">
             <div class="navbar-left">
                 <div class="app-title">全部聊天</div>
                 <div class="search-box">
@@ -1075,63 +1047,48 @@
             </div>
         </nav>
 
-        <!-- 房间列表视图 -->
-        <div id="roomsView">
-            <div class="room-list-container">
-                <div class="section-header">对话</div>
-                <div id="roomsList">
+        <div class="main-content">
+            <!-- 左侧边栏 - 移除了顶部的+按钮 -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">对话</div>
+                </div>
+                <div class="rooms-list" id="roomsList">
                     <div class="loading"><div class="loading-spinner"></div><p style="margin-top: 14px;">加载中...</p></div>
                 </div>
-            </div>
-        </div>
+            </aside>
 
-        <!-- 聊天视图 -->
-        <div id="chatView">
-            <div class="chat-header">
-                <div class="chat-header-left">
-                    <button class="btn-back" id="backBtn">←</button>
-                    <div class="chat-avatar" id="chatAvatar">?</div>
-                    <div class="chat-title" id="chatTitle">房间</div>
-                </div>
-                <button class="btn-icon" id="roomMenuBtn">⋮</button>
-            </div>
-            
-            <div class="messages-area" id="messagesArea"></div>
-            
-            <div class="message-input-container">
-                <div class="preview-container" id="previewContainer"></div>
-                <div class="input-wrapper">
-                    <div class="attach-menu">
-                        <button class="btn-attach-icon" id="attachBtn">📎</button>
-                        <div class="attach-popup" id="attachPopup">
-                            <div class="attach-option" id="uploadImage">
-                                <span>🖼️</span>
-                                <span>上传图片</span>
-                            </div>
-                            <div class="attach-option" id="uploadVideo">
-                                <span>🎬</span>
-                                <span>上传视频</span>
-                            </div>
-                            <div class="attach-option" id="uploadFile">
-                                <span>📄</span>
-                                <span>上传文件</span>
-                            </div>
-                        </div>
+            <!-- 右侧聊天区域 -->
+            <main class="chat-container">
+                <div class="chat-header" style="display: none;" id="chatHeader">
+                    <div class="chat-header-info">
+                        <div class="room-avatar" id="chatAvatar" style="width: 44px; height: 44px; font-size: 18px;">?</div>
+                        <div class="chat-title" id="chatTitle">房间</div>
                     </div>
-                    <textarea class="message-input" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
-                    <button class="btn-send" id="sendBtn">发送</button>
+                    <button class="btn-icon" id="roomMenuBtn">⋮</button>
                 </div>
-            </div>
+                
+                <div class="messages-area" id="messagesArea">
+                    <div class="empty-state">
+                        <div style="font-size: 72px; margin-bottom: 28px;">💬</div>
+                        <h3 style="margin-bottom: 16px; font-size: 24px; font-weight: 700;">选择对话</h3>
+                        <p style="color: var(--text-muted); font-size: 16px;">从左侧选择房间开始聊天</p>
+                    </div>
+                </div>
+                
+                <div class="message-input-container" id="inputContainer" style="display: none;">
+                    <div class="input-wrapper">
+                        <button class="btn-icon" id="attachBtn" title="附件">📎</button>
+                        <textarea class="message-input" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+                        <button class="btn-send" id="sendBtn">发送</button>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <!-- 图片查看器 -->
-    <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
-        <img src="" id="viewerImage">
-    </div>
-
-    <!-- FAB按钮 -->
-    <button class="fab" id="fabBtn" style="display: none;">✎</button>
+    <!-- 唯一的FAB按钮 -->
+    <button class="fab" id="fabBtn" style="display: none;" title="新建">✎</button>
     <div class="menu-popup" id="fabMenu">
         <div class="menu-popup-item" id="newChatBtn">💬 开始聊天</div>
         <div class="menu-popup-item" id="newRoomBtn">🏠 创建房间</div>
@@ -1139,7 +1096,7 @@
     </div>
 
     <!-- 主菜单 -->
-    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 80px; right: 24px;">
+    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 72px; right: 24px;">
         <div class="menu-popup-item" id="settingsBtn">⚙️ 设置</div>
         <div class="menu-popup-item" id="inviteBtn">👥 邀请朋友</div>
         <div class="menu-popup-item" id="feedbackBtn">💬 问题反馈</div>
@@ -1161,15 +1118,38 @@
             </div>
             <div class="form-group">
                 <label>显示名称</label>
-                <input type="text" id="profileDisplayName" placeholder="输入显示名称">
+                <input type="text" id="profileDisplayName" placeholder="输入显示名称" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
             </div>
             <div class="form-group">
                 <label>个人简介</label>
-                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3"></textarea>
+                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-family: inherit;"></textarea>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('profileModal')">取消</button>
                 <button class="btn-primary" id="saveProfile">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content" style="max-width: 1000px; max-height: 88vh;">
+            <div class="modal-header">
+                <span>设置</span>
+                <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+            </div>
+            <div class="settings-container">
+                <div class="settings-menu">
+                    <div class="settings-menu-item active" data-setting="general">⚙️ 通用</div>
+                    <div class="settings-menu-item" data-setting="notifications">🔔 通知</div>
+                    <div class="settings-menu-item" data-setting="preferences">🎨 偏好</div>
+                    <div class="settings-menu-item" data-setting="audio">🎵 音频与视频</div>
+                    <div class="settings-menu-item" data-setting="security">🔒 安全与隐私</div>
+                    <div class="settings-menu-item" data-setting="labs">🧪 实验室</div>
+                    <div class="settings-menu-item" data-setting="advanced">🔧 高级设置</div>
+                    <div class="settings-menu-item" data-setting="help">❓ 帮助和关于</div>
+                </div>
+                <div class="settings-content" id="settingsContent"></div>
             </div>
         </div>
     </div>
@@ -1183,18 +1163,28 @@
             </div>
             <div class="form-group">
                 <label>房间名称</label>
-                <input type="text" id="roomName" placeholder="名称">
+                <input type="text" id="roomName" placeholder="名称" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
             </div>
             <div class="form-group">
                 <label>房间话题（可选）</label>
-                <textarea id="roomTopic" placeholder="话题" rows="2"></textarea>
+                <textarea id="roomTopic" placeholder="话题" rows="2" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-family: inherit;"></textarea>
             </div>
             <div class="form-group">
                 <label>房间访问权限</label>
-                <select id="roomType">
+                <select id="roomType" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
                     <option value="private">私有 - 仅被邀请的人才能找到并加入</option>
                     <option value="public">公开 - 任何人都可以找到并加入</option>
                 </select>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>启用加密</span>
+                    <label class="switch">
+                        <input type="checkbox" id="roomEncrypted" checked>
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">启用后，无法禁用加密。</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('createRoomModal')">取消</button>
@@ -1202,11 +1192,6 @@
             </div>
         </div>
     </div>
-
-    <!-- 隐藏的文件输入 -->
-    <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
-    <input type="file" id="videoInput" accept="video/*" multiple style="display: none;">
-    <input type="file" id="fileInput" multiple style="display: none;">
 
     <script>
         class MatrixClient {
@@ -1217,6 +1202,8 @@
                 this.rooms = new Map();
                 this.syncToken = null;
                 this.syncing = false;
+                this.displayName = '';
+                this.avatarUrl = '';
             }
 
             async request(method, endpoint, data = null) {
@@ -1230,7 +1217,10 @@
                 };
                 if (data) options.body = JSON.stringify(data);
                 const response = await fetch(url, options);
-                if (!response.ok) throw new Error('Request failed');
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Request failed');
+                }
                 return response.json();
             }
 
@@ -1258,6 +1248,30 @@
                 return data;
             }
 
+            async getProfile() {
+                try {
+                    const profile = await this.request('GET', `/profile/${encodeURIComponent(this.userId)}`);
+                    this.displayName = profile.displayname || '';
+                    this.avatarUrl = profile.avatar_url || '';
+                    return profile;
+                } catch (error) {
+                    return {};
+                }
+            }
+
+            async setDisplayName(displayName) {
+                await this.request('PUT', `/profile/${encodeURIComponent(this.userId)}/displayname`, {
+                    displayname: displayName
+                });
+                this.displayName = displayName;
+            }
+
+            mxcToHttp(mxcUrl) {
+                if (!mxcUrl || !mxcUrl.startsWith('mxc://')) return null;
+                const parts = mxcUrl.substring(6).split('/');
+                return `${this.baseUrl}/_matrix/media/r0/download/${parts[0]}/${parts[1]}`;
+            }
+
             async getRooms() {
                 const data = await this.sync(0);
                 const rooms = [];
@@ -1267,6 +1281,7 @@
                             roomId,
                             name: this.getRoomName(roomData),
                             timeline: roomData.timeline?.events || [],
+                            members: roomData.summary?.['m.joined_member_count'] || 0,
                             unread: roomData.unread_notifications?.notification_count || 0
                         };
                         this.rooms.set(roomId, room);
@@ -1278,11 +1293,13 @@
 
             getRoomName(roomData) {
                 const nameEvent = roomData.state?.events?.find(e => e.type === 'm.room.name');
-                return nameEvent?.content?.name || '未命名房间';
+                if (nameEvent) return nameEvent.content.name;
+                return '未命名房间';
             }
 
             async sendMessage(roomId, message) {
-                return this.request('PUT', `/rooms/${encodeURIComponent(roomId)}/send/m.room.message/${Date.now()}`, {
+                const txnId = Date.now();
+                return this.request('PUT', `/rooms/${encodeURIComponent(roomId)}/send/m.room.message/${txnId}`, {
                     msgtype: 'm.text',
                     body: message
                 });
@@ -1290,19 +1307,30 @@
 
             async getMessages(roomId, limit = 50) {
                 try {
-                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?dir=b&limit=${limit}`);
+                    const params = new URLSearchParams({ dir: 'b', limit: limit.toString() });
+                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?${params}`);
                     return data.chunk.reverse();
-                } catch {
+                } catch (error) {
                     return this.rooms.get(roomId)?.timeline || [];
                 }
             }
 
-            async createRoom(name, topic, isPublic) {
-                return this.request('POST', '/createRoom', {
-                    name, topic,
+            async createRoom(name, topic, isPublic, encrypted) {
+                const options = {
+                    name,
+                    topic,
                     visibility: isPublic ? 'public' : 'private',
-                    preset: isPublic ? 'public_chat' : 'private_chat'
-                });
+                    preset: isPublic ? 'public_chat' : 'private_chat',
+                    initial_state: []
+                };
+                if (encrypted) {
+                    options.initial_state.push({
+                        type: 'm.room.encryption',
+                        state_key: '',
+                        content: { algorithm: 'm.megolm.v1.aes-sha2' }
+                    });
+                }
+                return this.request('POST', '/createRoom', options);
             }
 
             startSync(callback) {
@@ -1312,7 +1340,9 @@
                     try {
                         const data = await this.sync();
                         if (data.rooms?.join) callback(data);
-                    } catch (e) {}
+                    } catch (error) {
+                        console.error('同步错误:', error);
+                    }
                     if (this.syncing) setTimeout(doSync, 1000);
                 };
                 doSync();
@@ -1325,7 +1355,6 @@
 
         let client = null;
         let currentRoomId = null;
-        let pendingFiles = [];
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedAuth = localStorage.getItem('matrixAuth');
@@ -1333,11 +1362,13 @@
                 try {
                     const auth = JSON.parse(savedAuth);
                     client = new MatrixClient(auth.homeserver, auth.accessToken, auth.userId);
-                    client.syncToken = localStorage.getItem('matrixSyncToken');
+                    const savedSyncToken = localStorage.getItem('matrixSyncToken');
+                    if (savedSyncToken) client.syncToken = savedSyncToken;
                     showMainScreen(auth.userId);
+                    loadProfile();
                     loadRooms();
                     startSync();
-                } catch {
+                } catch (error) {
                     localStorage.removeItem('matrixAuth');
                 }
             }
@@ -1364,6 +1395,7 @@
                 }
                 client = new MatrixClient(homeserver, loginResponse.access_token, loginResponse.user_id);
                 showMainScreen(loginResponse.user_id);
+                await loadProfile();
                 await loadRooms();
                 startSync();
             } catch (error) {
@@ -1378,68 +1410,116 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'flex';
             document.getElementById('fabBtn').style.display = 'block';
-            const displayName = userId.substring(1, userId.indexOf(':'));
+            const displayName = userId.substring(1, userId.indexOf(':')) || userId;
             document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
             document.getElementById('profileAvatar').textContent = displayName[0].toUpperCase();
             document.getElementById('profileName').textContent = displayName;
             document.getElementById('profileId').textContent = userId;
         }
 
+        async function loadProfile() {
+            try {
+                const profile = await client.getProfile();
+                if (profile.displayname) {
+                    document.getElementById('profileName').textContent = profile.displayname;
+                    document.getElementById('profileDisplayName').value = profile.displayname;
+                }
+                if (profile.avatar_url) {
+                    const avatarUrl = client.mxcToHttp(profile.avatar_url);
+                    if (avatarUrl) {
+                        document.getElementById('userAvatar').innerHTML = `<img src="${avatarUrl}">`;
+                        document.getElementById('profileAvatar').innerHTML = `<img src="${avatarUrl}">`;
+                    }
+                }
+            } catch (error) {
+                console.error('加载个人资料失败:', error);
+            }
+        }
+
+        document.getElementById('userAvatar').addEventListener('click', () => {
+            document.getElementById('profileModal').classList.add('show');
+        });
+
+        document.getElementById('avatarInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    document.getElementById('userAvatar').innerHTML = `<img src="${dataUrl}">`;
+                    document.getElementById('profileAvatar').innerHTML = `<img src="${dataUrl}">`;
+                };
+                reader.readAsDataURL(file);
+                alert('头像已更新（演示模式）');
+            } catch (error) {
+                alert('上传失败');
+            }
+        });
+
+        document.getElementById('saveProfile').addEventListener('click', async () => {
+            const displayName = document.getElementById('profileDisplayName').value.trim();
+            if (displayName && displayName !== client.displayName) {
+                try {
+                    await client.setDisplayName(displayName);
+                    document.getElementById('profileName').textContent = displayName;
+                    alert('保存成功！');
+                    closeModal('profileModal');
+                } catch (error) {
+                    alert('保存失败');
+                }
+            }
+        });
+
         async function loadRooms() {
             const roomsList = document.getElementById('roomsList');
             try {
                 const rooms = await client.getRooms();
                 if (rooms.length === 0) {
-                    roomsList.innerHTML = '<div class="loading" style="padding: 60px 20px;"><p style="font-size: 17px; font-weight: 600;">暂无房间</p><p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">点击右下角 + 创建或加入房间</p></div>';
+                    roomsList.innerHTML = '<div class="loading" style="padding: 60px 20px;"><p style="font-size: 17px; margin-bottom: 12px; font-weight: 600;">暂无房间</p><p style="font-size: 14px; color: var(--text-muted);">点击右下角 + 创建或加入房间</p></div>';
                     return;
                 }
                 roomsList.innerHTML = '';
-                rooms.forEach((room, i) => {
+                rooms.forEach((room) => {
                     const lastMsg = [...room.timeline].reverse().find(e => e.type === 'm.room.message');
                     const preview = lastMsg ? lastMsg.content.body.substring(0, 30) : '暂无消息';
                     const time = lastMsg ? new Date(lastMsg.origin_server_ts).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'}) : '';
                     
-                    const roomCard = document.createElement('div');
-                    roomCard.className = 'room-card';
-                    roomCard.style.animationDelay = `${i * 0.05}s`;
-                    roomCard.dataset.roomId = room.roomId;
-                    roomCard.innerHTML = `
-                        <div class="room-card-avatar">
+                    const roomDiv = document.createElement('div');
+                    roomDiv.className = 'room-item';
+                    roomDiv.dataset.roomId = room.roomId;
+                    roomDiv.innerHTML = `
+                        <div class="room-avatar">
                             ${room.name[0].toUpperCase()}
                             ${room.unread > 0 ? `<div class="unread-badge">${room.unread > 99 ? '99+' : room.unread}</div>` : ''}
                         </div>
-                        <div class="room-card-info">
-                            <div class="room-card-header">
-                                <div class="room-card-name">${escapeHtml(room.name)}</div>
-                                <div class="room-card-time">${time}</div>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <div class="room-name">${escapeHtml(room.name)}</div>
+                                <div class="room-time">${time}</div>
                             </div>
-                            <div class="room-card-preview">${escapeHtml(preview)}</div>
+                            <div class="room-preview">${escapeHtml(preview)}</div>
                         </div>
                     `;
-                    roomCard.onclick = () => openRoom(room.roomId, room.name);
-                    roomsList.appendChild(roomCard);
+                    roomDiv.onclick = () => openRoom(room.roomId, room.name);
+                    roomsList.appendChild(roomDiv);
                 });
-            } catch {
+            } catch (error) {
                 roomsList.innerHTML = '<div class="loading">加载失败</div>';
             }
         }
 
         async function openRoom(roomId, roomName) {
             currentRoomId = roomId;
-            document.getElementById('roomsView').style.display = 'none';
-            document.getElementById('chatView').style.display = 'flex';
-            document.getElementById('fabBtn').style.display = 'none';
+            document.querySelectorAll('.room-item').forEach(i => i.classList.remove('active'));
+            document.querySelector(`[data-room-id="${roomId}"]`)?.classList.add('active');
+            document.getElementById('chatHeader').style.display = 'flex';
             document.getElementById('chatTitle').textContent = roomName;
             document.getElementById('chatAvatar').textContent = roomName[0].toUpperCase();
+            document.getElementById('inputContainer').style.display = 'block';
             await loadMessages(roomId);
         }
-
-        document.getElementById('backBtn').addEventListener('click', () => {
-            document.getElementById('chatView').style.display = 'none';
-            document.getElementById('roomsView').style.display = 'block';
-            document.getElementById('fabBtn').style.display = 'block';
-            currentRoomId = null;
-        });
 
         async function loadMessages(roomId) {
             const container = document.getElementById('messagesArea');
@@ -1447,64 +1527,6 @@
             try {
                 const messages = await client.getMessages(roomId);
                 container.innerHTML = '';
-                
-                // 添加示例消息
-                const demos = [
-                    {type: 'text', sender: 'Alice', content: '你好！这是一条测试消息。', time: '10:30'},
-                    {type: 'image', sender: 'Bob', content: '分享一张图片', url: 'https://picsum.photos/400/300', time: '10:35'},
-                    {type: 'file', sender: 'Charlie', filename: '文档示例.pdf', size: '2.5 MB', time: '10:40'},
-                    {type: 'audio', sender: 'David', filename: '音乐.mp3', duration: '3:45', time: '10:45'}
-                ];
-
-                demos.forEach(demo => {
-                    const div = document.createElement('div');
-                    div.className = 'message';
-                    let content = '';
-                    
-                    if (demo.type === 'text') {
-                        content = `<div class="message-bubble">${demo.content}</div>`;
-                    } else if (demo.type === 'image') {
-                        content = `
-                            <div class="message-bubble">${demo.content}</div>
-                            <div class="message-image-container" onclick="viewImage('${demo.url}')">
-                                <img class="message-image" src="${demo.url}">
-                            </div>
-                        `;
-                    } else if (demo.type === 'file') {
-                        content = `
-                            <div class="message-file-container">
-                                <div class="file-icon">📄</div>
-                                <div class="file-info">
-                                    <div class="file-name">${demo.filename}</div>
-                                    <div class="file-size">${demo.size}</div>
-                                </div>
-                            </div>
-                        `;
-                    } else if (demo.type === 'audio') {
-                        content = `
-                            <div class="message-audio-container">
-                                <div class="audio-icon">🎵</div>
-                                <div class="audio-info">
-                                    <div class="audio-title" style="font-weight: 600; margin-bottom: 4px;">${demo.filename}</div>
-                                    <div style="font-size: 12px; color: var(--text-muted);">${demo.duration}</div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    
-                    div.innerHTML = `
-                        <div class="message-avatar">${demo.sender[0]}</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">${demo.sender}</span>
-                                <span class="message-time">${demo.time}</span>
-                            </div>
-                            ${content}
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-                
                 messages.forEach(event => {
                     if (event.type === 'm.room.message') {
                         const sender = event.sender.substring(1, event.sender.indexOf(':'));
@@ -1525,89 +1547,8 @@
                     }
                 });
                 container.scrollTop = container.scrollHeight;
-            } catch {
+            } catch (error) {
                 container.innerHTML = '<div class="loading">加载失败</div>';
-            }
-        }
-
-        // 点击头像
-        document.getElementById('userAvatar').addEventListener('click', () => {
-            document.getElementById('profileModal').classList.add('show');
-        });
-
-        // 头像上传
-        document.getElementById('avatarInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('userAvatar').innerHTML = `<img src="${e.target.result}">`;
-                document.getElementById('profileAvatar').innerHTML = `<img src="${e.target.result}">`;
-                alert('头像已更新');
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // 附件上传
-        document.getElementById('attachBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('attachPopup').classList.toggle('show');
-        });
-
-        document.getElementById('uploadImage').addEventListener('click', () => {
-            document.getElementById('attachPopup').classList.remove('show');
-            document.getElementById('imageInput').click();
-        });
-
-        document.getElementById('uploadVideo').addEventListener('click', () => {
-            document.getElementById('attachPopup').classList.remove('show');
-            document.getElementById('videoInput').click();
-        });
-
-        document.getElementById('uploadFile').addEventListener('click', () => {
-            document.getElementById('attachPopup').classList.remove('show');
-            document.getElementById('fileInput').click();
-        });
-
-        document.getElementById('imageInput').addEventListener('change', (e) => handleFileSelect(e.target.files, 'image'));
-        document.getElementById('videoInput').addEventListener('change', (e) => handleFileSelect(e.target.files, 'video'));
-        document.getElementById('fileInput').addEventListener('change', (e) => handleFileSelect(e.target.files, 'file'));
-
-        function handleFileSelect(files, type) {
-            const previewContainer = document.getElementById('previewContainer');
-            previewContainer.classList.add('show');
-            
-            Array.from(files).forEach(file => {
-                pendingFiles.push({file, type});
-                const div = document.createElement('div');
-                div.className = 'preview-item';
-                
-                let thumb = type === 'image' ? '<img class="preview-thumbnail" src="">' : `<div class="preview-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 24px;">${type === 'video' ? '🎬' : '📄'}</div>`;
-                
-                div.innerHTML = `
-                    ${thumb}
-                    <div class="preview-info">
-                        <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(file.name)}</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">${formatFileSize(file.size)}</div>
-                    </div>
-                    <button class="preview-remove" onclick="removePreview(this, ${pendingFiles.length - 1})">×</button>
-                `;
-                
-                if (type === 'image') {
-                    const reader = new FileReader();
-                    reader.onload = (e) => div.querySelector('.preview-thumbnail').src = e.target.result;
-                    reader.readAsDataURL(file);
-                }
-                
-                previewContainer.appendChild(div);
-            });
-        }
-
-        function removePreview(btn, index) {
-            btn.parentElement.remove();
-            pendingFiles.splice(index, 1);
-            if (pendingFiles.length === 0) {
-                document.getElementById('previewContainer').classList.remove('show');
             }
         }
 
@@ -1628,61 +1569,13 @@
             if (!currentRoomId) return;
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
-            
-            if (pendingFiles.length > 0) {
-                const container = document.getElementById('messagesArea');
-                pendingFiles.forEach(({file, type}) => {
-                    const div = document.createElement('div');
-                    div.className = 'message';
-                    let content = '';
-                    
-                    if (type === 'image') {
-                        const reader = new FileReader();
-                        reader.onload = (e) => div.querySelector('.message-image').src = e.target.result;
-                        reader.readAsDataURL(file);
-                        content = `
-                            <div class="message-bubble">${escapeHtml(file.name)}</div>
-                            <div class="message-image-container"><img class="message-image" src=""></div>
-                        `;
-                    } else if (type === 'file') {
-                        content = `
-                            <div class="message-file-container">
-                                <div class="file-icon">📄</div>
-                                <div class="file-info">
-                                    <div class="file-name">${escapeHtml(file.name)}</div>
-                                    <div class="file-size">${formatFileSize(file.size)}</div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    
-                    div.innerHTML = `
-                        <div class="message-avatar">${client.userId[1].toUpperCase()}</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">我</span>
-                                <span class="message-time">${new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'})}</span>
-                            </div>
-                            ${content}
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-                
-                pendingFiles = [];
-                document.getElementById('previewContainer').classList.remove('show');
-                document.getElementById('previewContainer').innerHTML = '';
-                container.scrollTop = container.scrollHeight;
-            }
-            
-            if (message) {
-                try {
-                    await client.sendMessage(currentRoomId, message);
-                    input.value = '';
-                    input.style.height = 'auto';
-                } catch {
-                    alert('发送失败');
-                }
+            if (!message) return;
+            try {
+                await client.sendMessage(currentRoomId, message);
+                input.value = '';
+                input.style.height = 'auto';
+            } catch (error) {
+                alert('发送失败');
             }
         }
 
@@ -1699,10 +1592,17 @@
             document.getElementById('createRoomModal').classList.add('show');
         });
 
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('mainMenu').classList.remove('show');
+            document.getElementById('settingsModal').classList.add('show');
+            loadSettings('general');
+        });
+
         document.getElementById('logoutBtn').addEventListener('click', () => {
             if (confirm('确定要退出登录吗？')) {
                 client?.stopSync();
-                localStorage.clear();
+                localStorage.removeItem('matrixAuth');
+                localStorage.removeItem('matrixSyncToken');
                 location.reload();
             }
         });
@@ -1711,26 +1611,621 @@
             const name = document.getElementById('roomName').value.trim();
             const topic = document.getElementById('roomTopic').value.trim();
             const isPublic = document.getElementById('roomType').value === 'public';
+            const encrypted = document.getElementById('roomEncrypted').checked;
             
             if (!name) return alert('请输入房间名称');
             
             try {
-                await client.createRoom(name, topic, isPublic);
+                await client.createRoom(name, topic, isPublic, encrypted);
                 closeModal('createRoomModal');
                 alert('创建成功！');
                 await loadRooms();
-            } catch {
+            } catch (error) {
                 alert('创建失败');
             }
         });
 
-        function viewImage(src) {
-            document.getElementById('viewerImage').src = src;
-            document.getElementById('imageViewer').classList.add('show');
-        }
+        document.querySelectorAll('.settings-menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.settings-menu-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                loadSettings(this.dataset.setting);
+            });
+        });
 
-        function closeImageViewer() {
-            document.getElementById('imageViewer').classList.remove('show');
+        function loadSettings(type) {
+            const content = document.getElementById('settingsContent');
+            
+            if (type === 'general') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">发现</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>管理你的发现设置</h4>
+                                <p>控制其他用户如何发现你</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">账户</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>你的账户详细信息</h4>
+                                <p>于 account.matrix.org 单独管理。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">集成</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>使用集成管理器</h4>
+                                <p>管理机器人、桥接、小部件和贴纸包。集成管理器接收配置数据，并可以代表你修改小部件、发送房间邀请和设置权限等级。</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>允许集成</h4>
+                                <p>启用集成管理器功能</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">高级</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>登录为</h4>
+                                <p>${client.userId}</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>家服务器</h4>
+                                <p>${client.baseUrl}</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>身份服务器</h4>
+                                <p>你未使用身份服务器</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;" onclick="alert('清空缓存功能')">
+                            <div class="settings-item-info">
+                                <h4>清空缓存的媒体文件</h4>
+                                <p>释放存储空间</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'notifications') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">通知设置</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用这个账户的通知</h4>
+                                <p>接收所有设备的通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用这个会话的通知</h4>
+                                <p>当前设备的通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">默认通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>所有消息的通知</h4>
+                                <p>接收所有新消息的通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">提及和关键词</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>提及时通知</h4>
+                                <p>当有人@你时发送通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">电子邮件通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>为你的电子邮件启用通知</h4>
+                                <p>通过邮件接收重要通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'preferences') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">外观</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>主题</h4>
+                                <p>选择界面主题</p>
+                            </div>
+                            <select style="padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface);">
+                                <option>浅色</option>
+                                <option>深色</option>
+                                <option>自动</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>字体大小</h4>
+                                <p>调整界面字体大小</p>
+                            </div>
+                            <select style="padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface);">
+                                <option>小</option>
+                                <option selected>中</option>
+                                <option>大</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'audio') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">通话</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>防止意外通话</h4>
+                                <p>在开始通话之前要求确认</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'security') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">加密</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>交叉签名</h4>
+                                <p>已启用交叉签名。密钥未信任</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>仅向已验证的会话发送加密消息</h4>
+                                <p>从不从此会话向未验证的会话发送加密消息。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">可用会话</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>显示全部会话</h4>
+                                <p>9个活动会话</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">安全备份</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在此设备上设置</h4>
+                                <p>通过在你的服务器上备份加密密钥,防止失去对加密消息和数据的访问。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">密钥管理</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>导出端到端房间密钥</h4>
+                                <p>导出密钥到本地文件</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>导入端到端房间密钥</h4>
+                                <p>从本地文件导入密钥</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">已忽略的用户</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>已忽略的用户</h4>
+                                <p>管理已忽略的用户列表</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">保护访问</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>使用PIN和生物特征识别</h4>
+                                <p>保护应用访问</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>阻止截图</h4>
+                                <p>防止截取屏幕内容</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'labs') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">实验性功能</div>
+                        <p style="color: var(--text-muted); margin-bottom: 18px; font-size: 14px; line-height: 1.5;">这些是实验性功能,可能会出现不可预料的错误。请谨慎使用。</p>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用在时间线中滑动回复</h4>
+                                <p>MSC3061:滑动消息快速回复</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>为过去的消息共享房间密钥</h4>
+                                <p>MSC3061:在共享历史的加密房间中邀请时,加密历史将可见。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用 LaTeX 数学</h4>
+                                <p>重启应用以使更改生效。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用消息列消息</h4>
+                                <p>注意:应用将重启</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>自动报告解密错误</h4>
+                                <p>当无法解密的错误出现时,你的系统会自动发送日志</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用实时位置共享</h4>
+                                <p>临时执行:地点在房间历史中持续存在</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用 Element 通话权限快捷方式</h4>
+                                <p>自动允许 Element 通话小部件并授予相机/麦克风访问权限</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用新布局</h4>
+                                <p>简化的 Element,带有可选的标签</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用延迟的私聊消息</h4>
+                                <p>仅在首条消息创建私聊消息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用富文本编辑器</h4>
+                                <p>试用富文本编辑器(纯文本模式即将到来)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用新的会话管理器</h4>
+                                <p>对所有会话有更好的可见性和控制。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用客户端信息记录</h4>
+                                <p>记录客户端名称、版本和网址, 以便在会话管理器中更轻松地识别会话。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用语音广播</h4>
+                                <p>能够在房间时间线中录制和发送语音广播。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'advanced') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">开发者模式</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>开发者模式</h4>
+                                <p>激活隐藏的功能,也可能使应用不稳定。仅供开发者使用!</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在时间线上显示隐藏事件</h4>
+                                <p>显示系统消息和调试信息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在屏幕上显示调试信息</h4>
+                                <p>显示一些有用的信息以帮助调试应用程序</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在加密房间显示完整历史</h4>
+                                <p>显示所有历史消息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">日志</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用详细日志</h4>
+                                <p>详细日志将通过在你发送愤怒摇动时提供更多日志来帮助开发人员。即使启用, 应用程序也不会记录消息内容或任何其他私人数据。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>快速失败(Fail-fast)</h4>
+                                <p>发生意外错误时,Element Classic 可能更经常崩溃</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">愤怒摇动(Rageshake)</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>摇一摇快捷反馈问题</h4>
+                                <p>检测阈值 - 摇动手机以测试检测阈值</p>
+                            </div>
+                            <input type="range" min="1" max="10" value="5" style="width: 140px;">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>通知目标</h4>
+                                <p>配置推送规则</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>推送规则</h4>
+                                <p>查看和管理推送规则</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">开发工具</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>账户数据</h4>
+                                <p>查看账户数据</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>访问令牌</h4>
+                                <p>你的访问令牌提供对你账户的完全访问权限。勿与任何人分享它。</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'help') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">关于</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>Matrix 客户端</h4>
+                                <p>版本 1.0.0 - 完整功能版本</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>基于 Matrix 协议</h4>
+                                <p>去中心化、端到端加密的即时通讯</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>Matrix.org</h4>
+                                <p>了解更多关于 Matrix 的信息</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">帮助</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>使用指南</h4>
+                                <p>查看使用说明和教程</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>问题反馈</h4>
+                                <p>报告问题或提出建议</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>隐私政策</h4>
+                                <p>了解我们如何保护你的隐私</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>服务条款</h4>
+                                <p>查看使用条款</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function closeModal(id) {
@@ -1768,14 +2263,6 @@
             });
         }
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -1788,9 +2275,6 @@
             }
             if (!e.target.closest('#moreMenuBtn') && !e.target.closest('#mainMenu')) {
                 document.getElementById('mainMenu').classList.remove('show');
-            }
-            if (!e.target.closest('#attachBtn') && !e.target.closest('#attachPopup')) {
-                document.getElementById('attachPopup').classList.remove('show');
             }
         });
     </script>
