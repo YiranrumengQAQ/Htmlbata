@@ -13,21 +13,22 @@
         }
         
         :root {
-            --primary: #03a56a;
-            --primary-hover: #028a58;
-            --primary-light: rgba(3, 165, 106, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --primary-light: rgba(59, 130, 246, 0.1);
             --success: #10b981;
             --danger: #ef4444;
-            --bg: #f5f5f5;
+            --warning: #f59e0b;
+            --bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             --surface: #ffffff;
-            --text: #212529;
-            --text-muted: #6c757d;
-            --border: #e0e0e0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
             --shadow: rgba(0, 0, 0, 0.1);
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
             background: var(--bg);
             color: var(--text);
             height: 100vh;
@@ -53,11 +54,12 @@
         
         .login-container {
             background: var(--surface);
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px var(--shadow);
+            padding: 45px 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px var(--shadow);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
+            border: 1px solid var(--border);
             animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -74,14 +76,21 @@
         
         .login-logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
         
         .login-logo h1 {
-            font-size: 28px;
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .login-logo p {
+            color: var(--text-muted);
+            font-size: 15px;
         }
         
         .form-group {
@@ -91,44 +100,44 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
         }
         
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            padding: 13px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
             font-size: 15px;
             font-family: inherit;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            box-shadow: 0 0 0 4px var(--primary-light);
             transform: translateY(-1px);
         }
         
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
         }
         
         .btn-login:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(3, 165, 106, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
         }
         
         .btn-login:active {
@@ -145,39 +154,41 @@
         
         .navbar {
             background: var(--surface);
-            padding: 12px 16px;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px var(--shadow);
-            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 12px var(--shadow);
+            border-bottom: 2px solid var(--primary-light);
             z-index: 100;
         }
         
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             flex: 1;
         }
         
         .app-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text);
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .search-box {
             position: relative;
             flex: 1;
-            max-width: 300px;
+            max-width: 350px;
         }
         
         .search-box input {
             width: 100%;
-            padding: 8px 12px 8px 36px;
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            padding: 10px 16px 10px 42px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
             font-size: 14px;
             background: var(--bg);
             transition: all 0.3s;
@@ -186,61 +197,65 @@
         .search-box input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
         
         .search-icon {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+            font-size: 16px;
         }
         
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .user-avatar-nav {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(3, 165, 106, 0.2);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+        }
+        
+        .user-avatar-nav img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .user-avatar-nav:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(3, 165, 106, 0.3);
-        }
-        
-        .user-avatar-nav:active {
-            transform: scale(0.95);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
         .btn-icon {
             background: transparent;
             border: none;
-            padding: 8px;
+            padding: 10px;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 20px;
             color: var(--text-muted);
             transition: all 0.3s;
         }
         
         .btn-icon:hover {
-            background: var(--bg);
-            color: var(--text);
+            background: var(--primary-light);
+            color: var(--primary);
             transform: scale(1.1);
         }
         
@@ -254,51 +269,42 @@
         .sidebar {
             width: 340px;
             background: var(--surface);
-            border-right: 1px solid var(--border);
+            border-right: 2px solid var(--border);
             display: flex;
             flex-direction: column;
-            animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            box-shadow: 4px 0 12px var(--shadow);
         }
         
         .sidebar-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 18px 20px;
+            border-bottom: 2px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, var(--primary-light), transparent);
         }
         
         .sidebar-title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 19px;
+            font-weight: 700;
         }
         
         .btn-add {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 20px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 22px;
             cursor: pointer;
             line-height: 1;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         
         .btn-add:hover {
-            background: var(--primary-hover);
             transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
         .rooms-list {
@@ -314,22 +320,10 @@
             gap: 14px;
             align-items: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInItem 0.4s ease;
-        }
-        
-        @keyframes fadeInItem {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
         
         .room-item:hover {
-            background: var(--bg);
+            background: var(--primary-light);
             transform: translateX(5px);
         }
         
@@ -339,32 +333,33 @@
         }
         
         .room-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 25px;
-            background: var(--primary);
+            width: 52px;
+            height: 52px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 18px;
             position: relative;
-            box-shadow: 0 2px 8px rgba(3, 165, 106, 0.2);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
             flex-shrink: 0;
         }
         
         .unread-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
-            background: var(--danger);
+            top: -6px;
+            right: -6px;
+            background: linear-gradient(135deg, var(--danger), #dc2626);
             color: white;
             border-radius: 12px;
-            padding: 2px 8px;
+            padding: 3px 8px;
             font-size: 11px;
-            font-weight: 600;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            border: 2px solid var(--surface);
         }
         
         .room-info {
@@ -379,7 +374,7 @@
         }
         
         .room-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 15px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -389,7 +384,6 @@
         .room-time {
             font-size: 12px;
             color: var(--text-muted);
-            white-space: nowrap;
         }
         
         .room-preview {
@@ -406,29 +400,28 @@
             display: flex;
             flex-direction: column;
             background: var(--bg);
-            animation: fadeIn 0.5s ease;
         }
         
         .chat-header {
             background: var(--surface);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            border-bottom: 2px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px var(--shadow);
+            box-shadow: 0 2px 8px var(--shadow);
         }
         
         .chat-header-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             flex: 1;
         }
         
         .chat-title {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 17px;
+            font-weight: 700;
         }
         
         .messages-area {
@@ -459,7 +452,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -467,7 +460,7 @@
             font-weight: 600;
             font-size: 14px;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(3, 165, 106, 0.2);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
         }
         
         .message-content {
@@ -478,11 +471,15 @@
             display: flex;
             gap: 8px;
             margin-bottom: 4px;
+            align-items: center;
         }
         
         .message-sender {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .message-time {
@@ -492,25 +489,26 @@
         
         .message-bubble {
             background: var(--surface);
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
             border-top-left-radius: 4px;
             font-size: 15px;
             line-height: 1.5;
-            box-shadow: 0 2px 6px var(--shadow);
+            box-shadow: 0 2px 8px var(--shadow);
+            border: 1px solid var(--border);
             transition: all 0.3s;
         }
         
         .message-bubble:hover {
-            box-shadow: 0 4px 12px var(--shadow);
+            box-shadow: 0 4px 16px var(--shadow);
             transform: translateY(-1px);
         }
         
         .message-input-container {
             background: var(--surface);
             padding: 16px 20px;
-            border-top: 1px solid var(--border);
-            box-shadow: 0 -2px 8px var(--shadow);
+            border-top: 2px solid var(--border);
+            box-shadow: 0 -4px 12px var(--shadow);
         }
         
         .input-wrapper {
@@ -521,12 +519,12 @@
         
         .message-input {
             flex: 1;
-            padding: 12px 16px;
+            padding: 12px 18px;
             border: 2px solid var(--border);
             border-radius: 24px;
             font-size: 15px;
             resize: none;
-            max-height: 100px;
+            max-height: 120px;
             font-family: inherit;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -534,30 +532,25 @@
         .message-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
         
         .btn-send {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 24px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(3, 165, 106, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         
         .btn-send:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(3, 165, 106, 0.4);
-        }
-        
-        .btn-send:active {
-            transform: translateY(0);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
         .empty-state {
@@ -568,7 +561,6 @@
             height: 100%;
             color: var(--text-muted);
             text-align: center;
-            animation: fadeIn 0.6s ease;
         }
         
         /* 模态框 */
@@ -591,13 +583,14 @@
         
         .modal-content {
             background: var(--surface);
-            padding: 28px;
-            border-radius: 16px;
+            padding: 32px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 520px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary-light);
             animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -613,29 +606,33 @@
         }
         
         .modal-header {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .modal-close {
-            background: var(--bg);
+            background: var(--primary-light);
             border: none;
             width: 36px;
             height: 36px;
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
-            color: var(--text-muted);
+            color: var(--primary);
             line-height: 1;
             transition: all 0.3s;
         }
         
         .modal-close:hover {
-            background: var(--border);
+            background: var(--primary);
+            color: white;
             transform: rotate(90deg);
         }
         
@@ -643,75 +640,105 @@
             display: flex;
             gap: 12px;
             justify-content: flex-end;
-            margin-top: 24px;
+            margin-top: 28px;
         }
         
         .btn-secondary {
-            background: var(--bg);
+            background: var(--primary-light);
             color: var(--text);
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .btn-secondary:hover {
-            background: var(--border);
+            background: var(--primary);
+            color: white;
             transform: translateY(-2px);
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(3, 165, 106, 0.3);
         }
         
         .btn-primary:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(3, 165, 106, 0.4);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
-        /* 个人资料模态框 */
+        /* 个人资料 */
         .profile-avatar-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--primary);
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 36px;
-            font-weight: 600;
-            margin: 0 auto 20px;
+            font-size: 42px;
+            font-weight: 700;
+            margin: 0 auto 24px;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(3, 165, 106, 0.3);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .profile-avatar-large:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(3, 165, 106, 0.4);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+        }
+        
+        .profile-avatar-large::after {
+            content: '更改头像';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .profile-avatar-large:hover::after {
+            opacity: 1;
         }
         
         .profile-info {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
         
         .profile-name {
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .profile-id {
@@ -722,15 +749,15 @@
         /* 设置界面 */
         .settings-container {
             display: flex;
-            height: 600px;
+            height: 650px;
             gap: 0;
         }
         
         .settings-menu {
-            width: 220px;
-            border-right: 1px solid var(--border);
+            width: 240px;
+            border-right: 2px solid var(--border);
             overflow-y: auto;
-            background: var(--bg);
+            background: linear-gradient(135deg, var(--primary-light), transparent);
         }
         
         .settings-menu-item {
@@ -746,47 +773,53 @@
         
         .settings-menu-item:hover {
             background: var(--surface);
+            transform: translateX(5px);
         }
         
         .settings-menu-item.active {
             background: var(--primary-light);
             border-left-color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
         }
         
         .settings-content {
             flex: 1;
-            padding: 28px;
+            padding: 32px;
             overflow-y: auto;
             background: var(--surface);
         }
         
         .settings-section {
-            margin-bottom: 32px;
+            margin-bottom: 36px;
         }
         
         .settings-section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 18px;
             color: var(--text);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .settings-item {
-            padding: 16px 20px;
+            padding: 18px 22px;
             background: var(--bg);
-            border-radius: 8px;
-            margin-bottom: 12px;
+            border-radius: 12px;
+            margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s;
+            border: 2px solid transparent;
         }
         
         .settings-item:hover {
-            box-shadow: 0 2px 8px var(--shadow);
-            transform: translateY(-1px);
+            box-shadow: 0 4px 16px var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--primary-light);
         }
         
         .settings-item-info {
@@ -795,20 +828,20 @@
         
         .settings-item-info h4 {
             font-size: 15px;
-            margin-bottom: 4px;
-            font-weight: 600;
+            margin-bottom: 6px;
+            font-weight: 700;
         }
         
         .settings-item-info p {
             font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.4;
+            line-height: 1.5;
         }
         
         .switch {
             position: relative;
-            width: 52px;
-            height: 28px;
+            width: 54px;
+            height: 30px;
             flex-shrink: 0;
         }
         
@@ -826,25 +859,25 @@
             right: 0;
             bottom: 0;
             background-color: var(--border);
-            transition: 0.3s;
-            border-radius: 28px;
+            transition: 0.4s;
+            border-radius: 30px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 22px;
-            width: 22px;
+            height: 24px;
+            width: 24px;
             left: 3px;
             bottom: 3px;
             background-color: white;
-            transition: 0.3s;
+            transition: 0.4s;
             border-radius: 50%;
-            box-shadow: 0 2px 4px var(--shadow);
+            box-shadow: 0 2px 6px var(--shadow);
         }
         
         input:checked + .slider {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
         }
         
         input:checked + .slider:before {
@@ -853,41 +886,38 @@
         
         .fab {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
+            bottom: 28px;
+            right: 28px;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
             border-radius: 50%;
-            font-size: 28px;
+            font-size: 30px;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(3, 165, 106, 0.4);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 99;
         }
         
         .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 6px 20px rgba(3, 165, 106, 0.5);
-        }
-        
-        .fab:active {
-            transform: scale(0.95);
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.6);
         }
         
         .menu-popup {
             position: fixed;
-            bottom: 100px;
-            right: 24px;
+            bottom: 110px;
+            right: 28px;
             background: var(--surface);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px var(--shadow);
+            border-radius: 16px;
+            box-shadow: 0 12px 32px var(--shadow);
             display: none;
-            min-width: 200px;
+            min-width: 220px;
             animation: popupSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 98;
+            border: 2px solid var(--primary-light);
         }
         
         @keyframes popupSlide {
@@ -906,13 +936,14 @@
         }
         
         .menu-popup-item {
-            padding: 14px 18px;
+            padding: 16px 20px;
             cursor: pointer;
             border-bottom: 1px solid var(--border);
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 15px;
         }
         
         .menu-popup-item:last-child {
@@ -920,21 +951,21 @@
         }
         
         .menu-popup-item:hover {
-            background: var(--bg);
+            background: var(--primary-light);
             transform: translateX(5px);
         }
         
         .loading {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             color: var(--text-muted);
         }
         
         .loading-spinner {
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid var(--border);
+            width: 28px;
+            height: 28px;
+            border: 4px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -947,20 +978,15 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
-            background: var(--border); 
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
             border-radius: 4px;
-            transition: background 0.3s;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
+            background: var(--primary-hover);
         }
 
         @media (max-width: 768px) {
-            .sidebar { 
-                position: absolute; 
-                z-index: 90; 
-                height: 100%;
-            }
+            .sidebar { width: 300px; }
             .search-box { display: none; }
             .settings-container {
                 flex-direction: column;
@@ -969,7 +995,7 @@
             .settings-menu {
                 width: 100%;
                 border-right: none;
-                border-bottom: 1px solid var(--border);
+                border-bottom: 2px solid var(--border);
             }
         }
     </style>
@@ -980,7 +1006,7 @@
         <div class="login-container">
             <div class="login-logo">
                 <h1>Matrix</h1>
-                <p>去中心化即时通讯</p>
+                <p>去中心化即时通讯平台</p>
             </div>
             
             <form id="loginForm">
@@ -1002,12 +1028,12 @@
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="rememberMe" checked style="margin-right: 8px; width: auto;">
-                        记住登录
+                        记住登录状态
                     </label>
                 </div>
                 
                 <button type="submit" class="btn-login" id="loginBtn">登录</button>
-                <div class="error-alert" id="errorAlert" style="display: none; background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 12px; border-radius: 8px; margin-top: 16px;"></div>
+                <div id="errorAlert" style="display: none; background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 14px; border-radius: 10px; margin-top: 18px;"></div>
             </form>
         </div>
     </div>
@@ -1042,7 +1068,7 @@
             <main class="chat-container">
                 <div class="chat-header" style="display: none;" id="chatHeader">
                     <div class="chat-header-info">
-                        <div class="room-avatar" id="chatAvatar" style="width: 40px; height: 40px; font-size: 16px;">?</div>
+                        <div class="room-avatar" id="chatAvatar" style="width: 42px; height: 42px; font-size: 16px;">?</div>
                         <div class="chat-title" id="chatTitle">房间</div>
                     </div>
                     <button class="btn-icon" id="roomMenuBtn">⋮</button>
@@ -1050,9 +1076,9 @@
                 
                 <div class="messages-area" id="messagesArea">
                     <div class="empty-state">
-                        <div style="font-size: 56px; margin-bottom: 20px;">💬</div>
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">选择对话</h3>
-                        <p style="color: var(--text-muted);">从左侧选择房间开始聊天</p>
+                        <div style="font-size: 64px; margin-bottom: 24px;">💬</div>
+                        <h3 style="margin-bottom: 14px; font-size: 22px;">选择对话</h3>
+                        <p style="color: var(--text-muted); font-size: 15px;">从左侧选择房间开始聊天</p>
                     </div>
                 </div>
                 
@@ -1076,7 +1102,7 @@
     </div>
 
     <!-- 主菜单 -->
-    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 64px; right: 16px;">
+    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 68px; right: 20px;">
         <div class="menu-popup-item" id="settingsBtn">⚙️ 设置</div>
         <div class="menu-popup-item" id="inviteBtn">👥 邀请朋友</div>
         <div class="menu-popup-item" id="feedbackBtn">💬 问题反馈</div>
@@ -1090,7 +1116,8 @@
                 <span>个人资料</span>
                 <button class="modal-close" onclick="closeModal('profileModal')">×</button>
             </div>
-            <div class="profile-avatar-large" id="profileAvatar">M</div>
+            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+            <div class="profile-avatar-large" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">M</div>
             <div class="profile-info">
                 <div class="profile-name" id="profileName">用户</div>
                 <div class="profile-id" id="profileId">@user:matrix.org</div>
@@ -1101,7 +1128,7 @@
             </div>
             <div class="form-group">
                 <label>个人简介</label>
-                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3"></textarea>
+                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit;"></textarea>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('profileModal')">取消</button>
@@ -1112,7 +1139,7 @@
 
     <!-- 设置模态框 -->
     <div class="modal" id="settingsModal">
-        <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-content" style="max-width: 950px; max-height: 85vh;">
             <div class="modal-header">
                 <span>设置</span>
                 <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
@@ -1122,7 +1149,10 @@
                     <div class="settings-menu-item active" data-setting="general">⚙️ 通用</div>
                     <div class="settings-menu-item" data-setting="notifications">🔔 通知</div>
                     <div class="settings-menu-item" data-setting="preferences">🎨 偏好</div>
+                    <div class="settings-menu-item" data-setting="audio">🎵 音频与视频</div>
                     <div class="settings-menu-item" data-setting="security">🔒 安全与隐私</div>
+                    <div class="settings-menu-item" data-setting="labs">🧪 实验室</div>
+                    <div class="settings-menu-item" data-setting="advanced">🔧 高级设置</div>
                     <div class="settings-menu-item" data-setting="help">❓ 帮助和关于</div>
                 </div>
                 <div class="settings-content" id="settingsContent"></div>
@@ -1143,11 +1173,11 @@
             </div>
             <div class="form-group">
                 <label>房间话题（可选）</label>
-                <textarea id="roomTopic" placeholder="话题" rows="2"></textarea>
+                <textarea id="roomTopic" placeholder="话题" rows="2" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit;"></textarea>
             </div>
             <div class="form-group">
                 <label>房间访问权限</label>
-                <select id="roomType">
+                <select id="roomType" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px;">
                     <option value="private">私有 - 仅被邀请的人才能找到并加入</option>
                     <option value="public">公开 - 任何人都可以找到并加入</option>
                 </select>
@@ -1178,6 +1208,8 @@
                 this.rooms = new Map();
                 this.syncToken = null;
                 this.syncing = false;
+                this.displayName = '';
+                this.avatarUrl = '';
             }
 
             async request(method, endpoint, data = null) {
@@ -1220,6 +1252,37 @@
                 this.syncToken = data.next_batch;
                 localStorage.setItem('matrixSyncToken', this.syncToken);
                 return data;
+            }
+
+            async getProfile() {
+                try {
+                    const profile = await this.request('GET', `/profile/${encodeURIComponent(this.userId)}`);
+                    this.displayName = profile.displayname || '';
+                    this.avatarUrl = profile.avatar_url || '';
+                    return profile;
+                } catch (error) {
+                    return {};
+                }
+            }
+
+            async setDisplayName(displayName) {
+                await this.request('PUT', `/profile/${encodeURIComponent(this.userId)}/displayname`, {
+                    displayname: displayName
+                });
+                this.displayName = displayName;
+            }
+
+            async setAvatarUrl(avatarUrl) {
+                await this.request('PUT', `/profile/${encodeURIComponent(this.userId)}/avatar_url`, {
+                    avatar_url: avatarUrl
+                });
+                this.avatarUrl = avatarUrl;
+            }
+
+            mxcToHttp(mxcUrl) {
+                if (!mxcUrl || !mxcUrl.startsWith('mxc://')) return null;
+                const parts = mxcUrl.substring(6).split('/');
+                return `${this.baseUrl}/_matrix/media/r0/download/${parts[0]}/${parts[1]}`;
             }
 
             async getRooms() {
@@ -1315,6 +1378,7 @@
                     const savedSyncToken = localStorage.getItem('matrixSyncToken');
                     if (savedSyncToken) client.syncToken = savedSyncToken;
                     showMainScreen(auth.userId);
+                    loadProfile();
                     loadRooms();
                     startSync();
                 } catch (error) {
@@ -1344,6 +1408,7 @@
                 }
                 client = new MatrixClient(homeserver, loginResponse.access_token, loginResponse.user_id);
                 showMainScreen(loginResponse.user_id);
+                await loadProfile();
                 await loadRooms();
                 startSync();
             } catch (error) {
@@ -1365,9 +1430,63 @@
             document.getElementById('profileId').textContent = userId;
         }
 
+        async function loadProfile() {
+            try {
+                const profile = await client.getProfile();
+                if (profile.displayname) {
+                    document.getElementById('profileName').textContent = profile.displayname;
+                    document.getElementById('profileDisplayName').value = profile.displayname;
+                }
+                if (profile.avatar_url) {
+                    const avatarUrl = client.mxcToHttp(profile.avatar_url);
+                    if (avatarUrl) {
+                        document.getElementById('userAvatar').innerHTML = `<img src="${avatarUrl}">`;
+                        document.getElementById('profileAvatar').innerHTML = `<img src="${avatarUrl}">`;
+                    }
+                }
+            } catch (error) {
+                console.error('加载个人资料失败:', error);
+            }
+        }
+
         // 点击头像打开个人资料
         document.getElementById('userAvatar').addEventListener('click', () => {
             document.getElementById('profileModal').classList.add('show');
+        });
+
+        // 头像上传
+        document.getElementById('avatarInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                // 这里应该上传到Matrix服务器，暂时使用本地预览
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    document.getElementById('userAvatar').innerHTML = `<img src="${dataUrl}">`;
+                    document.getElementById('profileAvatar').innerHTML = `<img src="${dataUrl}">`;
+                };
+                reader.readAsDataURL(file);
+                alert('头像已更新（演示模式）');
+            } catch (error) {
+                alert('上传失败');
+            }
+        });
+
+        // 保存个人资料
+        document.getElementById('saveProfile').addEventListener('click', async () => {
+            const displayName = document.getElementById('profileDisplayName').value.trim();
+            if (displayName && displayName !== client.displayName) {
+                try {
+                    await client.setDisplayName(displayName);
+                    document.getElementById('profileName').textContent = displayName;
+                    alert('保存成功！');
+                    closeModal('profileModal');
+                } catch (error) {
+                    alert('保存失败');
+                }
+            }
         });
 
         async function loadRooms() {
@@ -1375,7 +1494,7 @@
             try {
                 const rooms = await client.getRooms();
                 if (rooms.length === 0) {
-                    roomsList.innerHTML = '<div class="loading" style="padding: 40px;"><p>暂无房间</p><p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">点击 + 创建或加入房间</p></div>';
+                    roomsList.innerHTML = '<div class="loading" style="padding: 50px;"><p style="font-size: 16px; margin-bottom: 10px;">暂无房间</p><p style="font-size: 14px; color: var(--text-muted);">点击 + 创建或加入房间</p></div>';
                     return;
                 }
                 roomsList.innerHTML = '';
@@ -1387,11 +1506,10 @@
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'room-item';
                     roomDiv.dataset.roomId = room.roomId;
-                    roomDiv.style.animationDelay = `${index * 0.05}s`;
                     roomDiv.innerHTML = `
                         <div class="room-avatar">
                             ${room.name[0].toUpperCase()}
-                            ${room.unread > 0 ? `<div class="unread-badge">${room.unread}</div>` : ''}
+                            ${room.unread > 0 ? `<div class="unread-badge">${room.unread > 99 ? '99+' : room.unread}</div>` : ''}
                         </div>
                         <div class="room-info">
                             <div class="room-header">
@@ -1461,7 +1579,7 @@
 
         document.getElementById('messageInput').addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
         async function sendMessage() {
@@ -1538,34 +1656,50 @@
 
         function loadSettings(type) {
             const content = document.getElementById('settingsContent');
+            
             if (type === 'general') {
-                const displayName = client.userId.substring(1, client.userId.indexOf(':'));
+                const displayName = client.displayName || client.userId.substring(1, client.userId.indexOf(':'));
                 content.innerHTML = `
                     <div class="settings-section">
-                        <div class="settings-section-title">用户设置</div>
+                        <div class="settings-section-title">发现</div>
                         <div class="settings-item">
                             <div class="settings-item-info">
-                                <h4>用户资料图片</h4>
-                                <p>点击顶部头像修改</p>
-                            </div>
-                            <div class="user-avatar-nav">${displayName[0].toUpperCase()}</div>
-                        </div>
-                        <div class="settings-item">
-                            <div class="settings-item-info">
-                                <h4>显示名称</h4>
-                                <p>${displayName}</p>
+                                <h4>管理你的发现设置</h4>
+                                <p>控制其他用户如何发现你</p>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="settings-section">
                         <div class="settings-section-title">账户</div>
                         <div class="settings-item">
                             <div class="settings-item-info">
-                                <h4>您的账户详细信息</h4>
+                                <h4>你的账户详细信息</h4>
                                 <p>于 account.matrix.org 单独管理。</p>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">集成</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>使用集成管理器</h4>
+                                <p>管理机器人、桥接、小部件和贴纸包。集成管理器接收配置数据，并可以代表你修改小部件、发送房间邀请和设置权限等级。</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>允许集成</h4>
+                                <p>启用集成管理器功能</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="settings-section">
                         <div class="settings-section-title">高级</div>
                         <div class="settings-item">
@@ -1578,6 +1712,12 @@
                             <div class="settings-item-info">
                                 <h4>家服务器</h4>
                                 <p>${client.baseUrl}</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>身份服务器</h4>
+                                <p>你未使用身份服务器</p>
                             </div>
                         </div>
                         <div class="settings-item" style="cursor: pointer;" onclick="alert('清空缓存功能')">
@@ -1594,8 +1734,8 @@
                         <div class="settings-section-title">通知设置</div>
                         <div class="settings-item">
                             <div class="settings-item-info">
-                                <h4>启用通知</h4>
-                                <p>接收新消息的桌面通知</p>
+                                <h4>启用这个账户的通知</h4>
+                                <p>接收所有设备的通知</p>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" checked>
@@ -1604,11 +1744,53 @@
                         </div>
                         <div class="settings-item">
                             <div class="settings-item-info">
-                                <h4>声音</h4>
-                                <p>播放消息提示音</p>
+                                <h4>启用这个会话的通知</h4>
+                                <p>当前设备的通知</p>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">默认通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>所有消息的通知</h4>
+                                <p>接收所有新消息的通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">提及和关键词</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>提及时通知</h4>
+                                <p>当有人@你时发送通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">电子邮件通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>为你的电子邮件启用通知</h4>
+                                <p>通过邮件接收重要通知</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -1617,28 +1799,39 @@
             } else if (type === 'preferences') {
                 content.innerHTML = `
                     <div class="settings-section">
-                        <div class="settings-section-title">偏好设置</div>
+                        <div class="settings-section-title">外观</div>
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>主题</h4>
                                 <p>选择界面主题</p>
                             </div>
-                            <select style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;">
+                            <select style="padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--surface);">
                                 <option>浅色</option>
                                 <option>深色</option>
                                 <option>自动</option>
                             </select>
                         </div>
-                    </div>
-                `;
-            } else if (type === 'security') {
-                content.innerHTML = `
-                    <div class="settings-section">
-                        <div class="settings-section-title">安全与隐私</div>
                         <div class="settings-item">
                             <div class="settings-item-info">
-                                <h4>端到端加密</h4>
-                                <p>默认启用加密对话</p>
+                                <h4>字体大小</h4>
+                                <p>调整界面字体大小</p>
+                            </div>
+                            <select style="padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--surface);">
+                                <option>小</option>
+                                <option selected>中</option>
+                                <option>大</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'audio') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">通话</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>防止意外通话</h4>
+                                <p>在开始通话之前要求确认</p>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" checked>
@@ -1647,8 +1840,348 @@
                         </div>
                     </div>
                 `;
-            } else {
-                content.innerHTML = '<div class="loading">功能开发中...</div>';
+            } else if (type === 'security') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">加密</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>交叉签名</h4>
+                                <p>已启用交叉签名。</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>仅向已验证的会话发送加密消息</h4>
+                                <p>从不从此会话向未验证的会话发送加密消息。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">安全备份</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在此设备上设置</h4>
+                                <p>通过在你的服务器上备份加密密钥,防止失去对加密消息和数据的访问。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">密钥管理</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>导出端到端房间密钥</h4>
+                                <p>导出密钥到本地文件</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>导入端到端房间密钥</h4>
+                                <p>从本地文件导入密钥</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">保护访问</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>使用PIN和生物特征识别</h4>
+                                <p>保护应用访问</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>阻止截图</h4>
+                                <p>防止截取屏幕内容</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'labs') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">实验性功能</div>
+                        <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">这些是实验性功能,可能会出现不可预料的错误。请谨慎使用。</p>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用在时间线中滑动回复</h4>
+                                <p>滑动消息快速回复</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>为过去的消息共享房间密钥</h4>
+                                <p>在共享历史的加密房间中邀请时,加密历史将可见。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用 LaTeX 数学</h4>
+                                <p>重启应用以使更改生效。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用消息列消息</h4>
+                                <p>注意:应用将重启</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>自动报告解密错误</h4>
+                                <p>当无法解密的错误出现时,你的系统会自动发送日志</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用实时位置共享</h4>
+                                <p>临时执行:地点在房间历史中持续存在</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用 Element 通话权限快捷方式</h4>
+                                <p>自动允许 Element 通话小部件并授予相机/麦克风访问权限</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用新布局</h4>
+                                <p>简化的 Element,带有可选的标签</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用延迟的私聊消息</h4>
+                                <p>仅在首条消息创建私聊消息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用富文本编辑器</h4>
+                                <p>试用富文本编辑器(纯文本模式即将到来)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用新的会话管理器</h4>
+                                <p>对所有会话有更好的可见性和控制。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用语音广播</h4>
+                                <p>能够在房间时间线中录制和发送语音广播。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'advanced') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">开发者模式</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>开发者模式</h4>
+                                <p>激活隐藏的功能,也可能使应用不稳定。仅供开发者使用!</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在时间线上显示隐藏事件</h4>
+                                <p>显示系统消息和调试信息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在屏幕上显示调试信息</h4>
+                                <p>显示一些有用的信息以帮助调试应用程序</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>在加密房间显示完整历史</h4>
+                                <p>显示所有历史消息</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">日志</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>启用详细日志</h4>
+                                <p>详细日志将通过在你发送愤怒摇动时提供更多日志来帮助开发人员。即使启用, 应用程序也不会记录消息内容或任何其他私人数据。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>快速失败(Fail-fast)</h4>
+                                <p>发生意外错误时,Element Classic 可能更经常崩溃</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">愤怒摇动(Rageshake)</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>摇一摇快捷反馈问题</h4>
+                                <p>检测阈值</p>
+                            </div>
+                            <input type="range" min="1" max="10" value="5" style="width: 120px;">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">开发工具</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>账户数据</h4>
+                                <p>查看账户数据</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>访问令牌</h4>
+                                <p>你的访问令牌提供对你账户的完全访问权限。勿与任何人分享它。</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'help') {
+                content.innerHTML = `
+                    <div class="settings-section">
+                        <div class="settings-section-title">关于</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>Matrix 客户端</h4>
+                                <p>版本 1.0.0</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>基于 Matrix 协议</h4>
+                                <p>去中心化、端到端加密的即时通讯</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">帮助</div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>使用指南</h4>
+                                <p>查看使用说明</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>问题反馈</h4>
+                                <p>报告问题或提出建议</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
         }
 
