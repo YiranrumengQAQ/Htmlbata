@@ -19,7 +19,7 @@
             overflow: hidden;
         }
         
-        /* 登录界面 - 保持原有深蓝紫色调 */
+        /* 登录界面 */
         #loginScreen {
             display: flex;
             justify-content: center;
@@ -33,13 +33,13 @@
             padding: 45px 40px;
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 420px;
+            width: 440px;
             backdrop-filter: blur(10px);
         }
         
         .login-title {
             color: #1e3c72;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
             font-size: 28px;
             font-weight: 700;
@@ -58,6 +58,7 @@
             font-size: 13px;
             margin-bottom: 20px;
             min-height: 20px;
+            font-weight: 500;
         }
         
         .form-group {
@@ -70,6 +71,10 @@
             margin-bottom: 8px;
             font-size: 14px;
             font-weight: 500;
+        }
+        
+        .input-wrapper {
+            position: relative;
         }
         
         .form-group input {
@@ -86,6 +91,70 @@
             outline: none;
             border-color: #2a5298;
             background: white;
+        }
+        
+        .input-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        
+        .input-hint.detected {
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .server-auto-detected {
+            display: none;
+            background: #d1fae5;
+            border: 1px solid #059669;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #047857;
+            margin-top: 8px;
+        }
+        
+        .server-auto-detected.show {
+            display: block;
+        }
+        
+        .homeserver-group {
+            transition: all 0.3s;
+        }
+        
+        .homeserver-group.hidden {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .login-method-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f3f4f6;
+            padding: 4px;
+            border-radius: 10px;
+        }
+        
+        .method-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .method-btn.active {
+            background: white;
+            color: #2a5298;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .login-btn {
@@ -122,16 +191,25 @@
             font-size: 13px;
             margin-top: 12px;
             text-align: center;
+            padding: 10px;
+            background: #fee2e2;
+            border-radius: 8px;
+            border: 1px solid #fca5a5;
         }
         
-        /* 主界面 */
+        .example-text {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        
+        /* 主界面样式 - 与之前相同 */
         #mainScreen {
             display: none;
             height: 100vh;
             flex-direction: column;
         }
         
-        /* 顶部导航栏 - 深色主题 */
         .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             padding: 16px 24px;
@@ -206,14 +284,12 @@
             background: rgba(255, 255, 255, 0.25);
         }
         
-        /* 主容器 */
         .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
         
-        /* 房间列表侧边栏 */
         .rooms-sidebar {
             width: 320px;
             background: #151b3d;
@@ -267,7 +343,6 @@
             text-overflow: ellipsis;
         }
         
-        /* 聊天区域 */
         .chat-area {
             flex: 1;
             display: flex;
@@ -339,7 +414,6 @@
             font-size: 14px;
         }
         
-        /* 消息输入区域 */
         .message-input-area {
             padding: 20px 24px;
             background: #151b3d;
@@ -412,7 +486,6 @@
             font-size: 14px;
         }
         
-        /* 滚动条样式 */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -439,21 +512,45 @@
             <h1 class="login-title">Matrix 客户端</h1>
             <p class="login-subtitle">连接到去中心化的通讯网络</p>
             <div class="status-text" id="loginStatus">准备就绪</div>
+            
             <form id="loginForm">
+                <!-- 登录方式切换 -->
+                <div class="login-method-toggle">
+                    <button type="button" class="method-btn active" data-method="user">用户ID/用户名</button>
+                    <button type="button" class="method-btn" data-method="email">邮箱</button>
+                </div>
+                
+                <!-- 用户标识符 -->
                 <div class="form-group">
+                    <label id="identifierLabel">用户ID 或 用户名</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="identifier" placeholder="@username:matrix.org" required autocomplete="username">
+                        <div class="server-auto-detected" id="serverDetected">
+                            ✓ 已自动检测服务器
+                        </div>
+                    </div>
+                    <div class="input-hint" id="identifierHint">
+                        完整格式: @username:matrix.org 或仅输入用户名
+                    </div>
+                </div>
+                
+                <!-- 服务器地址 -->
+                <div class="form-group homeserver-group" id="homeserverGroup">
                     <label>服务器地址</label>
                     <input type="text" id="homeserver" value="https://matrix.org" placeholder="https://matrix.org">
+                    <div class="input-hint">
+                        官方服务器: matrix.org
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" id="username" placeholder="@username:matrix.org" required>
-                </div>
+                
+                <!-- 密码 -->
                 <div class="form-group">
                     <label>密码</label>
-                    <input type="password" id="password" placeholder="输入密码" required>
+                    <input type="password" id="password" placeholder="输入密码" required autocomplete="current-password">
                 </div>
+                
                 <button type="submit" class="login-btn" id="loginBtn">登录</button>
-                <div id="errorMsg" class="error-msg"></div>
+                <div id="errorMsg" class="error-msg" style="display: none;"></div>
             </form>
         </div>
     </div>
@@ -477,7 +574,6 @@
         </div>
         
         <div class="main-container">
-            <!-- 房间列表 -->
             <div class="rooms-sidebar">
                 <div class="rooms-header">房间列表</div>
                 <div class="rooms-list" id="roomsList">
@@ -485,7 +581,6 @@
                 </div>
             </div>
             
-            <!-- 聊天区域 -->
             <div class="chat-area">
                 <div class="chat-header" id="chatHeader">选择一个房间开始聊天</div>
                 <div class="messages-container" id="messagesContainer">
@@ -501,52 +596,88 @@
         </div>
     </div>
 
-    <!-- Matrix JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/matrix-js-sdk@30.0.0/lib/browser-matrix.js"></script>
     
     <script>
         let matrixClient = null;
         let currentRoomId = null;
         let pingInterval = null;
+        let currentLoginMethod = 'user';
 
-        // 更新连接状态
-        function updateStatus(status, ping = null) {
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('connectionStatus');
-            const pingValue = document.getElementById('pingValue');
+        // 登录方式切换
+        document.querySelectorAll('.method-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentLoginMethod = this.dataset.method;
+                updateLoginInterface();
+            });
+        });
+
+        // 更新登录界面
+        function updateLoginInterface() {
+            const identifierInput = document.getElementById('identifier');
+            const identifierLabel = document.getElementById('identifierLabel');
+            const identifierHint = document.getElementById('identifierHint');
             
-            indicator.className = 'status-indicator';
-            if (status === 'connecting') {
-                indicator.classList.add('connecting');
-                statusText.textContent = '连接中';
+            if (currentLoginMethod === 'email') {
+                identifierLabel.textContent = '邮箱地址';
+                identifierInput.placeholder = 'user@example.com';
+                identifierInput.type = 'email';
+                identifierHint.textContent = '使用您在服务器上绑定的邮箱地址登录';
             } else {
-                statusText.textContent = '已连接';
+                identifierLabel.textContent = '用户ID 或 用户名';
+                identifierInput.placeholder = '@username:matrix.org';
+                identifierInput.type = 'text';
+                identifierHint.textContent = '完整格式: @username:matrix.org 或仅输入用户名';
             }
             
-            if (ping !== null) {
-                pingValue.textContent = ping;
+            checkIdentifier();
+        }
+
+        // 智能检测标识符类型
+        document.getElementById('identifier').addEventListener('input', checkIdentifier);
+
+        function checkIdentifier() {
+            const identifier = document.getElementById('identifier').value.trim();
+            const homeserverGroup = document.getElementById('homeserverGroup');
+            const serverDetected = document.getElementById('serverDetected');
+            const homeserverInput = document.getElementById('homeserver');
+            const identifierHint = document.getElementById('identifierHint');
+            
+            // 检测完整的Matrix用户ID (@username:homeserver.com)
+            const matrixIdRegex = /^@[a-z0-9._=-]+:([a-z0-9.-]+\.[a-z]{2,})$/i;
+            const match = identifier.match(matrixIdRegex);
+            
+            if (match && currentLoginMethod === 'user') {
+                // 自动提取homeserver
+                const detectedServer = match[1];
+                homeserverInput.value = `https://${detectedServer}`;
+                homeserverGroup.classList.add('hidden');
+                serverDetected.classList.add('show');
+                identifierHint.textContent = `✓ 已识别完整用户ID`;
+                identifierHint.classList.add('detected');
+            } else {
+                homeserverGroup.classList.remove('hidden');
+                serverDetected.classList.remove('show');
+                identifierHint.classList.remove('detected');
+                
+                if (currentLoginMethod === 'email') {
+                    identifierHint.textContent = '使用您在服务器上绑定的邮箱地址登录';
+                } else if (identifier && !identifier.startsWith('@')) {
+                    identifierHint.textContent = '已识别为用户名，需要指定服务器';
+                } else {
+                    identifierHint.textContent = '完整格式: @username:matrix.org 或仅输入用户名';
+                }
             }
         }
 
-        // 测量延迟
-        async function measurePing() {
-            if (!matrixClient) return;
-            try {
-                const start = Date.now();
-                await matrixClient.getVersions();
-                const ping = Date.now() - start;
-                updateStatus('connected', ping);
-            } catch (error) {
-                updateStatus('connected', '--');
-            }
-        }
-
-        // 登录
+        // 登录处理
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const homeserver = document.getElementById('homeserver').value;
-            const username = document.getElementById('username').value;
+            const identifier = document.getElementById('identifier').value.trim();
+            const homeserver = document.getElementById('homeserver').value.trim();
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
             const loginBtn = document.getElementById('loginBtn');
@@ -555,12 +686,39 @@
             loginBtn.disabled = true;
             loginBtn.textContent = '登录中...';
             loginStatus.textContent = '正在连接...';
-            errorMsg.textContent = '';
+            errorMsg.style.display = 'none';
             
             try {
                 const tempClient = matrixSdk.createClient({ baseUrl: homeserver });
+                
+                // 构建登录标识符
+                let loginIdentifier;
+                
+                if (currentLoginMethod === 'email') {
+                    // 邮箱登录
+                    loginIdentifier = {
+                        type: 'm.id.thirdparty',
+                        medium: 'email',
+                        address: identifier
+                    };
+                } else if (identifier.startsWith('@')) {
+                    // 完整用户ID
+                    loginIdentifier = {
+                        type: 'm.id.user',
+                        user: identifier
+                    };
+                } else {
+                    // 仅用户名
+                    loginIdentifier = {
+                        type: 'm.id.user',
+                        user: identifier
+                    };
+                }
+                
+                loginStatus.textContent = '正在验证身份...';
+                
                 const loginResponse = await tempClient.login('m.login.password', {
-                    user: username,
+                    identifier: loginIdentifier,
                     password: password
                 });
                 
@@ -581,7 +739,6 @@
                         loadRooms();
                         setupListeners();
                         
-                        // 启动延迟监测
                         measurePing();
                         pingInterval = setInterval(measurePing, 5000);
                     }
@@ -589,26 +746,74 @@
                 
             } catch (error) {
                 console.error('登录失败:', error);
-                errorMsg.textContent = '登录失败: ' + (error.data?.error || error.message);
+                let errorText = '登录失败: ';
+                
+                if (error.data?.error) {
+                    errorText += error.data.error;
+                } else if (error.message) {
+                    errorText += error.message;
+                } else {
+                    errorText += '未知错误';
+                }
+                
+                // 提供更友好的错误提示
+                if (error.data?.errcode === 'M_FORBIDDEN') {
+                    errorText = '用户名、邮箱或密码错误，请检查后重试';
+                } else if (error.data?.errcode === 'M_USER_DEACTIVATED') {
+                    errorText = '该账号已被停用';
+                } else if (error.message?.includes('fetch')) {
+                    errorText = '无法连接到服务器，请检查服务器地址';
+                }
+                
+                errorMsg.textContent = errorText;
+                errorMsg.style.display = 'block';
                 loginStatus.textContent = '准备就绪';
                 loginBtn.disabled = false;
                 loginBtn.textContent = '登录';
             }
         });
 
-        // 显示主界面
+        function updateStatus(status, ping = null) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('connectionStatus');
+            const pingValue = document.getElementById('pingValue');
+            
+            indicator.className = 'status-indicator';
+            if (status === 'connecting') {
+                indicator.classList.add('connecting');
+                statusText.textContent = '连接中';
+            } else {
+                statusText.textContent = '已连接';
+            }
+            
+            if (ping !== null) {
+                pingValue.textContent = ping;
+            }
+        }
+
+        async function measurePing() {
+            if (!matrixClient) return;
+            try {
+                const start = Date.now();
+                await matrixClient.getVersions();
+                const ping = Date.now() - start;
+                updateStatus('connected', ping);
+            } catch (error) {
+                updateStatus('connected', '--');
+            }
+        }
+
         function showMainScreen() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'flex';
             
             const userId = matrixClient.getUserId();
-            const displayName = userId.substring(1, userId.indexOf(':'));
+            const displayName = userId.substring(1, userId.indexOf(':')) || userId;
             
             document.getElementById('userName').textContent = displayName;
             document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
         }
 
-        // 加载房间列表
         function loadRooms() {
             const roomsList = document.getElementById('roomsList');
             const rooms = matrixClient.getRooms();
@@ -641,7 +846,6 @@
             });
         }
 
-        // 打开房间
         function openRoom(roomId) {
             currentRoomId = roomId;
             const room = matrixClient.getRoom(roomId);
@@ -657,7 +861,6 @@
             loadMessages(roomId);
         }
 
-        // 加载消息
         function loadMessages(roomId) {
             const container = document.getElementById('messagesContainer');
             const room = matrixClient.getRoom(roomId);
@@ -674,7 +877,6 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // 创建消息元素
         function createMessageElement(event) {
             const sender = event.getSender();
             const senderName = sender.substring(1, sender.indexOf(':')) || sender;
@@ -700,7 +902,6 @@
             return div;
         }
 
-        // 发送消息
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
         document.getElementById('messageInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -726,13 +927,11 @@
             }
         }
 
-        // 自动调整输入框高度
         document.getElementById('messageInput').addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        // 设置监听器
         function setupListeners() {
             matrixClient.on('Room.timeline', (event, room) => {
                 if (event.getType() === 'm.room.message') {
@@ -743,7 +942,6 @@
                         container.scrollTop = container.scrollHeight;
                     }
                     
-                    // 更新预览
                     const roomItem = document.querySelector(`[data-room-id="${room.roomId}"]`);
                     if (roomItem) {
                         const preview = roomItem.querySelector('.room-preview');
@@ -759,7 +957,6 @@
             });
         }
 
-        // 退出登录
         document.getElementById('logoutBtn').addEventListener('click', () => {
             if (matrixClient) {
                 matrixClient.stopClient();
@@ -775,7 +972,6 @@
             document.getElementById('loginStatus').textContent = '准备就绪';
         });
 
-        // HTML转义
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
