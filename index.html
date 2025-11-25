@@ -1,1427 +1,455 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix 聊天客户端 - 现代化即时通讯</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --danger-color: #dc3545;
-            --dark-bg: #1a1d29;
-            --darker-bg: #13151f;
-            --light-bg: #2a2d3a;
-            --hover-bg: #353845;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a3bd;
-            --border-color: #3a3d4a;
-            --message-sent: #0084ff;
-            --message-received: #3a3d4a;
-            --online-color: #10b981;
-            --sidebar-width: 320px;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #1a1d29 0%, #13151f 100%);
-            color: var(--text-primary);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* 登录界面 */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 50px 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 450px;
-            backdrop-filter: blur(10px);
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-header h1 {
-            color: #333;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #333;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-            color: #333;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-
-        .options label {
-            display: flex;
-            align-items: center;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .options input[type="checkbox"] {
-            margin-right: 6px;
-        }
-
-        .options a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 25px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* 聊天主界面 */
-        .chat-container {
-            display: none;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .chat-wrapper {
-            display: flex;
-            height: 100%;
-        }
-
-        /* 侧边栏 */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--darker-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            background: var(--dark-bg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .avatar.online::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 12px;
-            height: 12px;
-            background: var(--online-color);
-            border: 2px solid var(--darker-bg);
-            border-radius: 50%;
-        }
-
-        .user-info h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .user-info p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            font-size: 18px;
-        }
-
-        .icon-btn:hover {
-            background: var(--light-bg);
-            color: var(--text-primary);
-        }
-
-        /* 搜索栏 */
-        .search-bar {
-            padding: 15px 20px;
-            background: var(--darker-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .search-input-wrapper {
-            position: relative;
-        }
-
-        .search-input-wrapper input {
-            width: 100%;
-            padding: 12px 40px 12px 40px;
-            background: var(--light-bg);
-            border: 1px solid transparent;
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .search-input-wrapper input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--dark-bg);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        /* 房间列表 */
-        .room-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
-
-        .room-category {
-            padding: 15px 20px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .room-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-        }
-
-        .room-item:hover {
-            background: var(--light-bg);
-        }
-
-        .room-item.active {
-            background: var(--light-bg);
-            border-left: 3px solid var(--primary-color);
-        }
-
-        .room-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .room-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .room-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .room-name {
-            font-weight: 600;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .room-time {
-            font-size: 11px;
-            color: var(--text-secondary);
-            flex-shrink: 0;
-        }
-
-        .room-preview {
-            font-size: 13px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .unread-badge {
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: var(--primary-color);
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        /* 主聊天区域 */
-        .main-chat {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--dark-bg);
-        }
-
-        .chat-header {
-            padding: 20px 30px;
-            background: var(--darker-bg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .chat-header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .chat-title h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .chat-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* 消息区域 */
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .message {
-            display: flex;
-            gap: 12px;
-            animation: messageAppear 0.3s ease-out;
-        }
-
-        @keyframes messageAppear {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.sent {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .message-content {
-            max-width: 60%;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .message.sent .message-content {
-            align-items: flex-end;
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .message-sender {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .message-timestamp {
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        .message-bubble {
-            padding: 12px 16px;
-            border-radius: 16px;
-            word-wrap: break-word;
-            line-height: 1.5;
-        }
-
-        .message.received .message-bubble {
-            background: var(--message-received);
-            border-top-left-radius: 4px;
-        }
-
-        .message.sent .message-bubble {
-            background: var(--message-sent);
-            border-top-right-radius: 4px;
-        }
-
-        .message-reactions {
-            display: flex;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .reaction {
-            background: var(--light-bg);
-            border-radius: 12px;
-            padding: 4px 10px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .reaction:hover {
-            background: var(--hover-bg);
-        }
-
-        .reaction-count {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* 输入区域 */
-        .input-area {
-            padding: 20px 30px;
-            background: var(--darker-bg);
-            border-top: 1px solid var(--border-color);
-        }
-
-        .typing-indicator {
-            padding: 8px 0;
-            font-size: 13px;
-            color: var(--text-secondary);
-            min-height: 30px;
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .input-tools {
-            display: flex;
-            gap: 8px;
-        }
-
-        .input-box {
-            flex: 1;
-            background: var(--light-bg);
-            border-radius: 12px;
-            padding: 12px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .input-box textarea {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 15px;
-            font-family: inherit;
-            resize: none;
-            max-height: 120px;
-            line-height: 1.5;
-        }
-
-        .input-box textarea:focus {
-            outline: none;
-        }
-
-        .input-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .send-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: var(--primary-color);
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .send-btn:hover {
-            background: #0257d5;
-            transform: scale(1.05);
-        }
-
-        .send-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* 右侧信息面板 */
-        .info-panel {
-            width: 320px;
-            background: var(--darker-bg);
-            border-left: 1px solid var(--border-color);
-            overflow-y: auto;
-            padding: 20px;
-            display: none;
-        }
-
-        .info-panel.active {
-            display: block;
-        }
-
-        .info-section {
-            margin-bottom: 30px;
-        }
-
-        .info-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 15px;
-        }
-
-        .info-item {
-            padding: 12px;
-            background: var(--light-bg);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .info-item:hover {
-            background: var(--hover-bg);
-        }
-
-        .member-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .member-name {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        .member-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--online-color);
-        }
-
-        .member-status.offline {
-            background: var(--text-secondary);
-        }
-
-        /* 加密指示器 */
-        .encryption-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            background: var(--success-color);
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* 滚动条样式 */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--light-bg);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--hover-bg);
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .info-panel {
-                position: fixed;
-                right: -320px;
-                top: 0;
-                height: 100vh;
-                transition: right 0.3s ease;
-                z-index: 1000;
-            }
-            
-            .info-panel.active {
-                right: 0;
-                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -100%;
-                width: 280px;
-                height: 100vh;
-                z-index: 999;
-                transition: left 0.3s ease;
-            }
-            
-            .sidebar.active {
-                left: 0;
-                box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
-            }
-            
-            .message-content {
-                max-width: 80%;
-            }
-            
-            .messages-area {
-                padding: 15px;
-            }
-            
-            .input-area {
-                padding: 15px;
-            }
-
-            .chat-header {
-                padding: 15px;
-            }
-        }
-
-        /* 附加功能样式 */
-        .file-upload-preview {
-            padding: 10px;
-            background: var(--light-bg);
-            border-radius: 8px;
-            margin-top: 8px;
-            display: none;
-        }
-
-        .emoji-picker {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background: var(--darker-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 320px;
-        }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 8px;
-        }
-
-        .emoji-item {
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .emoji-item:hover {
-            background: var(--light-bg);
-            transform: scale(1.2);
-        }
-
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--darker-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            animation: slideInRight 0.3s ease-out;
-            z-index: 2000;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>简易 Matrix Web 客户端（可用版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 载入 matrix-js-sdk 的浏览器打包版本（已构建好的 bundle） -->
+  <!-- 这个文件提供全局对象 window.matrixcs，用于 createClient 等操作。 -->
+  <!-- 如失效，可到对应目录选择更新版本： -->
+  <!-- https://libraries.projects.cavi.au.dk/javascript/matrix-js-sdk/23.2.0/browser-matrix.min.js -->
+  <script src="https://libraries.projects.cavi.au.dk/javascript/matrix-js-sdk/23.2.0/browser-matrix.min.js"></script><!--[web:49]-->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
+      background: #12141b;
+      color: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+    .login, .app { width: 100%; display: none; }
+
+    /* 登录区域 */
+    .login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #2b5cff 0, #12141b 55%);
+    }
+    .login-card {
+      width: 360px;
+      background: rgba(8, 10, 20, 0.9);
+      border-radius: 16px;
+      padding: 24px 22px 26px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .login-card h1 { font-size: 20px; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: #9ca3af; margin-bottom: 18px; }
+
+    .field { margin-bottom: 14px; font-size: 13px; }
+    .field label { display: block; margin-bottom: 4px; }
+    .field input {
+      width: 100%; padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 13px;
+    }
+    .field input:focus { outline: none; border-color: #3b82f6; }
+
+    .btn {
+      width: 100%;
+      padding: 10px 0;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .error {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #f97373;
+      min-height: 16px;
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.4;
+    }
+
+    /* 主应用布局 */
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 260px;
+      background: #050816;
+      border-right: 1px solid #1f2933;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 12px;
+      border-bottom: 1px solid #1f2933;
+      font-size: 13px;
+    }
+    .sidebar-header strong { display: block; }
+    .sidebar-header span { color: #9ca3af; }
+
+    .rooms {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 4px;
+      font-size: 13px;
+    }
+    .room {
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin: 2px 4px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .room.active { background: #1f2937; }
+    .room:hover { background: #111827; }
+    .room-id { color: #6b7280; font-size: 11px; }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-header {
+      height: 46px;
+      border-bottom: 1px solid #1f2933;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .main-header span { color: #9ca3af; }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .msg {
+      margin-bottom: 8px;
+      max-width: 80%;
+    }
+    .msg.me { margin-left: auto; text-align: right; }
+    .msg-header { font-size: 11px; color: #9ca3af; margin-bottom: 2px; }
+    .msg-body {
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #111827;
+      word-break: break-word;
+    }
+    .msg.me .msg-body { background: #2563eb; }
+
+    .input-area {
+      border-top: 1px solid #1f2933;
+      padding: 6px 8px;
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+    }
+    .input-area textarea {
+      flex: 1;
+      resize: none;
+      background: #020617;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      color: #e5e7eb;
+      font-size: 13px;
+      padding: 6px 8px;
+      max-height: 80px;
+    }
+    .send-btn {
+      width: 60px;
+      padding: 8px 0;
+      border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .status-bar {
+      font-size: 11px;
+      color: #9ca3af;
+      padding: 2px 10px 4px;
+    }
+
+    @media (max-width: 720px) {
+      .sidebar { width: 200px; }
+      .login-card { width: 90%; }
+    }
+  </style>
 </head>
 <body>
-    <!-- 登录界面 -->
-    <div class="login-container" id="loginContainer">
-        <div class="login-box">
-            <div class="login-header">
-                <div class="logo">🔐</div>
-                <h1>欢迎使用 Matrix</h1>
-                <p>去中心化的安全即时通讯平台</p>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="homeserver">主服务器 (Homeserver)</label>
-                    <select id="homeserver">
-                        <option value="matrix.org">matrix.org (官方)</option>
-                        <option value="custom">自定义服务器...</option>
-                    </select>
-                </div>
+  <!-- 登录界面 -->
+  <div class="login" id="loginView">
+    <div class="login-card">
+      <h1>Matrix 登录</h1>
+      <p>这是一个真正连到 homeserver 的简易网页客户端（仅文本消息）。</p>
 
-                <div class="form-group hidden" id="customServerGroup">
-                    <label for="customServer">自定义服务器地址</label>
-                    <input type="text" id="customServer" placeholder="https://matrix.example.com">
-                </div>
+      <div class="field">
+        <label>Homeserver 地址</label>
+        <input id="hs" value="https://matrix.org" />
+      </div>
+      <div class="field">
+        <label>用户名（完整 MXID 或本地名）</label>
+        <input id="user" placeholder="@你:matrix.org 或 仅本地名" />
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input id="pass" type="password" />
+      </div>
 
-                <div class="form-group">
-                    <label for="username">用户名</label>
-                    <input type="text" id="username" placeholder="@username:matrix.org" required>
-                </div>
+      <button class="btn" id="loginBtn">登录</button>
+      <div class="error" id="loginError"></div>
+      <div class="hint">
+        说明：使用的是 Matrix 官方 JS SDK，通过密码登录获取 access_token，再用它创建客户端并开始同步消息。[web:21][web:22]
+      </div>
+    </div>
+  </div>
 
-                <div class="form-group">
-                    <label for="password">密码</label>
-                    <input type="password" id="password" placeholder="输入您的密码" required>
-                </div>
-
-                <div class="options">
-                    <label>
-                        <input type="checkbox" id="rememberMe">
-                        记住我
-                    </label>
-                    <a href="#">忘记密码？</a>
-                </div>
-
-                <button type="submit" class="btn-primary">登录</button>
-
-                <div class="register-link">
-                    还没有账户？<a href="#">立即注册</a>
-                </div>
-            </form>
+  <!-- 主聊天界面 -->
+  <div class="app" id="appView">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <strong id="meId">未登录</strong>
+        <span id="syncState">正在连接…</span>
+      </div>
+      <div class="rooms" id="roomList">
+        <!-- 动态填充房间 -->
+      </div>
+    </div>
+    <div class="main">
+      <div class="main-header">
+        <div>
+          <strong id="roomTitle">请选择左侧房间</strong><br />
+          <span id="roomIdSpan"></span>
         </div>
+        <span id="roomMembers"></span>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="status-bar" id="statusBar"></div>
+      <div class="input-area">
+        <textarea id="msgInput" rows="1" placeholder="输入消息，回车发送（Shift+回车换行）"></textarea>
+        <button class="send-btn" id="sendBtn">发送</button>
+      </div>
     </div>
+  </div>
 
-    <!-- 聊天主界面 -->
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-wrapper">
-            <!-- 左侧边栏 -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <div class="user-profile">
-                        <div class="avatar online">您</div>
-                        <div class="user-info">
-                            <h3 id="currentUser">用户名</h3>
-                            <p>在线</p>
-                        </div>
-                    </div>
-                    <div class="header-actions">
-                        <button class="icon-btn" title="设置">⚙️</button>
-                        <button class="icon-btn" title="新建对话">➕</button>
-                    </div>
-                </div>
+  <script>
+    // 全局变量
+    let client = null;
+    let currentRoomId = null;
+    let myUserId = null;
 
-                <div class="search-bar">
-                    <div class="search-input-wrapper">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" placeholder="搜索房间或用户..." id="searchInput">
-                    </div>
-                </div>
+    const $ = id => document.getElementById(id);
 
-                <div class="room-list" id="roomList">
-                    <div class="room-category">收藏</div>
-                    <div class="room-item active" data-room="general">
-                        <div class="room-avatar">🏠</div>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-name">通用讨论室</span>
-                                <span class="room-time">刚刚</span>
-                            </div>
-                            <div class="room-preview">欢迎来到 Matrix！</div>
-                        </div>
-                        <span class="unread-badge">3</span>
-                    </div>
+    // 登录逻辑：使用 matrix-js-sdk 的 login + createClient + startClient。[web:22][web:28]
+    $('loginBtn').onclick = async () => {
+      const hs = $('hs').value.trim();
+      let user = $('user').value.trim();
+      const pass = $('pass').value;
 
-                    <div class="room-category">最近</div>
-                    <div class="room-item" data-room="tech">
-                        <div class="room-avatar">💻</div>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-name">技术交流</span>
-                                <span class="room-time">10:30</span>
-                            </div>
-                            <div class="room-preview">讨论最新的技术趋势</div>
-                        </div>
-                    </div>
+      $('loginError').textContent = '';
 
-                    <div class="room-item" data-room="team">
-                        <div class="room-avatar">👥</div>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-name">团队协作</span>
-                                <span class="room-time">昨天</span>
-                            </div>
-                            <div class="room-preview">项目进度更新</div>
-                        </div>
-                        <span class="unread-badge">1</span>
-                    </div>
+      if (!hs || !user || !pass) {
+        $('loginError').textContent = '请填写完整信息。';
+        return;
+      }
 
-                    <div class="room-item" data-room="crypto">
-                        <div class="room-avatar">🔐</div>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-name">加密讨论组</span>
-                                <span class="room-time">11/23</span>
-                            </div>
-                            <div class="room-preview">🔒 加密消息</div>
-                        </div>
-                    </div>
+      try {
+        // 先创建一个未认证客户端用于登录
+        const tmpClient = window.matrixcs.createClient(hs); // 来自 browser-matrix.min.js。[web:56][web:60]
 
-                    <div class="room-category">直接消息</div>
-                    <div class="room-item" data-room="alice">
-                        <div class="room-avatar">👤</div>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-name">Alice</span>
-                                <span class="room-time">14:22</span>
-                            </div>
-                            <div class="room-preview">好的，我知道了</div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+        const loginRes = await tmpClient.login("m.login.password", {
+          user: user,
+          password: pass
+        }); // 得到 access_token 和 user_id。[web:22][web:29]
 
-            <!-- 主聊天区 -->
-            <main class="main-chat">
-                <div class="chat-header">
-                    <div class="chat-header-left">
-                        <div class="avatar">🏠</div>
-                        <div class="chat-title">
-                            <h2>通用讨论室</h2>
-                            <div class="chat-subtitle">
-                                <span class="encryption-badge">🔒 端到端加密</span>
-                                <span> · 125 位成员 · 23 位在线</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-actions">
-                        <button class="icon-btn" title="语音通话">📞</button>
-                        <button class="icon-btn" title="视频通话">📹</button>
-                        <button class="icon-btn" title="搜索">🔍</button>
-                        <button class="icon-btn" id="toggleInfo" title="信息面板">ℹ️</button>
-                    </div>
-                </div>
+        myUserId = loginRes.user_id;
 
-                <div class="messages-area" id="messagesArea">
-                    <div class="message received">
-                        <div class="message-avatar">A</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">Alice</span>
-                                <span class="message-timestamp">09:30</span>
-                            </div>
-                            <div class="message-bubble">
-                                大家好！欢迎来到Matrix聊天室！👋
-                            </div>
-                            <div class="message-reactions">
-                                <div class="reaction">
-                                    👋 <span class="reaction-count">5</span>
-                                </div>
-                                <div class="reaction">
-                                    ❤️ <span class="reaction-count">2</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        client = window.matrixcs.createClient({
+          baseUrl: hs,
+          accessToken: loginRes.access_token,
+          userId: loginRes.user_id
+        }); // 创建真正的已登录客户端。[web:21][web:22]
 
-                    <div class="message received">
-                        <div class="message-avatar">B</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">Bob</span>
-                                <span class="message-timestamp">09:32</span>
-                            </div>
-                            <div class="message-bubble">
-                                Matrix 真的很棒！端到端加密让通讯更安全 🔐
-                            </div>
-                        </div>
-                    </div>
+        $('meId').textContent = myUserId;
+        $('syncState').textContent = '正在同步…';
 
-                    <div class="message sent">
-                        <div class="message-avatar">您</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">您</span>
-                                <span class="message-timestamp">09:35</span>
-                            </div>
-                            <div class="message-bubble">
-                                完全同意！而且还是开源的，太棒了！✨
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="message received">
-                        <div class="message-avatar">C</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">Charlie</span>
-                                <span class="message-timestamp">09:40</span>
-                            </div>
-                            <div class="message-bubble">
-                                有人试过Matrix的语音通话功能吗？质量怎么样？
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-area">
-                    <div class="typing-indicator" id="typingIndicator"></div>
-                    <div class="input-wrapper">
-                        <div class="input-tools">
-                            <button class="icon-btn" title="表情符号" id="emojiBtn">😊</button>
-                            <button class="icon-btn" title="附件">📎</button>
-                            <button class="icon-btn" title="图片">🖼️</button>
-                            <button class="icon-btn" title="GIF">🎬</button>
-                        </div>
-                        <div class="input-box">
-                            <textarea id="messageInput" placeholder="输入消息..." rows="1"></textarea>
-                            <div class="input-actions">
-                                <button class="icon-btn" title="格式化">📝</button>
-                                <button class="icon-btn" title="代码">💻</button>
-                                <button class="icon-btn" title="引用">💬</button>
-                            </div>
-                        </div>
-                        <button class="send-btn" id="sendBtn" title="发送">➤</button>
-                    </div>
-
-                    <!-- 表情选择器 -->
-                    <div class="emoji-picker" id="emojiPicker">
-                        <div class="emoji-grid">
-                            <div class="emoji-item">😀</div>
-                            <div class="emoji-item">😂</div>
-                            <div class="emoji-item">😍</div>
-                            <div class="emoji-item">🤔</div>
-                            <div class="emoji-item">👍</div>
-                            <div class="emoji-item">👎</div>
-                            <div class="emoji-item">❤️</div>
-                            <div class="emoji-item">🎉</div>
-                            <div class="emoji-item">🔥</div>
-                            <div class="emoji-item">✨</div>
-                            <div class="emoji-item">🚀</div>
-                            <div class="emoji-item">💯</div>
-                            <div class="emoji-item">🙌</div>
-                            <div class="emoji-item">👏</div>
-                            <div class="emoji-item">🎯</div>
-                            <div class="emoji-item">💪</div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- 右侧信息面板 -->
-            <aside class="info-panel" id="infoPanel">
-                <div class="info-section">
-                    <h3>关于房间</h3>
-                    <div class="info-item">
-                        <strong>房间名称:</strong> 通用讨论室<br>
-                        <strong>主题:</strong> 欢迎大家交流讨论<br>
-                        <strong>创建时间:</strong> 2025年1月15日
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h3>成员 (125)</h3>
-                    <div class="member-item info-item">
-                        <div class="avatar">A</div>
-                        <div class="member-name">Alice</div>
-                        <div class="member-status"></div>
-                    </div>
-                    <div class="member-item info-item">
-                        <div class="avatar">B</div>
-                        <div class="member-name">Bob</div>
-                        <div class="member-status"></div>
-                    </div>
-                    <div class="member-item info-item">
-                        <div class="avatar">C</div>
-                        <div class="member-name">Charlie</div>
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-item info-item">
-                        <div class="avatar">D</div>
-                        <div class="member-name">David</div>
-                        <div class="member-status"></div>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h3>共享文件</h3>
-                    <div class="info-item">
-                        📄 项目文档.pdf<br>
-                        <small>2.5 MB · 昨天</small>
-                    </div>
-                    <div class="info-item">
-                        🖼️ 设计稿.png<br>
-                        <small>1.8 MB · 2天前</small>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h3>设置</h3>
-                    <div class="info-item">🔔 通知设置</div>
-                    <div class="info-item">🔐 加密密钥管理</div>
-                    <div class="info-item">👥 邀请成员</div>
-                    <div class="info-item">🚪 离开房间</div>
-                </div>
-            </aside>
-        </div>
-    </div>
-
-    <!-- 通知提示 -->
-    <div class="notification-toast" id="notificationToast">
-        <strong>新消息</strong><br>
-        <span id="notificationText">您有一条新消息</span>
-    </div>
-
-    <script>
-        // 登录功能
-        const loginForm = document.getElementById('loginForm');
-        const loginContainer = document.getElementById('loginContainer');
-        const chatContainer = document.getElementById('chatContainer');
-        const homeserverSelect = document.getElementById('homeserver');
-        const customServerGroup = document.getElementById('customServerGroup');
-
-        homeserverSelect.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                customServerGroup.classList.remove('hidden');
-            } else {
-                customServerGroup.classList.add('hidden');
-            }
+        // 监听同步状态
+        client.on("sync", (state) => {
+          $('syncState').textContent = '同步状态: ' + state;
+          if (state === "PREPARED") {
+            buildRoomList();
+          }
         });
 
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            
-            // 模拟登录
-            document.getElementById('currentUser').textContent = username;
-            loginContainer.style.display = 'none';
-            chatContainer.style.display = 'block';
-            
-            showNotification('登录成功！欢迎使用 Matrix');
-        });
+        // 监听时间线消息事件
+        client.on("Room.timeline", (event, room, toStartOfTimeline) => {
+          if (event.getType() !== "m.room.message") return;
+          if (!currentRoomId || room.roomId !== currentRoomId) return;
+          appendMessage(event, room);
+        }); // SDK 会调用 /sync 接口获取事件流，这是 Matrix 客户端的标准做法。[web:9][web:28]
 
-        // 消息发送功能
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const messagesArea = document.getElementById('messagesArea');
+        // 开始同步
+        client.startClient({ initialSyncLimit: 20 }); // 拉取最近消息。[web:28]
 
-        function sendMessage() {
-            const text = messageInput.value.trim();
-            if (text === '') return;
+        // 切换到主界面
+        $('loginView').style.display = 'none';
+        $('appView').style.display = 'flex';
+      } catch (e) {
+        console.error(e);
+        $('loginError').textContent = '登录失败：' +
+          (e?.data?.error || e?.message || '请检查 homeserver/账号/密码');
+      }
+    };
 
-            const messageHTML = `
-                <div class="message sent">
-                    <div class="message-avatar">您</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">您</span>
-                            <span class="message-timestamp">${getCurrentTime()}</span>
-                        </div>
-                        <div class="message-bubble">
-                            ${escapeHtml(text)}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            messagesArea.insertAdjacentHTML('beforeend', messageHTML);
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            scrollToBottom();
+    // 构建房间列表
+    function buildRoomList() {
+      const rooms = client.getRooms(); // 获取已加入房间列表。[web:32]
+      const list = $('roomList');
+      list.innerHTML = '';
 
-            // 模拟接收回复
-            setTimeout(() => {
-                simulateReply();
-            }, 2000);
-        }
+      if (!rooms.length) {
+        list.textContent = '你还没有加入任何房间。';
+        return;
+      }
 
-        sendBtn.addEventListener('click', sendMessage);
+      rooms.sort((a, b) => {
+        const t1 = a.getLastActiveTimestamp();
+        const t2 = b.getLastActiveTimestamp();
+        return t2 - t1;
+      });
 
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+      rooms.forEach(room => {
+        const div = document.createElement('div');
+        div.className = 'room';
+        div.dataset.roomId = room.roomId;
 
-        // 自动调整输入框高度
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
+        const name = room.name || '(无名称房间)';
+        const lastEvent = room.timeline[room.timeline.length - 1];
+        const preview = lastEvent && lastEvent.getContent().body
+          ? String(lastEvent.getContent().body).slice(0, 20)
+          : '';
 
-        // 表情选择器
-        const emojiBtn = document.getElementById('emojiBtn');
-        const emojiPicker = document.getElementById('emojiPicker');
+        div.innerHTML = `
+          <div>
+            <div>${escapeHtml(name)}</div>
+            <div class="room-id">${escapeHtml(room.roomId)}</div>
+          </div>
+          <div style="font-size:11px;color:#6b7280;max-width:90px;text-align:right;">
+            ${escapeHtml(preview)}
+          </div>
+        `;
 
-        emojiBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
-        });
+        div.onclick = () => selectRoom(room.roomId);
+        list.appendChild(div);
+      });
 
-        document.querySelectorAll('.emoji-item').forEach(item => {
-            item.addEventListener('click', function() {
-                messageInput.value += this.textContent;
-                messageInput.focus();
-                emojiPicker.style.display = 'none';
-            });
-        });
+      // 默认选第一个
+      selectRoom(rooms[0].roomId);
+    }
 
-        document.addEventListener('click', function() {
-            emojiPicker.style.display = 'none';
-        });
+    // 选择房间并加载最近消息
+    function selectRoom(roomId) {
+      currentRoomId = roomId;
 
-        // 信息面板切换
-        const toggleInfoBtn = document.getElementById('toggleInfo');
-        const infoPanel = document.getElementById('infoPanel');
+      document.querySelectorAll('.room').forEach(el => {
+        el.classList.toggle('active', el.dataset.roomId === roomId);
+      });
 
-        toggleInfoBtn.addEventListener('click', function() {
-            infoPanel.classList.toggle('active');
-        });
+      const room = client.getRoom(roomId);
+      if (!room) return;
 
-        // 房间切换
-        document.querySelectorAll('.room-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.room-item').forEach(r => r.classList.remove('active'));
-                this.classList.add('active');
-                
-                const roomName = this.querySelector('.room-name').textContent;
-                document.querySelector('.chat-title h2').textContent = roomName;
-                
-                // 移除未读标记
-                const badge = this.querySelector('.unread-badge');
-                if (badge) badge.remove();
-            });
-        });
+      $('roomTitle').textContent = room.name || '(无名称房间)';
+      $('roomIdSpan').textContent = roomId;
 
-        // 搜索功能
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            document.querySelectorAll('.room-item').forEach(room => {
-                const roomName = room.querySelector('.room-name').textContent.toLowerCase();
-                room.style.display = roomName.includes(searchTerm) ? 'flex' : 'none';
-            });
-        });
+      const members = room.getJoinedMembers();
+      $('roomMembers').textContent = members.length + ' 人在线(已加入)';
 
-        // 工具函数
-        function getCurrentTime() {
-            const now = new Date();
-            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        }
+      const msgBox = $('messages');
+      msgBox.innerHTML = '';
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+      // 显示最近 50 条消息
+      const events = room.timeline.filter(ev => ev.getType() === "m.room.message");
+      const last = events.slice(-50);
+      last.forEach(ev => appendMessage(ev, room));
 
-        function scrollToBottom() {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
 
-        function simulateReply() {
-            const replies = [
-                '收到！我会尽快处理的 ✅',
-                '好的，明白了！👍',
-                '这个想法很不错！💡',
-                '让我考虑一下...',
-                '同意你的观点！',
-                '谢谢分享！🙏'
-            ];
-            
-            const reply = replies[Math.floor(Math.random() * replies.length)];
-            const names = ['Alice', 'Bob', 'Charlie', 'David'];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const avatar = name[0];
+    // 在界面上追加一条消息
+    function appendMessage(event, room) {
+      const content = event.getContent();
+      if (!content || content.msgtype !== "m.text") return;
 
-            const messageHTML = `
-                <div class="message received">
-                    <div class="message-avatar">${avatar}</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">${name}</span>
-                            <span class="message-timestamp">${getCurrentTime()}</span>
-                        </div>
-                        <div class="message-bubble">
-                            ${reply}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            messagesArea.insertAdjacentHTML('beforeend', messageHTML);
-            scrollToBottom();
-            showNotification(`${name}: ${reply}`);
-        }
+      const body = content.body || '';
+      const sender = event.getSender();
+      const ts = new Date(event.getTs());
+      const timeStr = ts.toTimeString().slice(0, 5);
 
-        function showNotification(text) {
-            const toast = document.getElementById('notificationToast');
-            document.getElementById('notificationText').textContent = text;
-            toast.style.display = 'block';
-            
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
+      const div = document.createElement('div');
+      div.className = 'msg' + (sender === myUserId ? ' me' : '');
+      div.innerHTML = `
+        <div class="msg-header">${escapeHtml(sender)} · ${timeStr}</div>
+        <div class="msg-body">${escapeHtml(body)}</div>
+      `;
+      $('messages').appendChild(div);
+      $('messages').scrollTop = $('messages').scrollHeight;
+    }
 
-        // 模拟打字指示器
-        let typingTimer;
-        messageInput.addEventListener('input', function() {
-            clearTimeout(typingTimer);
-            
-            typingTimer = setTimeout(() => {
-                // 模拟其他人正在打字
-                const typingIndicator = document.getElementById('typingIndicator');
-                typingIndicator.textContent = '';
-            }, 1000);
-        });
+    // 发送消息
+    async function sendMessage() {
+      if (!client || !currentRoomId) return;
+      const text = $('msgInput').value.trim();
+      if (!text) return;
 
-        // 初始化滚动到底部
-        scrollToBottom();
+      $('msgInput').value = '';
+      $('statusBar').textContent = '发送中…';
 
-        // 响应式侧边栏切换
-        if (window.innerWidth <= 768) {
-            const menuBtn = document.createElement('button');
-            menuBtn.className = 'icon-btn';
-            menuBtn.innerHTML = '☰';
-            menuBtn.style.position = 'absolute';
-            menuBtn.style.left = '15px';
-            menuBtn.onclick = function() {
-                document.querySelector('.sidebar').classList.toggle('active');
-            };
-            document.querySelector('.chat-header-left').prepend(menuBtn);
-        }
-    </script>
+      const content = {
+        body: text,
+        msgtype: "m.text"
+      }; // 标准文本消息事件内容。[web:28]
+
+      try {
+        await client.sendEvent(currentRoomId, "m.room.message", content, "");
+        $('statusBar').textContent = '已发送。';
+      } catch (e) {
+        console.error(e);
+        $('statusBar').textContent = '发送失败：' + (e?.message || '未知错误');
+      }
+    }
+
+    $('sendBtn').onclick = sendMessage;
+    $('msgInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // 简单转义防 XSS
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+  </script>
 </body>
 </html>
