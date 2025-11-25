@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix - 安全通讯</title>
+    <title>Matrix - 安全通讯客户端</title>
     <style>
         * {
             margin: 0;
@@ -13,16 +13,16 @@
         
         :root {
             --primary: #0d6efd;
-            --primary-dark: #0a58ca;
+            --primary-hover: #0b5ed7;
             --success: #198754;
             --danger: #dc3545;
             --warning: #ffc107;
-            --bg: #f8f9fa;
+            --bg: #f5f7fa;
             --surface: #ffffff;
             --text: #212529;
             --text-muted: #6c757d;
             --border: #dee2e6;
-            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.08);
         }
         
         body {
@@ -38,17 +38,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
         
         .login-container {
             background: var(--surface);
-            padding: 50px;
-            border-radius: 24px;
+            padding: 45px 40px;
+            border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 460px;
-            max-width: 90%;
+            width: 100%;
+            max-width: 440px;
         }
         
         .login-logo {
@@ -57,7 +58,7 @@
         }
         
         .login-logo h1 {
-            font-size: 36px;
+            font-size: 32px;
             color: var(--primary);
             font-weight: 800;
             margin-bottom: 8px;
@@ -65,38 +66,37 @@
         
         .login-logo p {
             color: var(--text-muted);
-            font-size: 15px;
+            font-size: 14px;
         }
         
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text);
             font-size: 14px;
         }
         
         .form-group input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 10px;
+            font-size: 14px;
             transition: all 0.3s;
         }
         
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
         }
         
         .hint {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             margin-top: 6px;
         }
@@ -105,10 +105,10 @@
             display: none;
             background: rgba(25, 135, 84, 0.1);
             color: var(--success);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             font-size: 13px;
-            margin-top: 10px;
+            margin-top: 8px;
             font-weight: 600;
         }
         
@@ -116,14 +116,18 @@
             display: block;
         }
         
+        .homeserver-group.hidden {
+            display: none;
+        }
+        
         .remember-me {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
-        .remember-me input[type="checkbox"] {
+        .remember-me input {
             width: 18px;
             height: 18px;
             cursor: pointer;
@@ -131,17 +135,16 @@
         
         .remember-me label {
             font-size: 14px;
-            color: var(--text);
             cursor: pointer;
         }
         
         .btn-login {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -149,9 +152,9 @@
         }
         
         .btn-login:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(13, 110, 253, 0.3);
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
         }
         
         .btn-login:disabled {
@@ -164,10 +167,10 @@
             display: none;
             background: rgba(220, 53, 69, 0.1);
             color: var(--danger);
-            padding: 14px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 14px;
-            margin-top: 20px;
+            margin-top: 16px;
             border: 1px solid rgba(220, 53, 69, 0.2);
         }
         
@@ -181,12 +184,13 @@
         /* 顶部导航栏 */
         .navbar {
             background: var(--surface);
-            padding: 12px 24px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px var(--shadow);
-            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
         
         .navbar-left {
@@ -196,7 +200,7 @@
         }
         
         .app-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--primary);
         }
@@ -206,79 +210,93 @@
         }
         
         .search-box input {
-            padding: 10px 16px 10px 40px;
+            padding: 8px 14px 8px 36px;
             border: 2px solid var(--border);
             border-radius: 20px;
-            width: 300px;
+            width: 280px;
             font-size: 14px;
+            transition: all 0.3s;
         }
         
         .search-box input:focus {
             outline: none;
             border-color: var(--primary);
+            width: 320px;
         }
         
         .search-icon {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+            font-size: 16px;
         }
         
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
         
-        .user-profile {
+        .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 12px;
-            transition: background 0.3s;
-        }
-        
-        .user-profile:hover {
+            gap: 10px;
+            padding: 6px 12px;
             background: var(--bg);
+            border-radius: 10px;
         }
         
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
         }
         
-        .user-info span {
-            display: block;
+        .user-name {
             font-size: 14px;
             font-weight: 600;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
-        .btn-icon {
+        .btn-text {
             background: transparent;
-            border: none;
-            padding: 10px;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
             cursor: pointer;
             border-radius: 8px;
-            font-size: 20px;
+            font-size: 14px;
+            font-weight: 600;
             transition: all 0.3s;
-            color: var(--text-muted);
+            color: var(--text);
         }
         
-        .btn-icon:hover {
+        .btn-text:hover {
             background: var(--bg);
-            color: var(--text);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+        }
+        
+        .btn-logout:hover {
+            background: #bb2d3b;
+            color: white;
         }
         
         /* 主内容区 */
@@ -286,23 +304,26 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            height: calc(100vh - 61px);
         }
         
         /* 左侧边栏 */
         .sidebar {
-            width: 360px;
+            width: 340px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
         }
         
         .sidebar-header {
-            padding: 20px;
+            padding: 16px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         
         .sidebar-title {
@@ -314,8 +335,8 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -323,8 +344,7 @@
         }
         
         .btn-new:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
+            background: var(--primary-hover);
         }
         
         .rooms-list {
@@ -333,7 +353,7 @@
         }
         
         .room-item {
-            padding: 16px 20px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
@@ -347,21 +367,21 @@
         }
         
         .room-item.active {
-            background: linear-gradient(90deg, rgba(13, 110, 253, 0.1), transparent);
+            background: rgba(13, 110, 253, 0.1);
             border-left: 4px solid var(--primary);
         }
         
         .room-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 16px;
             flex-shrink: 0;
         }
         
@@ -380,22 +400,24 @@
         .room-name {
             font-weight: 600;
             font-size: 15px;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .room-time {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
+            flex-shrink: 0;
+            margin-left: 8px;
         }
         
         .room-preview {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         /* 聊天区域 */
@@ -404,43 +426,51 @@
             display: flex;
             flex-direction: column;
             background: var(--bg);
+            min-width: 0;
         }
         
         .chat-header {
             background: var(--surface);
-            padding: 16px 24px;
+            padding: 14px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         
         .chat-header-info {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
         }
         
         .chat-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .chat-actions {
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
         }
         
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 20px;
         }
         
         .message {
             display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 16px;
             animation: slideIn 0.3s ease;
         }
         
@@ -456,29 +486,30 @@
         }
         
         .message-avatar-small {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             flex-shrink: 0;
         }
         
         .message-content {
             flex: 1;
             max-width: 70%;
+            min-width: 0;
         }
         
         .message-header {
             display: flex;
             align-items: baseline;
-            gap: 10px;
-            margin-bottom: 6px;
+            gap: 8px;
+            margin-bottom: 4px;
         }
         
         .message-sender {
@@ -488,47 +519,62 @@
         }
         
         .message-time {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
         }
         
         .message-bubble {
             background: var(--surface);
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
             box-shadow: 0 1px 2px var(--shadow);
             word-wrap: break-word;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.5;
         }
         
         /* 消息输入 */
         .message-input-container {
             background: var(--surface);
-            padding: 20px 24px;
+            padding: 16px 20px;
             border-top: 1px solid var(--border);
+            flex-shrink: 0;
         }
         
         .input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: flex-end;
         }
         
         .input-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
+        }
+        
+        .btn-attach {
+            background: var(--bg);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .btn-attach:hover {
+            background: var(--border);
         }
         
         .message-input {
             flex: 1;
-            padding: 14px 18px;
+            padding: 10px 14px;
             border: 2px solid var(--border);
-            border-radius: 24px;
-            font-size: 15px;
+            border-radius: 20px;
+            font-size: 14px;
             font-family: inherit;
             resize: none;
-            max-height: 120px;
+            max-height: 100px;
             transition: all 0.3s;
         }
         
@@ -541,17 +587,17 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 24px;
-            font-size: 15px;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         
         .btn-send:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
+            background: var(--primary-hover);
         }
         
         /* 空状态 */
@@ -567,15 +613,15 @@
         }
         
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
         
         .empty-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         /* 模态框 */
@@ -598,26 +644,28 @@
         
         .modal-content {
             background: var(--surface);
-            padding: 30px;
+            padding: 28px;
             border-radius: 16px;
-            width: 500px;
-            max-width: 90%;
+            width: 90%;
+            max-width: 480px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal-header {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
         .modal-body {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
         .modal-footer {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: flex-end;
         }
         
@@ -625,8 +673,8 @@
             background: var(--bg);
             color: var(--text);
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -640,15 +688,15 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: var(--primary-hover);
         }
         
         .loading {
@@ -675,10 +723,11 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
-        
-        .homeserver-group.hidden {
-            opacity: 0.4;
-            pointer-events: none;
+
+        .room-members {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -687,14 +736,14 @@
     <div id="loginScreen">
         <div class="login-container">
             <div class="login-logo">
-                <h1>Matrix</h1>
+                <h1>Matrix 客户端</h1>
                 <p>安全、去中心化的通讯平台</p>
             </div>
             
             <form id="loginForm">
                 <div class="form-group">
                     <label>用户ID 或 用户名</label>
-                    <input type="text" id="identifier" placeholder="@username:matrix.org" required>
+                    <input type="text" id="identifier" placeholder="@username:matrix.org" required autocomplete="username">
                     <div class="server-detected" id="serverDetected">
                         ✓ 已自动检测服务器
                     </div>
@@ -703,18 +752,18 @@
                 
                 <div class="form-group homeserver-group" id="homeserverGroup">
                     <label>服务器地址</label>
-                    <input type="text" id="homeserver" value="https://matrix.org">
+                    <input type="text" id="homeserver" value="https://matrix.org" placeholder="https://matrix.org">
                     <div class="hint">Matrix 服务器地址</div>
                 </div>
                 
                 <div class="form-group">
                     <label>密码</label>
-                    <input type="password" id="password" placeholder="输入密码" required>
+                    <input type="password" id="password" placeholder="输入密码" required autocomplete="current-password">
                 </div>
                 
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe" checked>
-                    <label for="rememberMe">记住登录状态</label>
+                    <label for="rememberMe">记住登录状态（刷新页面不会退出）</label>
                 </div>
                 
                 <button type="submit" class="btn-login" id="loginBtn">登录</button>
@@ -736,15 +785,12 @@
                 </div>
             </div>
             <div class="navbar-right">
-                <button class="btn-icon" title="通知" id="notifBtn">🔔</button>
-                <button class="btn-icon" title="设置" id="settingsBtn">⚙️</button>
-                <div class="user-profile">
+                <div class="user-info">
                     <div class="user-avatar" id="navAvatar">M</div>
-                    <div class="user-info">
-                        <span id="navUsername">用户</span>
-                    </div>
+                    <div class="user-name" id="navUsername">用户</div>
                 </div>
-                <button class="btn-icon" title="退出登录" id="logoutBtn">🚪</button>
+                <button class="btn-text" id="settingsBtn">设置</button>
+                <button class="btn-text btn-logout" id="logoutBtn">退出登录</button>
             </div>
         </nav>
 
@@ -752,8 +798,8 @@
             <!-- 左侧房间列表 -->
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <div class="sidebar-title">对话</div>
-                    <button class="btn-new" id="newRoomBtn">+ 新建</button>
+                    <div class="sidebar-title">对话列表</div>
+                    <button class="btn-new" id="newRoomBtn">+ 新建房间</button>
                 </div>
                 <div class="rooms-list" id="roomsList">
                     <div class="loading">正在加载房间...</div>
@@ -764,12 +810,13 @@
             <main class="chat-container">
                 <div class="chat-header">
                     <div class="chat-header-info">
-                        <div class="room-avatar" id="chatAvatar" style="width: 40px; height: 40px; font-size: 16px;">?</div>
+                        <div class="room-avatar" id="chatAvatar" style="width: 36px; height: 36px; font-size: 14px;">?</div>
                         <div class="chat-title" id="chatTitle">选择一个房间</div>
                     </div>
                     <div class="chat-actions">
-                        <button class="btn-icon" title="邀请用户" id="inviteBtn">👥</button>
-                        <button class="btn-icon" title="房间信息" id="roomInfoBtn">ℹ️</button>
+                        <button class="btn-text" id="inviteBtn">邀请用户</button>
+                        <button class="btn-text" id="roomInfoBtn">房间信息</button>
+                        <button class="btn-text" id="leaveRoomBtn">离开房间</button>
                     </div>
                 </div>
                 
@@ -784,8 +831,8 @@
                 <div class="message-input-container" id="inputContainer" style="display: none;">
                     <div class="input-wrapper">
                         <div class="input-actions">
-                            <button class="btn-icon" title="附件">📎</button>
-                            <button class="btn-icon" title="表情">😊</button>
+                            <button class="btn-attach" title="附件">📎</button>
+                            <button class="btn-attach" title="表情">😊</button>
                         </div>
                         <textarea class="message-input" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
                         <button class="btn-send" id="sendBtn">发送</button>
@@ -795,18 +842,19 @@
         </div>
     </div>
 
-    <!-- 新建房间模态框 -->
+    <!-- 新建/加入房间模态框 -->
     <div class="modal" id="newRoomModal">
         <div class="modal-content">
             <div class="modal-header">创建或加入房间</div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>创建新房间</label>
-                    <input type="text" id="newRoomName" placeholder="房间名称">
+                    <input type="text" id="newRoomName" placeholder="输入房间名称">
                 </div>
                 <div class="form-group">
                     <label>或加入现有房间</label>
-                    <input type="text" id="joinRoomId" placeholder="房间ID 或 别名">
+                    <input type="text" id="joinRoomId" placeholder="输入房间ID或别名">
+                    <div class="hint">例如: #room:matrix.org 或 !roomid:server.com</div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -820,16 +868,30 @@
     <!-- 邀请用户模态框 -->
     <div class="modal" id="inviteModal">
         <div class="modal-content">
-            <div class="modal-header">邀请用户</div>
+            <div class="modal-header">邀请用户到房间</div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>用户ID</label>
                     <input type="text" id="inviteUserId" placeholder="@user:matrix.org">
+                    <div class="hint">输入要邀请的用户 Matrix ID</div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelInvite">取消</button>
-                <button class="btn-primary" id="confirmInvite">邀请</button>
+                <button class="btn-primary" id="confirmInvite">发送邀请</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 房间信息模态框 -->
+    <div class="modal" id="roomInfoModal">
+        <div class="modal-content">
+            <div class="modal-header">房间信息</div>
+            <div class="modal-body" id="roomInfoBody">
+                <div class="loading">加载中...</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeRoomInfo">关闭</button>
             </div>
         </div>
     </div>
@@ -903,7 +965,8 @@
                         const room = {
                             roomId,
                             name: this.getRoomName(roomData),
-                            timeline: roomData.timeline?.events || []
+                            timeline: roomData.timeline?.events || [],
+                            members: roomData.summary?.['m.joined_member_count'] || 0
                         };
                         this.rooms.set(roomId, room);
                         rooms.push(room);
@@ -936,6 +999,7 @@
                     const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?${params}`);
                     return data.chunk.reverse();
                 } catch (error) {
+                    console.error('获取消息失败:', error);
                     return this.rooms.get(roomId)?.timeline || [];
                 }
             }
@@ -943,7 +1007,8 @@
             async createRoom(name) {
                 return this.request('POST', '/createRoom', {
                     name: name,
-                    visibility: 'private'
+                    visibility: 'private',
+                    preset: 'private_chat'
                 });
             }
 
@@ -955,6 +1020,19 @@
                 return this.request('POST', `/rooms/${encodeURIComponent(roomId)}/invite`, {
                     user_id: userId
                 });
+            }
+
+            async leaveRoom(roomId) {
+                return this.request('POST', `/rooms/${encodeURIComponent(roomId)}/leave`, {});
+            }
+
+            async getRoomMembers(roomId) {
+                try {
+                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/members`);
+                    return data.chunk || [];
+                } catch (error) {
+                    return [];
+                }
             }
 
             startSync(callback) {
@@ -1031,7 +1109,6 @@
             try {
                 const loginResponse = await MatrixClient.login(homeserver, identifier, password);
                 
-                // 保存登录信息
                 if (rememberMe) {
                     localStorage.setItem('matrixAuth', JSON.stringify({
                         homeserver: homeserver,
@@ -1047,7 +1124,7 @@
                 
             } catch (error) {
                 errorAlert.textContent = error.message.includes('M_FORBIDDEN') ? 
-                    '用户名或密码错误' : '登录失败: ' + error.message;
+                    '用户名或密码错误，请检查后重试' : '登录失败: ' + error.message;
                 errorAlert.style.display = 'block';
                 loginBtn.disabled = false;
                 loginBtn.textContent = '登录';
@@ -1065,19 +1142,20 @@
 
         async function loadRooms() {
             const roomsList = document.getElementById('roomsList');
+            roomsList.innerHTML = '<div class="loading">加载中...</div>';
             
             try {
                 const rooms = await client.getRooms();
                 
                 if (rooms.length === 0) {
-                    roomsList.innerHTML = '<div class="loading">暂无房间<br>点击"新建"开始</div>';
+                    roomsList.innerHTML = '<div class="loading">暂无房间<br><br>点击上方"新建房间"按钮开始</div>';
                     return;
                 }
                 
                 roomsList.innerHTML = '';
                 rooms.forEach(room => {
-                    const lastMsg = room.timeline.reverse().find(e => e.type === 'm.room.message');
-                    const preview = lastMsg ? (lastMsg.content.body || '').substring(0, 50) : '暂无消息';
+                    const lastMsg = [...room.timeline].reverse().find(e => e.type === 'm.room.message');
+                    const preview = lastMsg ? (lastMsg.content.body || '').substring(0, 40) : '暂无消息';
                     const time = lastMsg ? new Date(lastMsg.origin_server_ts).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'}) : '';
                     
                     const roomDiv = document.createElement('div');
@@ -1091,13 +1169,18 @@
                                 <div class="room-time">${time}</div>
                             </div>
                             <div class="room-preview">${escapeHtml(preview)}</div>
+                            <div class="room-members">${room.members} 名成员</div>
                         </div>
                     `;
-                    roomDiv.addEventListener('click', () => openRoom(room.roomId, room.name));
+                    
+                    roomDiv.addEventListener('click', function() {
+                        openRoom(room.roomId, room.name);
+                    });
                     roomsList.appendChild(roomDiv);
                 });
             } catch (error) {
-                roomsList.innerHTML = '<div class="loading">加载失败</div>';
+                console.error('加载房间失败:', error);
+                roomsList.innerHTML = '<div class="loading">加载失败<br><br>请刷新页面重试</div>';
             }
         }
 
@@ -1105,7 +1188,8 @@
             currentRoomId = roomId;
             
             document.querySelectorAll('.room-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[data-room-id="${roomId}"]`)?.classList.add('active');
+            const activeRoom = document.querySelector(`[data-room-id="${roomId}"]`);
+            if (activeRoom) activeRoom.classList.add('active');
             
             document.getElementById('chatTitle').textContent = roomName;
             document.getElementById('chatAvatar').textContent = roomName[0].toUpperCase();
@@ -1122,6 +1206,11 @@
                 const messages = await client.getMessages(roomId);
                 container.innerHTML = '';
                 
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">暂无消息</div><p>发送第一条消息开始对话</p></div>';
+                    return;
+                }
+                
                 messages.forEach(event => {
                     if (event.type === 'm.room.message') {
                         container.appendChild(createMessageElement(event));
@@ -1130,6 +1219,7 @@
                 
                 container.scrollTop = container.scrollHeight;
             } catch (error) {
+                console.error('加载消息失败:', error);
                 container.innerHTML = '<div class="loading">加载失败</div>';
             }
         }
@@ -1176,13 +1266,14 @@
                 input.style.height = 'auto';
                 setTimeout(() => loadMessages(currentRoomId), 300);
             } catch (error) {
-                alert('发送失败');
+                console.error('发送失败:', error);
+                alert('发送消息失败: ' + error.message);
             }
         }
 
         document.getElementById('messageInput').addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
         });
 
         // 新建房间
@@ -1202,7 +1293,8 @@
                 await client.createRoom(name);
                 document.getElementById('newRoomModal').classList.remove('show');
                 document.getElementById('newRoomName').value = '';
-                loadRooms();
+                alert('房间创建成功！');
+                await loadRooms();
             } catch (error) {
                 alert('创建失败: ' + error.message);
             }
@@ -1210,13 +1302,14 @@
 
         document.getElementById('joinRoom').addEventListener('click', async () => {
             const roomId = document.getElementById('joinRoomId').value.trim();
-            if (!roomId) return alert('请输入房间ID');
+            if (!roomId) return alert('请输入房间ID或别名');
             
             try {
                 await client.joinRoom(roomId);
                 document.getElementById('newRoomModal').classList.remove('show');
                 document.getElementById('joinRoomId').value = '';
-                loadRooms();
+                alert('加入房间成功！');
+                await loadRooms();
             } catch (error) {
                 alert('加入失败: ' + error.message);
             }
@@ -1224,7 +1317,7 @@
 
         // 邀请用户
         document.getElementById('inviteBtn').addEventListener('click', () => {
-            if (!currentRoomId) return;
+            if (!currentRoomId) return alert('请先选择一个房间');
             document.getElementById('inviteModal').classList.add('show');
         });
 
@@ -1240,9 +1333,59 @@
                 await client.inviteUser(currentRoomId, userId);
                 document.getElementById('inviteModal').classList.remove('show');
                 document.getElementById('inviteUserId').value = '';
-                alert('邀请已发送');
+                alert('邀请已发送！');
             } catch (error) {
                 alert('邀请失败: ' + error.message);
+            }
+        });
+
+        // 房间信息
+        document.getElementById('roomInfoBtn').addEventListener('click', async () => {
+            if (!currentRoomId) return alert('请先选择一个房间');
+            document.getElementById('roomInfoModal').classList.add('show');
+            
+            try {
+                const members = await client.getRoomMembers(currentRoomId);
+                const room = client.rooms.get(currentRoomId);
+                
+                document.getElementById('roomInfoBody').innerHTML = `
+                    <div class="form-group">
+                        <label>房间名称</label>
+                        <input type="text" value="${escapeHtml(room.name)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>房间ID</label>
+                        <input type="text" value="${currentRoomId}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>成员数量</label>
+                        <input type="text" value="${members.length} 名成员" readonly>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('roomInfoBody').innerHTML = '<div class="loading">加载失败</div>';
+            }
+        });
+
+        document.getElementById('closeRoomInfo').addEventListener('click', () => {
+            document.getElementById('roomInfoModal').classList.remove('show');
+        });
+
+        // 离开房间
+        document.getElementById('leaveRoomBtn').addEventListener('click', async () => {
+            if (!currentRoomId) return alert('请先选择一个房间');
+            if (!confirm('确定要离开这个房间吗？')) return;
+            
+            try {
+                await client.leaveRoom(currentRoomId);
+                alert('已离开房间');
+                currentRoomId = null;
+                document.getElementById('inputContainer').style.display = 'none';
+                document.getElementById('messagesArea').innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-title">开始对话</div><p>从左侧选择一个房间开始聊天</p></div>';
+                document.getElementById('chatTitle').textContent = '选择一个房间';
+                await loadRooms();
+            } catch (error) {
+                alert('离开房间失败: ' + error.message);
             }
         });
 
@@ -1251,7 +1394,7 @@
             client.startSync((data) => {
                 if (data.rooms?.join && currentRoomId) {
                     const roomData = data.rooms.join[currentRoomId];
-                    if (roomData?.timeline) {
+                    if (roomData?.timeline?.events) {
                         const container = document.getElementById('messagesArea');
                         roomData.timeline.events.forEach(event => {
                             if (event.type === 'm.room.message') {
@@ -1261,12 +1404,14 @@
                         });
                     }
                 }
+                // 更新房间列表
+                loadRooms();
             });
         }
 
         // 退出登录
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            if (confirm('确定要退出登录吗？')) {
+            if (confirm('确定要退出登录吗？\n\n退出后需要重新输入账号密码才能登录。')) {
                 if (client) {
                     client.stopSync();
                     client = null;
@@ -1275,6 +1420,25 @@
                 currentRoomId = null;
                 location.reload();
             }
+        });
+
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            if (!query) {
+                document.querySelectorAll('.room-item').forEach(item => item.style.display = 'flex');
+                return;
+            }
+            
+            document.querySelectorAll('.room-item').forEach(item => {
+                const roomName = item.querySelector('.room-name').textContent.toLowerCase();
+                const roomPreview = item.querySelector('.room-preview').textContent.toLowerCase();
+                if (roomName.includes(query) || roomPreview.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         });
 
         function escapeHtml(text) {
