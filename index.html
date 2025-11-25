@@ -2,35 +2,39 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix - 安全通讯客户端</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matrix 通讯客户端</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         :root {
-            --primary: #0d6efd;
-            --primary-hover: #0b5ed7;
-            --success: #198754;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --bg: #f5f7fa;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             --surface: #ffffff;
-            --text: #212529;
-            --text-muted: #6c757d;
-            --border: #dee2e6;
-            --shadow: rgba(0, 0, 0, 0.08);
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --blue-light: rgba(59, 130, 246, 0.1);
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background: var(--bg);
+            background: var(--bg-gradient);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
+            position: fixed;
+            width: 100%;
         }
         
         /* 登录界面 */
@@ -39,26 +43,28 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
+            background: var(--bg-gradient);
+            overflow-y: auto;
         }
         
         .login-container {
             background: var(--surface);
-            padding: 45px 40px;
+            padding: 40px 30px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px var(--shadow);
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
+            border: 1px solid var(--border);
         }
         
         .login-logo {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
         
         .login-logo h1 {
-            font-size: 32px;
+            font-size: 28px;
             color: var(--primary);
             font-weight: 800;
             margin-bottom: 8px;
@@ -70,7 +76,7 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         
         .form-group label {
@@ -78,6 +84,7 @@
             margin-bottom: 8px;
             font-weight: 600;
             font-size: 14px;
+            color: var(--text);
         }
         
         .form-group input {
@@ -87,12 +94,13 @@
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
+            background: var(--surface);
         }
         
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            box-shadow: 0 0 0 3px var(--blue-light);
         }
         
         .hint {
@@ -103,7 +111,7 @@
         
         .server-detected {
             display: none;
-            background: rgba(25, 135, 84, 0.1);
+            background: rgba(16, 185, 129, 0.1);
             color: var(--success);
             padding: 8px 12px;
             border-radius: 8px;
@@ -136,12 +144,13 @@
         .remember-me label {
             font-size: 14px;
             cursor: pointer;
+            user-select: none;
         }
         
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
             border: none;
             border-radius: 10px;
@@ -149,12 +158,16 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         
         .btn-login:hover {
-            background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
         }
         
         .btn-login:disabled {
@@ -165,13 +178,13 @@
         
         .error-alert {
             display: none;
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
             padding: 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             margin-top: 16px;
-            border: 1px solid rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
         
         /* 主界面 */
@@ -179,41 +192,61 @@
             display: none;
             height: 100vh;
             flex-direction: column;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
         }
         
         /* 顶部导航栏 */
         .navbar {
             background: var(--surface);
-            padding: 12px 20px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px var(--shadow);
             border-bottom: 1px solid var(--border);
             flex-shrink: 0;
+            z-index: 100;
         }
         
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--text);
         }
         
         .app-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: var(--primary);
+            white-space: nowrap;
         }
         
         .search-box {
             position: relative;
+            flex: 1;
+            max-width: 300px;
         }
         
         .search-box input {
-            padding: 8px 14px 8px 36px;
+            width: 100%;
+            padding: 8px 12px 8px 35px;
             border: 2px solid var(--border);
             border-radius: 20px;
-            width: 280px;
             font-size: 14px;
             transition: all 0.3s;
         }
@@ -221,7 +254,6 @@
         .search-box input:focus {
             outline: none;
             border-color: var(--primary);
-            width: 320px;
         }
         
         .search-icon {
@@ -230,27 +262,34 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 16px;
+            font-size: 14px;
         }
         
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            flex-shrink: 0;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 6px 12px;
-            background: var(--bg);
-            border-radius: 10px;
+            gap: 8px;
+            padding: 5px 10px;
+            background: var(--blue-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-info:hover {
+            background: rgba(59, 130, 246, 0.15);
         }
         
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             display: flex;
@@ -259,44 +298,69 @@
             color: white;
             font-weight: 700;
             font-size: 14px;
+            flex-shrink: 0;
         }
         
         .user-name {
             font-size: 14px;
             font-weight: 600;
-            max-width: 120px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: all 0.3s;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon:hover {
+            background: var(--blue-light);
+            color: var(--primary);
+        }
+        
+        .btn-icon:active {
+            transform: scale(0.95);
+        }
+        
         .btn-text {
             background: transparent;
             border: 1px solid var(--border);
-            padding: 8px 16px;
+            padding: 6px 12px;
             cursor: pointer;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             transition: all 0.3s;
             color: var(--text);
+            white-space: nowrap;
         }
         
         .btn-text:hover {
-            background: var(--bg);
+            background: var(--blue-light);
             border-color: var(--primary);
             color: var(--primary);
         }
         
         .btn-logout {
-            background: var(--danger);
-            color: white;
-            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: transparent;
         }
         
         .btn-logout:hover {
-            background: #bb2d3b;
-            color: white;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
         }
         
         /* 主内容区 */
@@ -304,77 +368,101 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            height: calc(100vh - 61px);
+            height: calc(100vh - 60px);
+            position: relative;
         }
         
         /* 左侧边栏 */
         .sidebar {
-            width: 340px;
+            width: 320px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+            position: absolute;
+            height: 100%;
+            z-index: 90;
         }
         
         .sidebar-header {
-            padding: 16px;
+            padding: 15px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            background: var(--surface);
         }
         
         .sidebar-title {
             font-size: 18px;
             font-weight: 700;
+            color: var(--text);
         }
         
         .btn-new {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            white-space: nowrap;
         }
         
         .btn-new:hover {
-            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-new:active {
+            transform: translateY(0);
         }
         
         .rooms-list {
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .room-item {
-            padding: 14px 16px;
+            padding: 12px 15px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             gap: 12px;
             align-items: center;
+            background: var(--surface);
         }
         
         .room-item:hover {
-            background: var(--bg);
+            background: var(--blue-light);
+        }
+        
+        .room-item:active {
+            background: rgba(59, 130, 246, 0.15);
         }
         
         .room-item.active {
-            background: rgba(13, 110, 253, 0.1);
+            background: var(--blue-light);
             border-left: 4px solid var(--primary);
         }
         
         .room-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
             background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             display: flex;
             align-items: center;
@@ -383,6 +471,7 @@
             font-weight: 700;
             font-size: 16px;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
         }
         
         .room-info {
@@ -403,6 +492,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            color: var(--text);
         }
         
         .room-time {
@@ -420,23 +510,31 @@
             white-space: nowrap;
         }
         
+        .room-members {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
         /* 聊天区域 */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: var(--bg);
+            background: var(--bg-gradient);
             min-width: 0;
+            position: relative;
         }
         
         .chat-header {
             background: var(--surface);
-            padding: 14px 20px;
+            padding: 12px 15px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            box-shadow: 0 1px 3px var(--shadow);
         }
         
         .chat-header-info {
@@ -448,29 +546,44 @@
         }
         
         .chat-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            color: var(--text);
         }
         
         .chat-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
         
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .load-more {
+            text-align: center;
+            padding: 10px;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .load-more:hover {
+            text-decoration: underline;
         }
         
         .message {
             display: flex;
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             animation: slideIn 0.3s ease;
         }
         
@@ -501,7 +614,7 @@
         
         .message-content {
             flex: 1;
-            max-width: 70%;
+            max-width: 75%;
             min-width: 0;
         }
         
@@ -526,44 +639,62 @@
         .message-bubble {
             background: var(--surface);
             padding: 10px 14px;
-            border-radius: 10px;
-            box-shadow: 0 1px 2px var(--shadow);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px var(--shadow);
             word-wrap: break-word;
             font-size: 14px;
             line-height: 1.5;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .message-bubble img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 8px;
         }
         
         /* 消息输入 */
         .message-input-container {
             background: var(--surface);
-            padding: 16px 20px;
+            padding: 12px 15px;
             border-top: 1px solid var(--border);
             flex-shrink: 0;
+            box-shadow: 0 -1px 3px var(--shadow);
         }
         
         .input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: flex-end;
         }
         
         .input-actions {
             display: flex;
-            gap: 6px;
+            gap: 4px;
+            flex-shrink: 0;
         }
         
         .btn-attach {
-            background: var(--bg);
+            background: var(--blue-light);
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 18px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
         }
         
         .btn-attach:hover {
-            background: var(--border);
+            background: rgba(59, 130, 246, 0.15);
+        }
+        
+        .btn-attach:active {
+            transform: scale(0.95);
         }
         
         .message-input {
@@ -576,28 +707,36 @@
             resize: none;
             max-height: 100px;
             transition: all 0.3s;
+            background: var(--surface);
         }
         
         .message-input:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--blue-light);
         }
         
         .btn-send {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
             border: none;
-            padding: 10px 24px;
+            padding: 10px 20px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
         
         .btn-send:hover {
-            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-send:active {
+            transform: translateY(0);
         }
         
         /* 空状态 */
@@ -609,7 +748,7 @@
             height: 100%;
             color: var(--text-muted);
             text-align: center;
-            padding: 40px;
+            padding: 30px;
         }
         
         .empty-icon {
@@ -622,6 +761,7 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 8px;
+            color: var(--text);
         }
         
         /* 模态框 */
@@ -636,6 +776,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         
         .modal.show {
@@ -644,10 +785,10 @@
         
         .modal-content {
             background: var(--surface);
-            padding: 28px;
+            padding: 25px;
             border-radius: 16px;
-            width: 90%;
-            max-width: 480px;
+            width: 100%;
+            max-width: 460px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             max-height: 90vh;
             overflow-y: auto;
@@ -657,6 +798,7 @@
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 20px;
+            color: var(--text);
         }
         
         .modal-body {
@@ -667,10 +809,11 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
         
         .btn-secondary {
-            background: var(--bg);
+            background: var(--blue-light);
             color: var(--text);
             border: none;
             padding: 10px 20px;
@@ -681,11 +824,11 @@
         }
         
         .btn-secondary:hover {
-            background: var(--border);
+            background: rgba(59, 130, 246, 0.15);
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
             border: none;
             padding: 10px 20px;
@@ -693,41 +836,112 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
         
         .btn-primary:hover {
-            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: var(--text-muted);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* 滚动条 */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: var(--bg);
+            background: transparent;
         }
         
         ::-webkit-scrollbar-thumb {
             background: var(--border);
-            border-radius: 4px;
+            border-radius: 3px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                position: absolute;
+                z-index: 90;
+                height: 100%;
+                box-shadow: 2px 0 8px var(--shadow);
+            }
+            
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+            
+            .search-box {
+                display: none;
+            }
+            
+            .user-name {
+                display: none;
+            }
+            
+            .btn-text {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .navbar {
+                padding: 8px 12px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .chat-actions .btn-text {
+                padding: 6px 8px;
+            }
+            
+            .btn-new {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
 
-        .room-members {
+        .typing-indicator {
             font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
+            font-style: italic;
+            padding: 5px 15px;
         }
     </style>
 </head>
@@ -737,7 +951,7 @@
         <div class="login-container">
             <div class="login-logo">
                 <h1>Matrix 客户端</h1>
-                <p>安全、去中心化的通讯平台</p>
+                <p>安全、去中心化的即时通讯</p>
             </div>
             
             <form id="loginForm">
@@ -753,7 +967,7 @@
                 <div class="form-group homeserver-group" id="homeserverGroup">
                     <label>服务器地址</label>
                     <input type="text" id="homeserver" value="https://matrix.org" placeholder="https://matrix.org">
-                    <div class="hint">Matrix 服务器地址</div>
+                    <div class="hint">默认: matrix.org</div>
                 </div>
                 
                 <div class="form-group">
@@ -763,7 +977,7 @@
                 
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe" checked>
-                    <label for="rememberMe">记住登录状态（刷新页面不会退出）</label>
+                    <label for="rememberMe">记住登录（刷新页面不退出）</label>
                 </div>
                 
                 <button type="submit" class="btn-login" id="loginBtn">登录</button>
@@ -778,6 +992,7 @@
         <!-- 顶部导航 -->
         <nav class="navbar">
             <div class="navbar-left">
+                <button class="menu-toggle" id="menuToggle">☰</button>
                 <div class="app-title">Matrix</div>
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
@@ -785,24 +1000,27 @@
                 </div>
             </div>
             <div class="navbar-right">
-                <div class="user-info">
+                <div class="user-info" id="userInfo">
                     <div class="user-avatar" id="navAvatar">M</div>
                     <div class="user-name" id="navUsername">用户</div>
                 </div>
-                <button class="btn-text" id="settingsBtn">设置</button>
-                <button class="btn-text btn-logout" id="logoutBtn">退出登录</button>
+                <button class="btn-icon" title="设置" id="settingsBtn">⚙️</button>
+                <button class="btn-text btn-logout" id="logoutBtn">退出</button>
             </div>
         </nav>
 
         <div class="main-content">
             <!-- 左侧房间列表 -->
-            <aside class="sidebar">
+            <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <div class="sidebar-title">对话列表</div>
                     <button class="btn-new" id="newRoomBtn">+ 新建房间</button>
                 </div>
                 <div class="rooms-list" id="roomsList">
-                    <div class="loading">正在加载房间...</div>
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>正在加载房间...</p>
+                    </div>
                 </div>
             </aside>
 
@@ -814,25 +1032,26 @@
                         <div class="chat-title" id="chatTitle">选择一个房间</div>
                     </div>
                     <div class="chat-actions">
-                        <button class="btn-text" id="inviteBtn">邀请用户</button>
-                        <button class="btn-text" id="roomInfoBtn">房间信息</button>
-                        <button class="btn-text" id="leaveRoomBtn">离开房间</button>
+                        <button class="btn-icon" title="邀请用户" id="inviteBtn">👥</button>
+                        <button class="btn-icon" title="更多" id="moreBtn">⋯</button>
                     </div>
                 </div>
+                
+                <div class="typing-indicator" id="typingIndicator" style="display: none;"></div>
                 
                 <div class="messages-area" id="messagesArea">
                     <div class="empty-state">
                         <div class="empty-icon">💬</div>
                         <div class="empty-title">开始对话</div>
-                        <p>从左侧选择一个房间开始聊天</p>
+                        <p>从左侧选择一个房间开始聊天<br>所有消息会自动同步到其他客户端</p>
                     </div>
                 </div>
                 
                 <div class="message-input-container" id="inputContainer" style="display: none;">
                     <div class="input-wrapper">
                         <div class="input-actions">
-                            <button class="btn-attach" title="附件">📎</button>
-                            <button class="btn-attach" title="表情">😊</button>
+                            <button class="btn-attach" title="附件" id="attachBtn">📎</button>
+                            <button class="btn-attach" title="表情" id="emojiBtn">😊</button>
                         </div>
                         <textarea class="message-input" id="messageInput" placeholder="输入消息..." rows="1"></textarea>
                         <button class="btn-send" id="sendBtn">发送</button>
@@ -849,11 +1068,11 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>创建新房间</label>
-                    <input type="text" id="newRoomName" placeholder="输入房间名称">
+                    <input type="text" id="newRoomName" placeholder="输入房间名称" class="form-group input">
                 </div>
                 <div class="form-group">
                     <label>或加入现有房间</label>
-                    <input type="text" id="joinRoomId" placeholder="输入房间ID或别名">
+                    <input type="text" id="joinRoomId" placeholder="输入房间ID或别名" class="form-group input">
                     <div class="hint">例如: #room:matrix.org 或 !roomid:server.com</div>
                 </div>
             </div>
@@ -872,7 +1091,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>用户ID</label>
-                    <input type="text" id="inviteUserId" placeholder="@user:matrix.org">
+                    <input type="text" id="inviteUserId" placeholder="@user:matrix.org" class="form-group input">
                     <div class="hint">输入要邀请的用户 Matrix ID</div>
                 </div>
             </div>
@@ -883,12 +1102,29 @@
         </div>
     </div>
 
+    <!-- 房间菜单模态框 -->
+    <div class="modal" id="roomMenuModal">
+        <div class="modal-content">
+            <div class="modal-header">房间操作</div>
+            <div class="modal-body">
+                <button class="btn-text" id="roomInfoBtn" style="width: 100%; margin-bottom: 10px; text-align: left;">📋 房间信息</button>
+                <button class="btn-text" id="loadHistoryBtn" style="width: 100%; margin-bottom: 10px; text-align: left;">📜 加载历史消息</button>
+                <button class="btn-text" id="leaveRoomBtn" style="width: 100%; text-align: left; color: var(--danger);">🚪 离开房间</button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeRoomMenu">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 房间信息模态框 -->
     <div class="modal" id="roomInfoModal">
         <div class="modal-content">
             <div class="modal-header">房间信息</div>
             <div class="modal-body" id="roomInfoBody">
-                <div class="loading">加载中...</div>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="closeRoomInfo">关闭</button>
@@ -896,8 +1132,10 @@
         </div>
     </div>
 
+    <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+
     <script>
-        // Matrix 客户端类
+        // Matrix 客户端类（完整实现）
         class MatrixClient {
             constructor(baseUrl, accessToken, userId) {
                 this.baseUrl = baseUrl;
@@ -906,6 +1144,7 @@
                 this.rooms = new Map();
                 this.syncToken = null;
                 this.syncing = false;
+                this.roomTimelines = new Map();
             }
 
             async request(method, endpoint, data = null) {
@@ -953,6 +1192,10 @@
                 
                 const data = await this.request('GET', `/sync?${params}`);
                 this.syncToken = data.next_batch;
+                
+                // 保存 sync token 以便下次使用
+                localStorage.setItem('matrixSyncToken', this.syncToken);
+                
                 return data;
             }
 
@@ -969,6 +1212,7 @@
                             members: roomData.summary?.['m.joined_member_count'] || 0
                         };
                         this.rooms.set(roomId, room);
+                        this.roomTimelines.set(roomId, room.timeline);
                         rooms.push(room);
                     }
                 }
@@ -993,22 +1237,47 @@
                 });
             }
 
-            async getMessages(roomId, limit = 50) {
+            async sendTyping(roomId, typing) {
                 try {
-                    const params = new URLSearchParams({ dir: 'b', limit: limit.toString() });
-                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?${params}`);
-                    return data.chunk.reverse();
+                    await this.request('PUT', `/rooms/${encodeURIComponent(roomId)}/typing/${encodeURIComponent(this.userId)}`, {
+                        typing: typing,
+                        timeout: 30000
+                    });
                 } catch (error) {
-                    console.error('获取消息失败:', error);
-                    return this.rooms.get(roomId)?.timeline || [];
+                    console.error('发送打字状态失败:', error);
                 }
             }
 
-            async createRoom(name) {
+            async getMessages(roomId, limit = 50, from = null) {
+                try {
+                    const params = new URLSearchParams({ 
+                        dir: 'b', 
+                        limit: limit.toString() 
+                    });
+                    
+                    if (from) params.append('from', from);
+                    
+                    const data = await this.request('GET', `/rooms/${encodeURIComponent(roomId)}/messages?${params}`);
+                    return {
+                        messages: data.chunk.reverse(),
+                        end: data.end,
+                        start: data.start
+                    };
+                } catch (error) {
+                    console.error('获取消息失败:', error);
+                    return {
+                        messages: this.roomTimelines.get(roomId) || [],
+                        end: null,
+                        start: null
+                    };
+                }
+            }
+
+            async createRoom(name, isPublic = false) {
                 return this.request('POST', '/createRoom', {
                     name: name,
-                    visibility: 'private',
-                    preset: 'private_chat'
+                    visibility: isPublic ? 'public' : 'private',
+                    preset: isPublic ? 'public_chat' : 'private_chat'
                 });
             }
 
@@ -1035,6 +1304,34 @@
                 }
             }
 
+            async uploadFile(file) {
+                const url = `${this.baseUrl}/_matrix/media/r0/upload?filename=${encodeURIComponent(file.name)}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`,
+                        'Content-Type': file.type
+                    },
+                    body: file
+                });
+                
+                if (!response.ok) throw new Error('上传失败');
+                return response.json();
+            }
+
+            async sendImage(roomId, file, mxcUrl) {
+                const txnId = Date.now();
+                return this.request('PUT', `/rooms/${encodeURIComponent(roomId)}/send/m.room.message/${txnId}`, {
+                    msgtype: 'm.image',
+                    body: file.name,
+                    url: mxcUrl,
+                    info: {
+                        mimetype: file.type,
+                        size: file.size
+                    }
+                });
+            }
+
             startSync(callback) {
                 if (this.syncing) return;
                 this.syncing = true;
@@ -1058,6 +1355,8 @@
 
         let client = null;
         let currentRoomId = null;
+        let messageEndToken = null;
+        let typingTimeout = null;
 
         // 页面加载时检查登录状态
         window.addEventListener('DOMContentLoaded', () => {
@@ -1066,14 +1365,28 @@
                 try {
                     const auth = JSON.parse(savedAuth);
                     client = new MatrixClient(auth.homeserver, auth.accessToken, auth.userId);
+                    
+                    // 恢复 sync token
+                    const savedSyncToken = localStorage.getItem('matrixSyncToken');
+                    if (savedSyncToken) {
+                        client.syncToken = savedSyncToken;
+                    }
+                    
                     showMainScreen(auth.userId);
                     loadRooms();
                     startSync();
                 } catch (error) {
                     console.error('自动登录失败:', error);
                     localStorage.removeItem('matrixAuth');
+                    localStorage.removeItem('matrixSyncToken');
                 }
             }
+        });
+
+        // 移动端菜单切换
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-hidden');
         });
 
         // 智能检测服务器
@@ -1142,20 +1455,26 @@
 
         async function loadRooms() {
             const roomsList = document.getElementById('roomsList');
-            roomsList.innerHTML = '<div class="loading">加载中...</div>';
+            roomsList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>加载中...</p></div>';
             
             try {
                 const rooms = await client.getRooms();
                 
                 if (rooms.length === 0) {
-                    roomsList.innerHTML = '<div class="loading">暂无房间<br><br>点击上方"新建房间"按钮开始</div>';
+                    roomsList.innerHTML = '<div class="loading"><div class="empty-icon">📭</div><p>暂无房间</p><p style="font-size: 12px; margin-top: 10px;">点击上方"新建房间"按钮开始</p></div>';
                     return;
                 }
                 
                 roomsList.innerHTML = '';
+                rooms.sort((a, b) => {
+                    const aTime = a.timeline[a.timeline.length - 1]?.origin_server_ts || 0;
+                    const bTime = b.timeline[b.timeline.length - 1]?.origin_server_ts || 0;
+                    return bTime - aTime;
+                });
+                
                 rooms.forEach(room => {
                     const lastMsg = [...room.timeline].reverse().find(e => e.type === 'm.room.message');
-                    const preview = lastMsg ? (lastMsg.content.body || '').substring(0, 40) : '暂无消息';
+                    const preview = lastMsg ? (lastMsg.content.body || '').substring(0, 35) : '暂无消息';
                     const time = lastMsg ? new Date(lastMsg.origin_server_ts).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'}) : '';
                     
                     const roomDiv = document.createElement('div');
@@ -1175,17 +1494,22 @@
                     
                     roomDiv.addEventListener('click', function() {
                         openRoom(room.roomId, room.name);
+                        // 移动端自动隐藏侧边栏
+                        if (window.innerWidth <= 768) {
+                            document.getElementById('sidebar').classList.add('mobile-hidden');
+                        }
                     });
                     roomsList.appendChild(roomDiv);
                 });
             } catch (error) {
                 console.error('加载房间失败:', error);
-                roomsList.innerHTML = '<div class="loading">加载失败<br><br>请刷新页面重试</div>';
+                roomsList.innerHTML = '<div class="loading"><p>加载失败</p><p style="font-size: 12px; margin-top: 10px;">请刷新页面重试</p></div>';
             }
         }
 
         async function openRoom(roomId, roomName) {
             currentRoomId = roomId;
+            messageEndToken = null;
             
             document.querySelectorAll('.room-item').forEach(item => item.classList.remove('active'));
             const activeRoom = document.querySelector(`[data-room-id="${roomId}"]`);
@@ -1198,29 +1522,64 @@
             await loadMessages(roomId);
         }
 
-        async function loadMessages(roomId) {
+        async function loadMessages(roomId, loadMore = false) {
             const container = document.getElementById('messagesArea');
-            container.innerHTML = '<div class="loading">加载消息中...</div>';
+            
+            if (!loadMore) {
+                container.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+            }
             
             try {
-                const messages = await client.getMessages(roomId);
-                container.innerHTML = '';
+                const result = await client.getMessages(roomId, 50, loadMore ? messageEndToken : null);
+                const messages = result.messages;
+                messageEndToken = result.end;
                 
-                if (messages.length === 0) {
+                if (!loadMore) {
+                    container.innerHTML = '';
+                }
+                
+                if (messages.length === 0 && !loadMore) {
                     container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">暂无消息</div><p>发送第一条消息开始对话</p></div>';
                     return;
                 }
                 
+                // 添加"加载更多"按钮
+                if (messageEndToken && !loadMore) {
+                    const loadMoreDiv = document.createElement('div');
+                    loadMoreDiv.className = 'load-more';
+                    loadMoreDiv.textContent = '点击加载更多历史消息';
+                    loadMoreDiv.onclick = () => loadMessages(roomId, true);
+                    container.appendChild(loadMoreDiv);
+                }
+                
+                const scrollBefore = container.scrollHeight;
+                
                 messages.forEach(event => {
                     if (event.type === 'm.room.message') {
-                        container.appendChild(createMessageElement(event));
+                        const msgElement = createMessageElement(event);
+                        if (loadMore) {
+                            const loadMoreBtn = container.querySelector('.load-more');
+                            if (loadMoreBtn) {
+                                container.insertBefore(msgElement, loadMoreBtn.nextSibling);
+                            } else {
+                                container.insertBefore(msgElement, container.firstChild);
+                            }
+                        } else {
+                            container.appendChild(msgElement);
+                        }
                     }
                 });
                 
-                container.scrollTop = container.scrollHeight;
+                if (loadMore) {
+                    container.scrollTop = container.scrollHeight - scrollBefore;
+                } else {
+                    container.scrollTop = container.scrollHeight;
+                }
             } catch (error) {
                 console.error('加载消息失败:', error);
-                container.innerHTML = '<div class="loading">加载失败</div>';
+                if (!loadMore) {
+                    container.innerHTML = '<div class="loading">加载失败</div>';
+                }
             }
         }
 
@@ -1231,6 +1590,16 @@
             
             const div = document.createElement('div');
             div.className = 'message';
+            div.dataset.eventId = event.event_id;
+            
+            let content = '';
+            if (event.content.msgtype === 'm.image') {
+                const imageUrl = event.content.url ? event.content.url.replace('mxc://', `${client.baseUrl}/_matrix/media/r0/download/`) : '';
+                content = `<img src="${imageUrl}" alt="${escapeHtml(event.content.body)}" style="max-width: 300px; border-radius: 8px;">`;
+            } else {
+                content = escapeHtml(event.content.body);
+            }
+            
             div.innerHTML = `
                 <div class="message-avatar-small">${senderName[0].toUpperCase()}</div>
                 <div class="message-content">
@@ -1238,7 +1607,7 @@
                         <span class="message-sender">${escapeHtml(senderName)}</span>
                         <span class="message-time">${time}</span>
                     </div>
-                    <div class="message-bubble">${escapeHtml(event.content.body)}</div>
+                    <div class="message-bubble">${content}</div>
                 </div>
             `;
             return div;
@@ -1253,6 +1622,22 @@
             }
         });
 
+        // 打字指示器
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            
+            if (currentRoomId && this.value.trim()) {
+                if (typingTimeout) clearTimeout(typingTimeout);
+                
+                client.sendTyping(currentRoomId, true);
+                
+                typingTimeout = setTimeout(() => {
+                    client.sendTyping(currentRoomId, false);
+                }, 3000);
+            }
+        });
+
         async function sendMessage() {
             if (!currentRoomId) return;
             
@@ -1261,19 +1646,37 @@
             if (!message) return;
             
             try {
+                if (typingTimeout) {
+                    clearTimeout(typingTimeout);
+                    await client.sendTyping(currentRoomId, false);
+                }
+                
                 await client.sendMessage(currentRoomId, message);
                 input.value = '';
                 input.style.height = 'auto';
-                setTimeout(() => loadMessages(currentRoomId), 300);
             } catch (error) {
                 console.error('发送失败:', error);
                 alert('发送消息失败: ' + error.message);
             }
         }
 
-        document.getElementById('messageInput').addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        // 文件上传
+        document.getElementById('attachBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentRoomId) return;
+            
+            try {
+                const uploadResult = await client.uploadFile(file);
+                await client.sendImage(currentRoomId, file, uploadResult.content_uri);
+                e.target.value = '';
+            } catch (error) {
+                console.error('上传失败:', error);
+                alert('文件上传失败: ' + error.message);
+            }
         });
 
         // 新建房间
@@ -1339,9 +1742,26 @@
             }
         });
 
-        // 房间信息
+        // 房间菜单
+        document.getElementById('moreBtn').addEventListener('click', () => {
+            if (!currentRoomId) return;
+            document.getElementById('roomMenuModal').classList.add('show');
+        });
+
+        document.getElementById('closeRoomMenu').addEventListener('click', () => {
+            document.getElementById('roomMenuModal').classList.remove('show');
+        });
+
+        document.getElementById('loadHistoryBtn').addEventListener('click', async () => {
+            document.getElementById('roomMenuModal').classList.remove('show');
+            if (currentRoomId) {
+                await loadMessages(currentRoomId, true);
+            }
+        });
+
         document.getElementById('roomInfoBtn').addEventListener('click', async () => {
-            if (!currentRoomId) return alert('请先选择一个房间');
+            document.getElementById('roomMenuModal').classList.remove('show');
+            if (!currentRoomId) return;
             document.getElementById('roomInfoModal').classList.add('show');
             
             try {
@@ -1351,15 +1771,15 @@
                 document.getElementById('roomInfoBody').innerHTML = `
                     <div class="form-group">
                         <label>房间名称</label>
-                        <input type="text" value="${escapeHtml(room.name)}" readonly>
+                        <input type="text" value="${escapeHtml(room.name)}" readonly style="background: var(--blue-light);">
                     </div>
                     <div class="form-group">
                         <label>房间ID</label>
-                        <input type="text" value="${currentRoomId}" readonly>
+                        <input type="text" value="${currentRoomId}" readonly style="background: var(--blue-light); font-size: 11px;">
                     </div>
                     <div class="form-group">
                         <label>成员数量</label>
-                        <input type="text" value="${members.length} 名成员" readonly>
+                        <input type="text" value="${members.length} 名成员" readonly style="background: var(--blue-light);">
                     </div>
                 `;
             } catch (error) {
@@ -1371,9 +1791,9 @@
             document.getElementById('roomInfoModal').classList.remove('show');
         });
 
-        // 离开房间
         document.getElementById('leaveRoomBtn').addEventListener('click', async () => {
-            if (!currentRoomId) return alert('请先选择一个房间');
+            document.getElementById('roomMenuModal').classList.remove('show');
+            if (!currentRoomId) return;
             if (!confirm('确定要离开这个房间吗？')) return;
             
             try {
@@ -1381,7 +1801,7 @@
                 alert('已离开房间');
                 currentRoomId = null;
                 document.getElementById('inputContainer').style.display = 'none';
-                document.getElementById('messagesArea').innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-title">开始对话</div><p>从左侧选择一个房间开始聊天</p></div>';
+                document.getElementById('messagesArea').innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-title">开始对话</div><p>从左侧选择一个房间开始聊天<br>所有消息会自动同步到其他客户端</p></div>';
                 document.getElementById('chatTitle').textContent = '选择一个房间';
                 await loadRooms();
             } catch (error) {
@@ -1392,20 +1812,47 @@
         // 同步
         function startSync() {
             client.startSync((data) => {
-                if (data.rooms?.join && currentRoomId) {
-                    const roomData = data.rooms.join[currentRoomId];
-                    if (roomData?.timeline?.events) {
-                        const container = document.getElementById('messagesArea');
-                        roomData.timeline.events.forEach(event => {
-                            if (event.type === 'm.room.message') {
-                                container.appendChild(createMessageElement(event));
-                                container.scrollTop = container.scrollHeight;
+                if (data.rooms?.join) {
+                    // 更新房间列表
+                    loadRooms();
+                    
+                    // 更新当前房间消息
+                    if (currentRoomId && data.rooms.join[currentRoomId]) {
+                        const roomData = data.rooms.join[currentRoomId];
+                        if (roomData.timeline?.events) {
+                            const container = document.getElementById('messagesArea');
+                            roomData.timeline.events.forEach(event => {
+                                if (event.type === 'm.room.message') {
+                                    // 检查消息是否已存在
+                                    if (!container.querySelector(`[data-event-id="${event.event_id}"]`)) {
+                                        container.appendChild(createMessageElement(event));
+                                        container.scrollTop = container.scrollHeight;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // 显示打字指示器
+                        if (roomData.ephemeral?.events) {
+                            const typingEvent = roomData.ephemeral.events.find(e => e.type === 'm.typing');
+                            if (typingEvent && typingEvent.content.user_ids?.length > 0) {
+                                const typingUsers = typingEvent.content.user_ids
+                                    .filter(id => id !== client.userId)
+                                    .map(id => id.substring(1, id.indexOf(':')));
+                                
+                                if (typingUsers.length > 0) {
+                                    const typingIndicator = document.getElementById('typingIndicator');
+                                    typingIndicator.textContent = `${typingUsers.join(', ')} 正在输入...`;
+                                    typingIndicator.style.display = 'block';
+                                    
+                                    setTimeout(() => {
+                                        typingIndicator.style.display = 'none';
+                                    }, 5000);
+                                }
                             }
-                        });
+                        }
                     }
                 }
-                // 更新房间列表
-                loadRooms();
             });
         }
 
@@ -1417,6 +1864,7 @@
                     client = null;
                 }
                 localStorage.removeItem('matrixAuth');
+                localStorage.removeItem('matrixSyncToken');
                 currentRoomId = null;
                 location.reload();
             }
@@ -1437,6 +1885,15 @@
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
+                }
+            });
+        });
+
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
                 }
             });
         });
