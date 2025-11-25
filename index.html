@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix 通讯客户端</title>
-    <script src="https://cdn.jsdelivr.net/npm/matrix-js-sdk@31.0.0/lib/browser-index.js"></script>
+    <title>Matrix 私人图床</title>
     <style>
         * {
             margin: 0;
@@ -15,8 +14,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
         }
 
         /* 登录界面 */
@@ -24,30 +22,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px;
             animation: fadeIn 0.5s ease-in;
         }
 
         .login-box {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 400px;
+            width: 100%;
+            max-width: 450px;
             animation: slideUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .login-box h1 {
+        .logo {
             text-align: center;
-            color: #667eea;
             margin-bottom: 30px;
-            font-size: 32px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 36px;
+            margin-bottom: 10px;
             animation: pulse 2s infinite;
         }
 
+        .logo p {
+            color: #999;
+            font-size: 14px;
+        }
+
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
 
         .input-group input {
@@ -65,15 +82,10 @@
             box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
         }
 
-        .input-group label {
-            position: absolute;
-            left: 15px;
-            top: -10px;
-            background: white;
-            padding: 0 5px;
-            color: #667eea;
+        .input-hint {
             font-size: 12px;
-            font-weight: bold;
+            color: #999;
+            margin-top: 5px;
         }
 
         .btn {
@@ -94,302 +106,292 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .btn:active {
-            transform: translateY(0);
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* 主聊天界面 */
-        .chat-container {
+        /* 主界面 */
+        .main-container {
             display: none;
-            height: 100vh;
-            background: white;
+            min-height: 100vh;
+            padding: 20px;
             animation: fadeIn 0.5s ease-in;
         }
 
-        .chat-container.active {
-            display: flex;
+        .main-container.active {
+            display: block;
         }
 
-        /* 侧边栏 */
-        .sidebar {
-            width: 300px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-info {
-            padding: 20px;
-            color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .user-info h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .user-info p {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
-        .rooms-header {
-            padding: 15px 20px;
-            color: white;
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideDown 0.5s ease;
         }
 
-        .rooms-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
+        .header h2 {
+            color: #667eea;
+            font-size: 24px;
         }
 
-        .room-item {
-            padding: 15px;
-            margin-bottom: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+        .user-info-badge {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info-badge span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* 上传区域 */
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             animation: slideInLeft 0.5s ease;
         }
 
-        .room-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
+        .upload-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
-        .room-item.active {
-            background: rgba(255, 255, 255, 0.3);
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(102, 126, 234, 0.05);
         }
 
-        .room-name {
-            color: white;
+        .upload-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+
+        .upload-area.dragover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #667eea;
+            font-size: 16px;
             font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 12px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-preview.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .preview-icon {
+            font-size: 32px;
+        }
+
+        .preview-info {
+            flex: 1;
+        }
+
+        .preview-name {
+            font-weight: bold;
+            color: #333;
             margin-bottom: 5px;
         }
 
-        .room-preview {
-            color: rgba(255, 255, 255, 0.7);
+        .preview-size {
             font-size: 12px;
+            color: #999;
+        }
+
+        .upload-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 文件列表 */
+        .files-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: slideInRight 0.5s ease;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .files-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.4s ease;
+        }
+
+        .file-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            font-size: 32px;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        /* 主聊天区 */
-        .main-chat {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #f5f5f5;
-        }
-
-        .chat-header {
-            padding: 20px;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header h2 {
-            color: #333;
-            font-size: 20px;
-        }
-
-        .header-buttons button {
-            padding: 8px 15px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #667eea;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .header-buttons button:hover {
-            background: #764ba2;
-            transform: scale(1.05);
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            animation: slideInRight 0.4s ease;
-            max-width: 70%;
-        }
-
-        .message.own {
-            align-self: flex-end;
-        }
-
-        .message.other {
-            align-self: flex-start;
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .sender-name {
-            font-weight: bold;
-            color: #667eea;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        .message-time {
+        .file-details {
             font-size: 11px;
             color: #999;
         }
 
-        .message-content {
-            padding: 12px 15px;
-            border-radius: 15px;
-            word-wrap: break-word;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            animation: messagePop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .message.own .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-bottom-right-radius: 5px;
-        }
-
-        .message.other .message-content {
-            background: white;
-            color: #333;
-            border-bottom-left-radius: 5px;
-        }
-
-        /* 输入区 */
-        .input-area {
-            padding: 20px;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        .file-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .input-area input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .input-area input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
-        }
-
-        .send-btn {
-            padding: 0 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .action-btn {
+            padding: 8px 12px;
             border: none;
-            border-radius: 25px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 12px;
             transition: all 0.3s ease;
+            font-weight: bold;
         }
 
-        .send-btn:hover {
+        .copy-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        /* 动画 */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        .delete-btn {
+            background: #ff4444;
+            color: white;
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes messagePop {
-            0% {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+        .delete-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
         }
 
         /* 加载动画 */
         .loading {
             display: none;
             text-align: center;
-            color: #667eea;
-            margin-top: 10px;
-            font-size: 14px;
+            margin: 20px 0;
         }
 
         .loading.active {
@@ -400,36 +402,18 @@
             border: 3px solid #f3f3f3;
             border-top: 3px solid #667eea;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 10px auto;
+            margin: 0 auto 10px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loading-text {
+            color: #667eea;
+            font-size: 14px;
         }
 
-        /* 滚动条样式 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-
-        /* 提示信息 */
+        /* 提示框 */
         .toast {
             position: fixed;
             top: 20px;
@@ -437,10 +421,11 @@
             background: white;
             padding: 15px 25px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             display: none;
             animation: slideInRight 0.3s ease;
             z-index: 1000;
+            max-width: 300px;
         }
 
         .toast.active {
@@ -457,71 +442,99 @@
             color: white;
         }
 
-        /* 模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 400px;
-            animation: slideUp 0.4s ease;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: #667eea;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-cancel {
-            background: #e0e0e0;
-            color: #333;
-        }
-
-        .btn-confirm {
-            background: #667eea;
+        .toast.warning {
+            background: #ff9800;
             color: white;
         }
 
-        .welcome-message {
-            text-align: center;
-            color: #999;
-            padding: 50px;
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .welcome-message h2 {
-            color: #667eea;
-            margin-bottom: 10px;
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -529,66 +542,88 @@
     <!-- 登录界面 -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
-            <h1>🚀 Matrix 客户端</h1>
-            <div class="input-group">
-                <label>服务器地址</label>
-                <input type="text" id="homeserver" placeholder="https://matrix.org" value="https://matrix.org">
+            <div class="logo">
+                <h1>📁 Matrix 图床</h1>
+                <p>私人文件存储与分享</p>
             </div>
+
+            <div class="input-group">
+                <label>Matrix 服务器地址</label>
+                <input type="text" id="homeserver" placeholder="https://matrix.org" value="https://matrix.org">
+                <div class="input-hint">确保地址格式正确，包含 https://</div>
+            </div>
+
             <div class="input-group">
                 <label>用户名</label>
-                <input type="text" id="username" placeholder="@user:matrix.org">
+                <input type="text" id="username" placeholder="@username:matrix.org">
+                <div class="input-hint">完整的Matrix ID，包含 @ 和域名</div>
             </div>
+
             <div class="input-group">
                 <label>密码</label>
                 <input type="password" id="password" placeholder="输入密码">
             </div>
-            <button class="btn" onclick="login()">登录</button>
+
+            <button class="btn" id="loginBtn" onclick="login()">🔐 登录</button>
+
             <div class="loading" id="loginLoading">
                 <div class="spinner"></div>
-                正在连接...
+                <div class="loading-text">正在连接服务器...</div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px; font-size: 12px; color: #856404;">
+                <strong>常见登录问题：</strong><br>
+                • 确保服务器地址包含完整协议(https://)<br>
+                • 用户名需要完整格式: @user:domain<br>
+                • 检查服务器CORS配置是否正确<br>
+                • 确认账号密码正确无误
             </div>
         </div>
     </div>
 
-    <!-- 聊天界面 -->
-    <div class="chat-container" id="chatContainer">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <div class="user-info">
-                <h3 id="displayName">用户名</h3>
-                <p id="userId">@user:matrix.org</p>
+    <!-- 主界面 -->
+    <div class="main-container" id="mainContainer">
+        <div class="header">
+            <div>
+                <h2>📁 我的文件存储</h2>
             </div>
-            <div class="rooms-header">
-                <h4>房间列表</h4>
-                <button onclick="showJoinRoomModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">➕</button>
-            </div>
-            <div class="rooms-list" id="roomsList">
-                <!-- 房间列表 -->
+            <div class="user-info-badge">
+                <span id="userIdDisplay">未登录</span>
+                <button class="logout-btn" onclick="logout()">退出</button>
             </div>
         </div>
 
-        <!-- 主聊天区 -->
-        <div class="main-chat">
-            <div class="chat-header">
-                <div>
-                    <h2 id="currentRoomName">选择一个房间开始聊天</h2>
-                    <p style="font-size: 12px; color: #999;" id="roomTopic"></p>
+        <div class="content">
+            <!-- 上传区域 -->
+            <div class="upload-section">
+                <h3>📤 上传文件</h3>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">☁️</div>
+                    <div class="upload-text">点击或拖拽文件到此处</div>
+                    <div class="upload-hint">支持图片、文档、视频等各类文件</div>
                 </div>
-                <div class="header-buttons">
-                    <button onclick="loadMoreMessages()">📜 历史</button>
-                    <button onclick="showRoomSettings()">⚙️ 设置</button>
-                    <button onclick="logout()">🚪 退出</button>
+                <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)">
+
+                <div class="file-preview" id="filePreview">
+                    <div id="previewList"></div>
+                    <button class="upload-btn" onclick="uploadFiles()">📤 开始上传</button>
+                </div>
+
+                <div class="loading" id="uploadLoading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">正在上传...</div>
                 </div>
             </div>
-            <div class="messages-container" id="messagesContainer">
-                <div class="welcome-message">
-                    <h2>👋 欢迎使用 Matrix</h2>
-                    <p>选择左侧房间开始聊天，或创建/加入新房间</p>
+
+            <!-- 文件列表 -->
+            <div class="files-section">
+                <h3>📋 已上传文件</h3>
+                <div id="filesList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <p>暂无文件，开始上传吧！</p>
+                    </div>
                 </div>
-            </div>
-            <div class="input-area">
-                <input type="text" id="messageInput" placeholder="输入消息..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()">📤 发送</button>
             </div>
         </div>
     </div>
@@ -596,287 +631,375 @@
     <!-- 提示框 -->
     <div class="toast" id="toast"></div>
 
-    <!-- 加入房间模态框 -->
-    <div class="modal" id="joinRoomModal">
-        <div class="modal-content">
-            <h3>加入房间</h3>
-            <div class="input-group">
-                <label>房间ID或别名</label>
-                <input type="text" id="roomIdInput" placeholder="#room:matrix.org 或 !roomid:matrix.org">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeJoinRoomModal()">取消</button>
-                <button class="btn-confirm" onclick="joinRoom()">加入</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let client = null;
-        let currentRoomId = null;
-        let myUserId = null;
+        let accessToken = null;
+        let userId = null;
+        let homeserverUrl = null;
+        let uploadedFiles = [];
+        let selectedFiles = [];
 
         // 登录功能
         async function login() {
-            const homeserver = document.getElementById('homeserver').value;
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const homeserver = document.getElementById('homeserver').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
 
+            // 验证输入
             if (!homeserver || !username || !password) {
                 showToast('请填写所有字段', 'error');
                 return;
             }
 
-            document.getElementById('loginLoading').classList.add('active');
+            // 验证服务器地址格式
+            if (!homeserver.startsWith('http://') && !homeserver.startsWith('https://')) {
+                showToast('服务器地址必须包含 http:// 或 https://', 'error');
+                return;
+            }
+
+            // 验证用户名格式
+            if (!username.startsWith('@') || !username.includes(':')) {
+                showToast('用户名格式错误，应为: @username:domain', 'error');
+                return;
+            }
+
+            const loginBtn = document.getElementById('loginBtn');
+            const loading = document.getElementById('loginLoading');
+            
+            loginBtn.disabled = true;
+            loading.classList.add('active');
 
             try {
-                // 创建客户端
-                client = matrixcs.createClient({
-                    baseUrl: homeserver
+                // 移除末尾的斜杠
+                homeserverUrl = homeserver.replace(/\/$/, '');
+
+                // 获取登录flows
+                const flowsResponse = await fetch(`${homeserverUrl}/_matrix/client/r0/login`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                // 登录
-                const response = await client.loginWithPassword(username, password);
-                myUserId = response.user_id;
+                if (!flowsResponse.ok) {
+                    throw new Error(`无法连接到服务器 (${flowsResponse.status})`);
+                }
 
-                // 重新创建已认证的客户端
-                client = matrixcs.createClient({
-                    baseUrl: homeserver,
-                    accessToken: response.access_token,
-                    userId: response.user_id
+                // 执行登录
+                const loginResponse = await fetch(`${homeserverUrl}/_matrix/client/r0/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'm.login.password',
+                        identifier: {
+                            type: 'm.id.user',
+                            user: username
+                        },
+                        password: password
+                    })
                 });
 
-                // 设置事件监听器
-                setupEventListeners();
+                if (!loginResponse.ok) {
+                    const errorData = await loginResponse.json();
+                    throw new Error(errorData.error || '登录失败');
+                }
 
-                // 启动客户端
-                await client.startClient();
+                const loginData = await loginResponse.json();
+                accessToken = loginData.access_token;
+                userId = loginData.user_id;
 
-                // 显示聊天界面
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('chatContainer').classList.add('active');
+                // 保存到localStorage
+                localStorage.setItem('matrix_token', accessToken);
+                localStorage.setItem('matrix_user_id', userId);
+                localStorage.setItem('matrix_homeserver', homeserverUrl);
 
-                // 更新用户信息
-                document.getElementById('userId').textContent = response.user_id;
-                document.getElementById('displayName').textContent = username.split(':')[0];
-
+                // 显示主界面
+                showMainInterface();
                 showToast('登录成功！', 'success');
 
             } catch (error) {
-                console.error('登录失败:', error);
+                console.error('登录错误:', error);
                 showToast('登录失败: ' + error.message, 'error');
             } finally {
-                document.getElementById('loginLoading').classList.remove('active');
+                loginBtn.disabled = false;
+                loading.classList.remove('active');
             }
         }
 
-        // 设置事件监听器
-        function setupEventListeners() {
-            // 同步完成
-            client.once('sync', function(state, prevState, res) {
-                if (state === 'PREPARED') {
-                    console.log('同步完成');
-                    loadRooms();
+        // 显示主界面
+        function showMainInterface() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').classList.add('active');
+            document.getElementById('userIdDisplay').textContent = userId;
+            loadUploadedFiles();
+        }
+
+        // 拖拽上传
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // 文件选择处理
+        function handleFileSelect(event) {
+            handleFiles(event.target.files);
+        }
+
+        // 处理文件
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            const previewList = document.getElementById('previewList');
+            const filePreview = document.getElementById('filePreview');
+
+            previewList.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                
+                const icon = getFileIcon(file.type);
+                const size = formatFileSize(file.size);
+
+                item.innerHTML = `
+                    <div class="preview-icon">${icon}</div>
+                    <div class="preview-info">
+                        <div class="preview-name">${file.name}</div>
+                        <div class="preview-size">${size}</div>
+                    </div>
+                `;
+                
+                previewList.appendChild(item);
+            });
+
+            filePreview.classList.add('active');
+        }
+
+        // 上传文件
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                showToast('请选择文件', 'warning');
+                return;
+            }
+
+            const loading = document.getElementById('uploadLoading');
+            loading.classList.add('active');
+
+            try {
+                for (const file of selectedFiles) {
+                    await uploadSingleFile(file);
                 }
-            });
 
-            // 新消息
-            client.on('Room.timeline', function(event, room, toStartOfTimeline) {
-                if (event.getType() === 'm.room.message' && room.roomId === currentRoomId && !toStartOfTimeline) {
-                    displayMessage(event);
-                }
-            });
+                showToast(`成功上传 ${selectedFiles.length} 个文件`, 'success');
+                selectedFiles = [];
+                document.getElementById('filePreview').classList.remove('active');
+                document.getElementById('fileInput').value = '';
+                loadUploadedFiles();
 
-            // 房间更新
-            client.on('Room', function(room) {
-                loadRooms();
-            });
+            } catch (error) {
+                console.error('上传错误:', error);
+                showToast('上传失败: ' + error.message, 'error');
+            } finally {
+                loading.classList.remove('active');
+            }
         }
 
-        // 加载房间列表
-        function loadRooms() {
-            const rooms = client.getRooms();
-            const roomsList = document.getElementById('roomsList');
-            roomsList.innerHTML = '';
+        // 上传单个文件
+        async function uploadSingleFile(file) {
+            const uploadUrl = `${homeserverUrl}/_matrix/media/r0/upload?filename=${encodeURIComponent(file.name)}`;
 
-            rooms.forEach(room => {
-                const roomItem = document.createElement('div');
-                roomItem.className = 'room-item';
-                roomItem.onclick = () => selectRoom(room.roomId);
-
-                const roomName = document.createElement('div');
-                roomName.className = 'room-name';
-                roomName.textContent = room.name || '未命名房间';
-
-                const lastMessage = room.timeline[room.timeline.length - 1];
-                const roomPreview = document.createElement('div');
-                roomPreview.className = 'room-preview';
-                roomPreview.textContent = lastMessage ? (lastMessage.getContent().body || '...') : '暂无消息';
-
-                roomItem.appendChild(roomName);
-                roomItem.appendChild(roomPreview);
-                roomsList.appendChild(roomItem);
-            });
-        }
-
-        // 选择房间
-        function selectRoom(roomId) {
-            currentRoomId = roomId;
-            const room = client.getRoom(roomId);
-
-            // 更新房间名称
-            document.getElementById('currentRoomName').textContent = room.name || '未命名房间';
-            document.getElementById('roomTopic').textContent = room.currentState.getStateEvents('m.room.topic', '')?.getContent()?.topic || '';
-
-            // 高亮当前房间
-            document.querySelectorAll('.room-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.room-item')?.classList.add('active');
-
-            // 加载消息
-            loadMessages();
-        }
-
-        // 加载消息
-        function loadMessages() {
-            if (!currentRoomId) return;
-
-            const room = client.getRoom(currentRoomId);
-            const messagesContainer = document.getElementById('messagesContainer');
-            messagesContainer.innerHTML = '';
-
-            const messages = room.timeline;
-            messages.forEach(event => {
-                if (event.getType() === 'm.room.message') {
-                    displayMessage(event);
-                }
+            const response = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': file.type || 'application/octet-stream'
+                },
+                body: file
             });
 
-            // 滚动到底部
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`上传失败 (${response.status}): ${errorText}`);
+            }
 
-        // 显示消息
-        function displayMessage(event) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const content = event.getContent();
-            const sender = event.getSender();
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ' + (sender === myUserId ? 'own' : 'other');
-
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'message-header';
-
-            const senderName = document.createElement('span');
-            senderName.className = 'sender-name';
-            senderName.textContent = sender === myUserId ? '我' : (sender.split(':')[0].substring(1));
-
-            const timeSpan = document.createElement('span');
-            timeSpan.className = 'message-time';
-            const date = new Date(event.getTs());
-            timeSpan.textContent = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-
-            headerDiv.appendChild(senderName);
-            headerDiv.appendChild(timeSpan);
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = content.body || '';
-
-            messageDiv.appendChild(headerDiv);
-            messageDiv.appendChild(contentDiv);
-            messagesContainer.appendChild(messageDiv);
-
-            // 滚动到底部
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // 发送消息
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-
-            if (!message || !currentRoomId) return;
-
-            const content = {
-                body: message,
-                msgtype: 'm.text'
+            const data = await response.json();
+            
+            // 保存文件信息
+            const fileInfo = {
+                content_uri: data.content_uri,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                uploadTime: new Date().toISOString()
             };
 
-            client.sendEvent(currentRoomId, 'm.room.message', content, '').then(() => {
-                input.value = '';
-            }).catch(err => {
-                showToast('发送失败: ' + err.message, 'error');
+            uploadedFiles.push(fileInfo);
+            saveUploadedFiles();
+
+            return data;
+        }
+
+        // 加载已上传文件列表
+        function loadUploadedFiles() {
+            const savedFiles = localStorage.getItem(`matrix_files_${userId}`);
+            if (savedFiles) {
+                uploadedFiles = JSON.parse(savedFiles);
+            }
+            displayFiles();
+        }
+
+        // 保存文件列表
+        function saveUploadedFiles() {
+            localStorage.setItem(`matrix_files_${userId}`, JSON.stringify(uploadedFiles));
+        }
+
+        // 显示文件列表
+        function displayFiles() {
+            const filesList = document.getElementById('filesList');
+            
+            if (uploadedFiles.length === 0) {
+                filesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <p>暂无文件，开始上传吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filesList.innerHTML = '';
+            
+            uploadedFiles.reverse().forEach((file, index) => {
+                const actualIndex = uploadedFiles.length - 1 - index;
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                
+                const icon = getFileIcon(file.type);
+                const size = formatFileSize(file.size);
+                const time = new Date(file.uploadTime).toLocaleString('zh-CN');
+                const downloadUrl = getDownloadUrl(file.content_uri);
+
+                item.innerHTML = `
+                    <div class="file-icon">${icon}</div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-details">${size} • ${time}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="action-btn copy-btn" onclick="copyFileUrl('${downloadUrl}')">📋 复制链接</button>
+                        <button class="action-btn copy-btn" onclick="downloadFile('${downloadUrl}', '${file.name}')">⬇️ 下载</button>
+                        <button class="action-btn delete-btn" onclick="deleteFile(${actualIndex})">🗑️ 删除</button>
+                    </div>
+                `;
+                
+                filesList.appendChild(item);
             });
         }
 
-        // 回车发送
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
+        // 获取下载URL
+        function getDownloadUrl(contentUri) {
+            // content_uri 格式: mxc://domain/mediaId
+            const match = contentUri.match(/mxc:\/\/([^/]+)\/(.+)/);
+            if (match) {
+                return `${homeserverUrl}/_matrix/media/r0/download/${match[1]}/${match[2]}`;
+            }
+            return '';
+        }
+
+        // 复制文件URL
+        function copyFileUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('链接已复制到剪贴板', 'success');
+            }).catch(err => {
+                showToast('复制失败', 'error');
+            });
+        }
+
+        // 下载文件
+        function downloadFile(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            showToast('开始下载', 'success');
+        }
+
+        // 删除文件
+        function deleteFile(index) {
+            if (confirm('确定要删除这个文件吗？')) {
+                uploadedFiles.splice(index, 1);
+                saveUploadedFiles();
+                displayFiles();
+                showToast('文件已删除', 'success');
             }
         }
 
-        // 加载更多历史消息
-        function loadMoreMessages() {
-            if (!currentRoomId) return;
-            
-            client.scrollback(client.getRoom(currentRoomId), 50).then(() => {
-                loadMessages();
-                showToast('历史消息已加载', 'success');
-            }).catch(err => {
-                showToast('加载失败: ' + err.message, 'error');
-            });
+        // 获取文件图标
+        function getFileIcon(mimeType) {
+            if (!mimeType) return '📄';
+            if (mimeType.startsWith('image/')) return '🖼️';
+            if (mimeType.startsWith('video/')) return '🎥';
+            if (mimeType.startsWith('audio/')) return '🎵';
+            if (mimeType.includes('pdf')) return '📕';
+            if (mimeType.includes('zip') || mimeType.includes('rar')) return '📦';
+            if (mimeType.includes('text')) return '📝';
+            return '📄';
         }
 
-        // 显示加入房间模态框
-        function showJoinRoomModal() {
-            document.getElementById('joinRoomModal').classList.add('active');
-        }
-
-        // 关闭加入房间模态框
-        function closeJoinRoomModal() {
-            document.getElementById('joinRoomModal').classList.remove('active');
-        }
-
-        // 加入房间
-        function joinRoom() {
-            const roomId = document.getElementById('roomIdInput').value.trim();
-            if (!roomId) return;
-
-            client.joinRoom(roomId).then(() => {
-                showToast('成功加入房间', 'success');
-                closeJoinRoomModal();
-                document.getElementById('roomIdInput').value = '';
-            }).catch(err => {
-                showToast('加入失败: ' + err.message, 'error');
-            });
-        }
-
-        // 房间设置
-        function showRoomSettings() {
-            if (!currentRoomId) return;
-            showToast('房间设置功能开发中...', 'success');
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
 
         // 退出登录
         function logout() {
-            if (client) {
-                client.stopClient();
-                client.logout();
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('matrix_token');
+                localStorage.removeItem('matrix_user_id');
+                localStorage.removeItem('matrix_homeserver');
+                location.reload();
             }
-            location.reload();
         }
 
         // 显示提示
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
-            toast.className = 'toast ' + type + ' active';
+            toast.className = `toast ${type} active`;
             setTimeout(() => {
                 toast.classList.remove('active');
             }, 3000);
         }
+
+        // 页面加载时检查登录状态
+        window.onload = function() {
+            const savedToken = localStorage.getItem('matrix_token');
+            const savedUserId = localStorage.getItem('matrix_user_id');
+            const savedHomeserver = localStorage.getItem('matrix_homeserver');
+
+            if (savedToken && savedUserId && savedHomeserver) {
+                accessToken = savedToken;
+                userId = savedUserId;
+                homeserverUrl = savedHomeserver;
+                showMainInterface();
+            }
+        };
     </script>
 </body>
 </html>
