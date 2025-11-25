@@ -1437,7 +1437,7 @@
         }
 
         document.getElementById('userAvatar').addEventListener('click', () => {
-            document.getElementById('profileModal').classList.add('show');
+            openModal('profileModal');
         });
 
         document.getElementById('avatarInput').addEventListener('change', async (e) => {
@@ -1589,12 +1589,12 @@
 
         document.getElementById('newRoomBtn').addEventListener('click', () => {
             document.getElementById('fabMenu').classList.remove('show');
-            document.getElementById('createRoomModal').classList.add('show');
+            openModal('createRoomModal');
         });
 
         document.getElementById('settingsBtn').addEventListener('click', () => {
             document.getElementById('mainMenu').classList.remove('show');
-            document.getElementById('settingsModal').classList.add('show');
+            openModal('settingsModal');
             loadSettings('general');
         });
 
@@ -2230,6 +2230,9 @@
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('show');
+        }
+        function openModal(id) {
+            document.getElementById(id).classList.add('show');
         }
 
         function startSync() {
