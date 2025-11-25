@@ -13,9 +13,9 @@
         }
         
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --primary-light: rgba(59, 130, 246, 0.1);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -33,6 +33,8 @@
             color: var(--text);
             height: 100vh;
             overflow: hidden;
+            position: fixed;
+            width: 100%;
         }
 
         /* 登录界面 */
@@ -55,7 +57,7 @@
         .login-container {
             background: var(--surface);
             padding: 45px 35px;
-            border-radius: 16px;
+            border-radius: 20px;
             box-shadow: 0 10px 40px var(--shadow);
             width: 100%;
             max-width: 440px;
@@ -80,12 +82,12 @@
         }
         
         .login-logo h1 {
-            font-size: 32px;
+            font-size: 34px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .login-logo p {
@@ -94,7 +96,7 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         
         .form-group label {
@@ -106,9 +108,9 @@
         
         .form-group input {
             width: 100%;
-            padding: 13px 16px;
+            padding: 14px 18px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 15px;
             font-family: inherit;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -123,21 +125,21 @@
         
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
         }
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45);
         }
         
         .btn-login:active {
@@ -166,12 +168,12 @@
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             flex: 1;
         }
         
         .app-title {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
@@ -181,12 +183,12 @@
         .search-box {
             position: relative;
             flex: 1;
-            max-width: 350px;
+            max-width: 360px;
         }
         
         .search-box input {
             width: 100%;
-            padding: 10px 16px 10px 42px;
+            padding: 11px 18px 11px 44px;
             border: 2px solid var(--border);
             border-radius: 24px;
             font-size: 14px;
@@ -202,7 +204,7 @@
         
         .search-icon {
             position: absolute;
-            left: 14px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
@@ -216,8 +218,8 @@
         }
         
         .user-avatar-nav {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
@@ -227,7 +229,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
             overflow: hidden;
         }
         
@@ -239,7 +241,7 @@
         
         .user-avatar-nav:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45);
         }
         
         .btn-icon {
@@ -247,8 +249,8 @@
             border: none;
             padding: 10px;
             cursor: pointer;
-            border-radius: 10px;
-            font-size: 20px;
+            border-radius: 12px;
+            font-size: 22px;
             color: var(--text-muted);
             transition: all 0.3s;
         }
@@ -265,46 +267,26 @@
             overflow: hidden;
         }
         
-        /* 侧边栏 */
+        /* 侧边栏 - 优化布局 */
         .sidebar {
             width: 340px;
             background: var(--surface);
             border-right: 2px solid var(--border);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 12px var(--shadow);
+            box-shadow: 4px 0 16px var(--shadow);
+            flex-shrink: 0;
         }
         
         .sidebar-header {
-            padding: 18px 20px;
+            padding: 20px;
             border-bottom: 2px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background: linear-gradient(135deg, var(--primary-light), transparent);
         }
         
         .sidebar-title {
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 700;
-        }
-        
-        .btn-add {
-            background: linear-gradient(135deg, var(--primary), #7c3aed);
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 22px;
-            cursor: pointer;
-            line-height: 1;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        
-        .btn-add:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
         .rooms-list {
@@ -313,7 +295,7 @@
         }
         
         .room-item {
-            padding: 14px 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             display: flex;
@@ -333,18 +315,18 @@
         }
         
         .room-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 26px;
+            width: 54px;
+            height: 54px;
+            border-radius: 27px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 20px;
             position: relative;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
             flex-shrink: 0;
         }
         
@@ -355,7 +337,7 @@
             background: linear-gradient(135deg, var(--danger), #dc2626);
             color: white;
             border-radius: 12px;
-            padding: 3px 8px;
+            padding: 3px 9px;
             font-size: 11px;
             font-weight: 700;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
@@ -371,11 +353,12 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
+            align-items: center;
         }
         
         .room-name {
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -384,6 +367,7 @@
         .room-time {
             font-size: 12px;
             color: var(--text-muted);
+            font-weight: 500;
         }
         
         .room-preview {
@@ -394,17 +378,18 @@
             white-space: nowrap;
         }
         
-        /* 聊天区域 */
+        /* 聊天区域 - 确保不重叠 */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             background: var(--bg);
+            min-width: 0;
         }
         
         .chat-header {
             background: var(--surface);
-            padding: 14px 20px;
+            padding: 16px 20px;
             border-bottom: 2px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -420,20 +405,20 @@
         }
         
         .chat-title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
         }
         
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 24px;
         }
         
         .message {
             display: flex;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             animation: messageSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -449,8 +434,8 @@
         }
         
         .message-avatar {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
@@ -458,9 +443,9 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
         }
         
         .message-content {
@@ -469,14 +454,14 @@
         
         .message-header {
             display: flex;
-            gap: 8px;
-            margin-bottom: 4px;
+            gap: 10px;
+            margin-bottom: 6px;
             align-items: center;
         }
         
         .message-sender {
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -489,37 +474,37 @@
         
         .message-bubble {
             background: var(--surface);
-            padding: 12px 16px;
-            border-radius: 14px;
+            padding: 14px 18px;
+            border-radius: 16px;
             border-top-left-radius: 4px;
             font-size: 15px;
-            line-height: 1.5;
-            box-shadow: 0 2px 8px var(--shadow);
+            line-height: 1.6;
+            box-shadow: 0 2px 10px var(--shadow);
             border: 1px solid var(--border);
             transition: all 0.3s;
         }
         
         .message-bubble:hover {
-            box-shadow: 0 4px 16px var(--shadow);
-            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--shadow);
+            transform: translateY(-2px);
         }
         
         .message-input-container {
             background: var(--surface);
-            padding: 16px 20px;
+            padding: 18px 20px;
             border-top: 2px solid var(--border);
             box-shadow: 0 -4px 12px var(--shadow);
         }
         
         .input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: flex-end;
         }
         
         .message-input {
             flex: 1;
-            padding: 12px 18px;
+            padding: 14px 20px;
             border: 2px solid var(--border);
             border-radius: 24px;
             font-size: 15px;
@@ -539,18 +524,18 @@
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 14px 30px;
             border-radius: 24px;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
         }
         
         .btn-send:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
         }
         
         .empty-state {
@@ -586,7 +571,7 @@
             padding: 32px;
             border-radius: 20px;
             width: 90%;
-            max-width: 520px;
+            max-width: 540px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
@@ -606,7 +591,7 @@
         }
         
         .modal-header {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 28px;
             display: flex;
@@ -620,8 +605,8 @@
         .modal-close {
             background: var(--primary-light);
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
@@ -638,7 +623,7 @@
         
         .modal-footer {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             justify-content: flex-end;
             margin-top: 28px;
         }
@@ -647,8 +632,8 @@
             background: var(--primary-light);
             color: var(--text);
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 13px 26px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -664,34 +649,34 @@
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 13px 26px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
             transition: all 0.3s;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
         }
         
         /* 个人资料 */
         .profile-avatar-large {
-            width: 120px;
-            height: 120px;
-            border-radius: 60px;
+            width: 130px;
+            height: 130px;
+            border-radius: 65px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 700;
-            margin: 0 auto 24px;
+            margin: 0 auto 28px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
@@ -705,7 +690,7 @@
         
         .profile-avatar-large:hover {
             transform: scale(1.05);
-            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 14px 40px rgba(79, 70, 229, 0.5);
         }
         
         .profile-avatar-large::after {
@@ -714,10 +699,10 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             color: white;
-            padding: 8px;
-            font-size: 12px;
+            padding: 10px;
+            font-size: 13px;
             text-align: center;
             opacity: 0;
             transition: opacity 0.3s;
@@ -733,39 +718,39 @@
         }
         
         .profile-name {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
         .profile-id {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-muted);
         }
         
         /* 设置界面 */
         .settings-container {
             display: flex;
-            height: 650px;
+            height: 680px;
             gap: 0;
         }
         
         .settings-menu {
-            width: 240px;
+            width: 260px;
             border-right: 2px solid var(--border);
             overflow-y: auto;
             background: linear-gradient(135deg, var(--primary-light), transparent);
         }
         
         .settings-menu-item {
-            padding: 16px 20px;
+            padding: 18px 22px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             border-left: 3px solid transparent;
             transition: all 0.3s;
             font-size: 15px;
@@ -791,13 +776,13 @@
         }
         
         .settings-section {
-            margin-bottom: 36px;
+            margin-bottom: 40px;
         }
         
         .settings-section-title {
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             color: var(--text);
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             -webkit-background-clip: text;
@@ -805,10 +790,10 @@
         }
         
         .settings-item {
-            padding: 18px 22px;
+            padding: 20px 24px;
             background: var(--bg);
-            border-radius: 12px;
-            margin-bottom: 14px;
+            border-radius: 14px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -817,7 +802,7 @@
         }
         
         .settings-item:hover {
-            box-shadow: 0 4px 16px var(--shadow);
+            box-shadow: 0 4px 20px var(--shadow);
             transform: translateY(-2px);
             border-color: var(--primary-light);
         }
@@ -827,7 +812,7 @@
         }
         
         .settings-item-info h4 {
-            font-size: 15px;
+            font-size: 16px;
             margin-bottom: 6px;
             font-weight: 700;
         }
@@ -835,13 +820,13 @@
         .settings-item-info p {
             font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
         .switch {
             position: relative;
-            width: 54px;
-            height: 30px;
+            width: 56px;
+            height: 32px;
             flex-shrink: 0;
         }
         
@@ -860,20 +845,20 @@
             bottom: 0;
             background-color: var(--border);
             transition: 0.4s;
-            border-radius: 30px;
+            border-radius: 32px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 24px;
-            width: 24px;
+            height: 26px;
+            width: 26px;
             left: 3px;
             bottom: 3px;
             background-color: white;
             transition: 0.4s;
             border-radius: 50%;
-            box-shadow: 0 2px 6px var(--shadow);
+            box-shadow: 0 2px 8px var(--shadow);
         }
         
         input:checked + .slider {
@@ -884,37 +869,38 @@
             transform: translateX(24px);
         }
         
+        /* FAB按钮 - 唯一的新建按钮 */
         .fab {
             position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 64px;
-            height: 64px;
+            bottom: 30px;
+            right: 30px;
+            width: 68px;
+            height: 68px;
             background: linear-gradient(135deg, var(--primary), #7c3aed);
             color: white;
             border: none;
             border-radius: 50%;
-            font-size: 30px;
+            font-size: 32px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.5);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 99;
         }
         
         .fab:hover {
             transform: scale(1.15) rotate(90deg);
-            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.6);
+            box-shadow: 0 14px 40px rgba(79, 70, 229, 0.6);
         }
         
         .menu-popup {
             position: fixed;
-            bottom: 110px;
-            right: 28px;
+            bottom: 120px;
+            right: 30px;
             background: var(--surface);
-            border-radius: 16px;
-            box-shadow: 0 12px 32px var(--shadow);
+            border-radius: 18px;
+            box-shadow: 0 14px 40px var(--shadow);
             display: none;
-            min-width: 220px;
+            min-width: 240px;
             animation: popupSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 98;
             border: 2px solid var(--primary-light);
@@ -936,14 +922,14 @@
         }
         
         .menu-popup-item {
-            padding: 16px 20px;
+            padding: 18px 22px;
             cursor: pointer;
             border-bottom: 1px solid var(--border);
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 15px;
+            gap: 14px;
+            font-size: 16px;
         }
         
         .menu-popup-item:last-child {
@@ -957,14 +943,14 @@
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 50px;
             color: var(--text-muted);
         }
         
         .loading-spinner {
             display: inline-block;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border: 4px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
@@ -975,18 +961,25 @@
             to { transform: rotate(360deg); }
         }
         
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
             background: linear-gradient(135deg, var(--primary), #7c3aed);
-            border-radius: 4px;
+            border-radius: 5px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-hover);
         }
 
         @media (max-width: 768px) {
-            .sidebar { width: 300px; }
+            .sidebar { 
+                position: absolute;
+                z-index: 90;
+                height: 100%;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.show { transform: translateX(0); }
             .search-box { display: none; }
             .settings-container {
                 flex-direction: column;
@@ -1027,13 +1020,13 @@
                 
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="rememberMe" checked style="margin-right: 8px; width: auto;">
+                        <input type="checkbox" id="rememberMe" checked style="margin-right: 10px; width: auto;">
                         记住登录状态
                     </label>
                 </div>
                 
                 <button type="submit" class="btn-login" id="loginBtn">登录</button>
-                <div id="errorAlert" style="display: none; background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 14px; border-radius: 10px; margin-top: 18px;"></div>
+                <div id="errorAlert" style="display: none; background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 14px; border-radius: 12px; margin-top: 18px;"></div>
             </form>
         </div>
     </div>
@@ -1049,26 +1042,27 @@
                 </div>
             </div>
             <div class="navbar-right">
-                <div class="user-avatar-nav" id="userAvatar" title="个人资料">M</div>
+                <div class="user-avatar-nav" id="userAvatar" title="个人资料">W</div>
                 <button class="btn-icon" id="moreMenuBtn" title="更多">⋮</button>
             </div>
         </nav>
 
         <div class="main-content">
+            <!-- 左侧边栏 - 移除了顶部的+按钮 -->
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <div class="sidebar-title">对话</div>
-                    <button class="btn-add" id="addBtn" title="新建">+</button>
                 </div>
                 <div class="rooms-list" id="roomsList">
-                    <div class="loading"><div class="loading-spinner"></div><p>加载中...</p></div>
+                    <div class="loading"><div class="loading-spinner"></div><p style="margin-top: 14px;">加载中...</p></div>
                 </div>
             </aside>
 
+            <!-- 右侧聊天区域 -->
             <main class="chat-container">
                 <div class="chat-header" style="display: none;" id="chatHeader">
                     <div class="chat-header-info">
-                        <div class="room-avatar" id="chatAvatar" style="width: 42px; height: 42px; font-size: 16px;">?</div>
+                        <div class="room-avatar" id="chatAvatar" style="width: 44px; height: 44px; font-size: 18px;">?</div>
                         <div class="chat-title" id="chatTitle">房间</div>
                     </div>
                     <button class="btn-icon" id="roomMenuBtn">⋮</button>
@@ -1076,9 +1070,9 @@
                 
                 <div class="messages-area" id="messagesArea">
                     <div class="empty-state">
-                        <div style="font-size: 64px; margin-bottom: 24px;">💬</div>
-                        <h3 style="margin-bottom: 14px; font-size: 22px;">选择对话</h3>
-                        <p style="color: var(--text-muted); font-size: 15px;">从左侧选择房间开始聊天</p>
+                        <div style="font-size: 72px; margin-bottom: 28px;">💬</div>
+                        <h3 style="margin-bottom: 16px; font-size: 24px; font-weight: 700;">选择对话</h3>
+                        <p style="color: var(--text-muted); font-size: 16px;">从左侧选择房间开始聊天</p>
                     </div>
                 </div>
                 
@@ -1093,7 +1087,7 @@
         </div>
     </div>
 
-    <!-- FAB菜单 -->
+    <!-- 唯一的FAB按钮 -->
     <button class="fab" id="fabBtn" style="display: none;" title="新建">✎</button>
     <div class="menu-popup" id="fabMenu">
         <div class="menu-popup-item" id="newChatBtn">💬 开始聊天</div>
@@ -1102,7 +1096,7 @@
     </div>
 
     <!-- 主菜单 -->
-    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 68px; right: 20px;">
+    <div class="menu-popup" id="mainMenu" style="bottom: auto; top: 72px; right: 24px;">
         <div class="menu-popup-item" id="settingsBtn">⚙️ 设置</div>
         <div class="menu-popup-item" id="inviteBtn">👥 邀请朋友</div>
         <div class="menu-popup-item" id="feedbackBtn">💬 问题反馈</div>
@@ -1117,18 +1111,18 @@
                 <button class="modal-close" onclick="closeModal('profileModal')">×</button>
             </div>
             <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-            <div class="profile-avatar-large" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">M</div>
+            <div class="profile-avatar-large" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">W</div>
             <div class="profile-info">
                 <div class="profile-name" id="profileName">用户</div>
                 <div class="profile-id" id="profileId">@user:matrix.org</div>
             </div>
             <div class="form-group">
                 <label>显示名称</label>
-                <input type="text" id="profileDisplayName" placeholder="输入显示名称">
+                <input type="text" id="profileDisplayName" placeholder="输入显示名称" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
             </div>
             <div class="form-group">
                 <label>个人简介</label>
-                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit;"></textarea>
+                <textarea id="profileBio" placeholder="介绍一下自己..." rows="3" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-family: inherit;"></textarea>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('profileModal')">取消</button>
@@ -1139,7 +1133,7 @@
 
     <!-- 设置模态框 -->
     <div class="modal" id="settingsModal">
-        <div class="modal-content" style="max-width: 950px; max-height: 85vh;">
+        <div class="modal-content" style="max-width: 1000px; max-height: 88vh;">
             <div class="modal-header">
                 <span>设置</span>
                 <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
@@ -1169,15 +1163,15 @@
             </div>
             <div class="form-group">
                 <label>房间名称</label>
-                <input type="text" id="roomName" placeholder="名称">
+                <input type="text" id="roomName" placeholder="名称" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
             </div>
             <div class="form-group">
                 <label>房间话题（可选）</label>
-                <textarea id="roomTopic" placeholder="话题" rows="2" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit;"></textarea>
+                <textarea id="roomTopic" placeholder="话题" rows="2" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-family: inherit;"></textarea>
             </div>
             <div class="form-group">
                 <label>房间访问权限</label>
-                <select id="roomType" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px;">
+                <select id="roomType" style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
                     <option value="private">私有 - 仅被邀请的人才能找到并加入</option>
                     <option value="public">公开 - 任何人都可以找到并加入</option>
                 </select>
@@ -1190,7 +1184,7 @@
                         <span class="slider"></span>
                     </label>
                 </label>
-                <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">启用后，无法禁用加密。</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">启用后，无法禁用加密。</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('createRoomModal')">取消</button>
@@ -1270,13 +1264,6 @@
                     displayname: displayName
                 });
                 this.displayName = displayName;
-            }
-
-            async setAvatarUrl(avatarUrl) {
-                await this.request('PUT', `/profile/${encodeURIComponent(this.userId)}/avatar_url`, {
-                    avatar_url: avatarUrl
-                });
-                this.avatarUrl = avatarUrl;
             }
 
             mxcToHttp(mxcUrl) {
@@ -1449,18 +1436,15 @@
             }
         }
 
-        // 点击头像打开个人资料
         document.getElementById('userAvatar').addEventListener('click', () => {
             document.getElementById('profileModal').classList.add('show');
         });
 
-        // 头像上传
         document.getElementById('avatarInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             
             try {
-                // 这里应该上传到Matrix服务器，暂时使用本地预览
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const dataUrl = e.target.result;
@@ -1474,7 +1458,6 @@
             }
         });
 
-        // 保存个人资料
         document.getElementById('saveProfile').addEventListener('click', async () => {
             const displayName = document.getElementById('profileDisplayName').value.trim();
             if (displayName && displayName !== client.displayName) {
@@ -1494,11 +1477,11 @@
             try {
                 const rooms = await client.getRooms();
                 if (rooms.length === 0) {
-                    roomsList.innerHTML = '<div class="loading" style="padding: 50px;"><p style="font-size: 16px; margin-bottom: 10px;">暂无房间</p><p style="font-size: 14px; color: var(--text-muted);">点击 + 创建或加入房间</p></div>';
+                    roomsList.innerHTML = '<div class="loading" style="padding: 60px 20px;"><p style="font-size: 17px; margin-bottom: 12px; font-weight: 600;">暂无房间</p><p style="font-size: 14px; color: var(--text-muted);">点击右下角 + 创建或加入房间</p></div>';
                     return;
                 }
                 roomsList.innerHTML = '';
-                rooms.forEach((room, index) => {
+                rooms.forEach((room) => {
                     const lastMsg = [...room.timeline].reverse().find(e => e.type === 'm.room.message');
                     const preview = lastMsg ? lastMsg.content.body.substring(0, 30) : '暂无消息';
                     const time = lastMsg ? new Date(lastMsg.origin_server_ts).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'}) : '';
@@ -1604,10 +1587,6 @@
             document.getElementById('mainMenu').classList.toggle('show');
         });
 
-        document.getElementById('addBtn').addEventListener('click', () => {
-            document.getElementById('fabMenu').classList.toggle('show');
-        });
-
         document.getElementById('newRoomBtn').addEventListener('click', () => {
             document.getElementById('fabMenu').classList.remove('show');
             document.getElementById('createRoomModal').classList.add('show');
@@ -1658,7 +1637,6 @@
             const content = document.getElementById('settingsContent');
             
             if (type === 'general') {
-                const displayName = client.displayName || client.userId.substring(1, client.userId.indexOf(':'));
                 content.innerHTML = `
                     <div class="settings-section">
                         <div class="settings-section-title">发现</div>
@@ -1805,7 +1783,7 @@
                                 <h4>主题</h4>
                                 <p>选择界面主题</p>
                             </div>
-                            <select style="padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--surface);">
+                            <select style="padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface);">
                                 <option>浅色</option>
                                 <option>深色</option>
                                 <option>自动</option>
@@ -1816,7 +1794,7 @@
                                 <h4>字体大小</h4>
                                 <p>调整界面字体大小</p>
                             </div>
-                            <select style="padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--surface);">
+                            <select style="padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface);">
                                 <option>小</option>
                                 <option selected>中</option>
                                 <option>大</option>
@@ -1847,7 +1825,7 @@
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>交叉签名</h4>
-                                <p>已启用交叉签名。</p>
+                                <p>已启用交叉签名。密钥未信任</p>
                             </div>
                         </div>
                         <div class="settings-item">
@@ -1859,6 +1837,16 @@
                                 <input type="checkbox">
                                 <span class="slider"></span>
                             </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">可用会话</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>显示全部会话</h4>
+                                <p>9个活动会话</p>
+                            </div>
                         </div>
                     </div>
                     
@@ -1884,6 +1872,16 @@
                             <div class="settings-item-info">
                                 <h4>导入端到端房间密钥</h4>
                                 <p>从本地文件导入密钥</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">已忽略的用户</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>已忽略的用户</h4>
+                                <p>管理已忽略的用户列表</p>
                             </div>
                         </div>
                     </div>
@@ -1916,12 +1914,12 @@
                 content.innerHTML = `
                     <div class="settings-section">
                         <div class="settings-section-title">实验性功能</div>
-                        <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">这些是实验性功能,可能会出现不可预料的错误。请谨慎使用。</p>
+                        <p style="color: var(--text-muted); margin-bottom: 18px; font-size: 14px; line-height: 1.5;">这些是实验性功能,可能会出现不可预料的错误。请谨慎使用。</p>
                         
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>启用在时间线中滑动回复</h4>
-                                <p>滑动消息快速回复</p>
+                                <p>MSC3061:滑动消息快速回复</p>
                             </div>
                             <label class="switch">
                                 <input type="checkbox">
@@ -1932,7 +1930,7 @@
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>为过去的消息共享房间密钥</h4>
-                                <p>在共享历史的加密房间中邀请时,加密历史将可见。</p>
+                                <p>MSC3061:在共享历史的加密房间中邀请时,加密历史将可见。</p>
                             </div>
                             <label class="switch">
                                 <input type="checkbox">
@@ -2041,6 +2039,17 @@
                         
                         <div class="settings-item">
                             <div class="settings-item-info">
+                                <h4>启用客户端信息记录</h4>
+                                <p>记录客户端名称、版本和网址, 以便在会话管理器中更轻松地识别会话。</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-info">
                                 <h4>启用语音广播</h4>
                                 <p>能够在房间时间线中录制和发送语音广播。</p>
                             </div>
@@ -2126,9 +2135,25 @@
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>摇一摇快捷反馈问题</h4>
-                                <p>检测阈值</p>
+                                <p>检测阈值 - 摇动手机以测试检测阈值</p>
                             </div>
-                            <input type="range" min="1" max="10" value="5" style="width: 120px;">
+                            <input type="range" min="1" max="10" value="5" style="width: 140px;">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-section-title">通知</div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>通知目标</h4>
+                                <p>配置推送规则</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>推送规则</h4>
+                                <p>查看和管理推送规则</p>
+                            </div>
                         </div>
                     </div>
                     
@@ -2155,13 +2180,19 @@
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>Matrix 客户端</h4>
-                                <p>版本 1.0.0</p>
+                                <p>版本 1.0.0 - 完整功能版本</p>
                             </div>
                         </div>
                         <div class="settings-item">
                             <div class="settings-item-info">
                                 <h4>基于 Matrix 协议</h4>
                                 <p>去中心化、端到端加密的即时通讯</p>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <h4>Matrix.org</h4>
+                                <p>了解更多关于 Matrix 的信息</p>
                             </div>
                         </div>
                     </div>
@@ -2171,13 +2202,25 @@
                         <div class="settings-item" style="cursor: pointer;">
                             <div class="settings-item-info">
                                 <h4>使用指南</h4>
-                                <p>查看使用说明</p>
+                                <p>查看使用说明和教程</p>
                             </div>
                         </div>
                         <div class="settings-item" style="cursor: pointer;">
                             <div class="settings-item-info">
                                 <h4>问题反馈</h4>
                                 <p>报告问题或提出建议</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>隐私政策</h4>
+                                <p>了解我们如何保护你的隐私</p>
+                            </div>
+                        </div>
+                        <div class="settings-item" style="cursor: pointer;">
+                            <div class="settings-item-info">
+                                <h4>服务条款</h4>
+                                <p>查看使用条款</p>
                             </div>
                         </div>
                     </div>
@@ -2227,7 +2270,7 @@
         }
 
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('#fabBtn') && !e.target.closest('#fabMenu') && !e.target.closest('#addBtn')) {
+            if (!e.target.closest('#fabBtn') && !e.target.closest('#fabMenu')) {
                 document.getElementById('fabMenu').classList.remove('show');
             }
             if (!e.target.closest('#moreMenuBtn') && !e.target.closest('#mainMenu')) {
