@@ -2,224 +2,553 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>Minecraft 刷骨粉机教程</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>智能快递查询</title>
   <style>
-    /* ==== 全局基础样式（像素感） ==== */
     * {
       box-sizing: border-box;
-    }
-    html, body {
       margin: 0;
       padding: 0;
-      font-family: "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #1b2830;
-      color: #f8f8f8;
-      image-rendering: pixelated;
     }
-
-    /* ==== 背景：简易“草地方块”效果 ==== */
     body {
-      background:
-        linear-gradient(#3d6b2f 0, #3d6b2f 32px, #2a4b21 32px, #2a4b21 64px) repeat-x top,
-        linear-gradient(#7f5a36 0, #7f5a36 32px, #5a3b22 32px, #5a3b22 64px) repeat top 64px / 64px 64px,
-        #1b2830;
-      background-size: 64px 64px, 64px 64px, auto;
-    }
-
-    /* ==== 页面布局 ==== */
-    .container {
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 16px;
-    }
-
-    /* ==== Minecraft 风标题 ==== */
-    .mc-title {
-      text-align: center;
-      margin-bottom: 24px;
-      text-shadow: 3px 3px 0 #000;
-    }
-
-    .mc-title h1 {
-      margin: 0;
-      font-size: 42px;
-      letter-spacing: 2px;
-      color: #e0ff9f;
-      text-transform: uppercase;
-    }
-
-    .mc-title small {
-      display: block;
-      margin-top: 8px;
-      color: #c8ffb0;
-      font-size: 14px;
-    }
-
-    /* ==== 卡片 + 边框（模仿游戏 UI） ==== */
-    .panel {
-      background: #2b2b2b;
-      border: 4px solid #000;
-      box-shadow:
-        0 0 0 4px #c6c6c6,
-        0 0 0 8px #555;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .panel h2 {
-      margin-top: 0;
-      font-size: 22px;
-      color: #fff;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    /* ==== 物品栏风格列表 ==== */
-    .slot-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .slot {
-      width: 64px;
-      height: 64px;
-      border: 3px solid #000;
-      box-shadow:
-        0 0 0 3px #8b8b8b,
-        inset 0 0 0 2px #3b3b3b;
-      background: #6b6b6b;
-      position: relative;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+      background: radial-gradient(circle at top left, #4f46e5, #0f172a);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 16px;
+      color: #0f172a;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 960px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
+      padding: 24px 24px 20px;
+      backdrop-filter: blur(12px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .title-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .title-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+      animation: pulse 1.8s infinite;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .card-header-right {
+      text-align: right;
       font-size: 12px;
-      text-align: center;
+      color: #9ca3af;
     }
-
-    .slot span {
-      padding: 2px 4px;
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-
-    .slot-count {
+    .input-wrap {
+      flex: 1 1 220px;
+      position: relative;
+    }
+    .input-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      padding-right: 44px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+      transition: all 0.18s ease;
+      outline: none;
+      background-color: #f9fafb;
+    }
+    .input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+      background-color: #ffffff;
+    }
+    .clear-btn {
       position: absolute;
-      right: 4px;
-      bottom: 2px;
-      font-size: 11px;
-      color: #fff;
-      text-shadow: 1px 1px 0 #000;
-    }
-
-    /* ==== 步骤区域 ==== */
-    ol.steps {
-      padding-left: 20px;
-      margin: 8px 0 0;
-    }
-    ol.steps li {
-      margin: 4px 0;
-      line-height: 1.6;
-    }
-
-    /* ==== 按钮（像素风） ==== */
-    .mc-btn {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 16px;
-      background: #3c8527;
-      color: #fff;
-      border: 3px solid #000;
-      box-shadow:
-        0 0 0 3px #4f913c,
-        0 0 0 6px #1d4d13;
-      text-decoration: none;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .mc-btn:hover {
-      background: #2a641c;
+      right: 12px;
+      top: 32px;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      padding: 0;
     }
-
-    /* ==== 底部说明 ==== */
-    footer {
-      margin-top: 24px;
-      text-align: center;
+    .clear-btn:hover {
+      color: #6b7280;
+    }
+    .btn-primary {
+      flex: 0 0 auto;
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(79, 70, 229, 0.45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px rgba(79, 70, 229, 0.5);
+      opacity: 0.96;
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.5);
+    }
+    .btn-primary[disabled] {
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+    .btn-text {
+      font-size: 14px;
+    }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(248, 250, 252, 0.5);
+      border-top-color: #e5e7eb;
+      animation: spin 0.7s linear infinite;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-radius: 12px;
+      background: #f3f4f6;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .pill {
+      border-radius: 999px;
+      padding: 4px 10px;
       font-size: 12px;
-      color: #cccccc;
-      text-shadow: 1px 1px 0 #000;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pill-primary {
+      background: rgba(79, 70, 229, 0.08);
+      color: #4f46e5;
+    }
+    .pill-green {
+      background: rgba(34, 197, 94, 0.08);
+      color: #15803d;
+    }
+    .company-text {
+      font-weight: 600;
+      color: #111827;
+    }
+    .status-right {
+      font-size: 12px;
+      color: #6b7280;
+      text-align: right;
+    }
+    .result-wrapper {
+      display: grid;
+      grid-template-columns: 1.1fr 1.2fr;
+      gap: 16px;
+    }
+    .timeline-card, .summary-card {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 12px 14px;
+      background: #f9fafb;
+      max-height: 360px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .block-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+    .timeline-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .timeline-item {
+      position: relative;
+      padding-left: 16px;
+      padding-bottom: 14px;
+    }
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      bottom: -4px;
+      width: 1px;
+      background: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+    }
+    .timeline-item:last-child::before {
+      bottom: 12px;
+    }
+    .dot {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #d1d5db;
+      border: 2px solid #f9fafb;
+    }
+    .dot.active {
+      background: #4f46e5;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.18);
+    }
+    .log-time {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+    .log-status {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+    .log-desc {
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .summary-body {
+      font-size: 13px;
+      color: #4b5563;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      gap: 10px;
+    }
+    .summary-label {
+      color: #6b7280;
+    }
+    .summary-value {
+      font-weight: 500;
+      text-align: right;
+    }
+    .empty-tip {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .error-msg {
+      font-size: 13px;
+      color: #b91c1c;
+      margin-top: 6px;
+    }
+    @media (max-width: 768px) {
+      .card {
+        padding: 18px 16px 14px;
+      }
+      .card-title {
+        font-size: 18px;
+      }
+      .result-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .status-bar {
+        align-items: flex-start;
+      }
+      .card-header-right {
+        text-align: left;
+      }
+    }
+    @media (max-width: 480px) {
+      .card-header {
+        align-items: flex-start;
+      }
+      .form-row {
+        flex-direction: column;
+      }
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.25);
+        opacity: 0.4;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- 标题 -->
-    <header class="mc-title">
-      <h1>刷骨粉机教程</h1>
-      <small>Minecraft 风格 HTML 页面示例</small>
-    </header>
-
-    <!-- 简介 -->
-    <section class="panel">
-      <h2>简介</h2>
-      <p>这是一个使用 HTML + CSS 制作的 Minecraft 风格页面，用来展示「刷骨粉机」的基本原理与搭建步骤。你可以根据需要修改文字、颜色和布局。</p>
-    </section>
-
-    <!-- 材料清单（物品栏风格） -->
-    <section class="panel">
-      <h2>所需材料（示例）</h2>
-      <div class="slot-row">
-        <div class="slot">
-          <span>漏斗</span>
-          <div class="slot-count">x4</div>
+  <div class="wrapper">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="title-block">
+            <span class="title-dot"></span>
+            <div class="card-title">智能快递查询</div>
+          </div>
+          <div class="card-subtitle">输入快递单号，自动识别快递公司并查询最新物流状态</div>
         </div>
-        <div class="slot">
-          <span>发射器</span>
-          <div class="slot-count">x2</div>
-        </div>
-        <div class="slot">
-          <span>箱子</span>
-          <div class="slot-count">x2</div>
-        </div>
-        <div class="slot">
-          <span>红石粉</span>
-          <div class="slot-count">x20</div>
-        </div>
-        <div class="slot">
-          <span>红石中继器</span>
-          <div class="slot-count">x4</div>
-        </div>
-        <div class="slot">
-          <span>观察者</span>
-          <div class="slot-count">x2</div>
-        </div>
-        <div class="slot">
-          <span>堆肥桶</span>
-          <div class="slot-count">x1</div>
+        <div class="card-header-right">
+          <div>支持主流国内快递 · 实时轨迹更新</div>
+          <div>PC / 平板 / 手机自适应</div>
         </div>
       </div>
-      <p style="margin-top:8px;font-size:12px;opacity:.9;">
-        上面数量仅作演示，你可以改成自己设计的刷骨粉机材料表。
-      </p>
-    </section>
 
-    <!-- 搭建步骤 -->
-    <section class="panel">
-      <h2>搭建步骤（示意）</h2>
-      <ol class="steps">
-        <li>放置收集骨粉的箱子，并用漏斗与堆肥桶相连。</li>
-        <li>在堆肥桶上方或侧面放置发射器，用于自动投掷可堆肥物品。</li>
-        <li>使用观察者与红石中继器/红石粉，构建一个循环信号或触发器，让发射器持续工作。</li>
-        <li>在系统上方接入你的农场产出（例如南瓜、甜瓜、竹子、仙人掌等），让物品自动进入堆肥桶。</li>
-        <li>启动红石电路，观察骨粉是否不断进入收集箱，根据需要微调红石节奏与布局。</li>
-      </ol>
-      <a class="mc-btn" href="#">开始搭建（示例按钮）</a>
-    </section>
+      <div class="form-row">
+        <div class="input-wrap">
+          <label class="input-label" for="kdNo">快递单号</label>
+          <input id="kdNo" class="input" type="text" placeholder="请输入或粘贴快递单号" />
+          <button class="clear-btn" type="button" id="clearBtn" title="清空">✕</button>
+        </div>
+        <button class="btn-primary" type="button" id="queryBtn">
+          <span class="btn-text">查询物流</span>
+          <span class="spinner" id="spinner" style="display:none;"></span>
+        </button>
+      </div>
+      <div class="error-msg" id="error"></div>
 
-    <!-- 备注 -->
-    <footer>
-      本页面仅为演示 HTML &amp; CSS 排版，不包含游戏内自动搭建功能。
-    </footer>
+      <div class="status-bar" id="statusBar" style="display:none;">
+        <div class="status-left">
+          <span class="pill pill-primary" id="companyPill">自动识别中</span>
+          <span class="pill pill-green" id="latestStatusPill">最新状态</span>
+        </div>
+        <div class="status-right" id="statusMeta"></div>
+      </div>
+
+      <div class="result-wrapper">
+        <div class="timeline-card">
+          <div class="block-title">物流轨迹</div>
+          <ul class="timeline-list" id="timelineList">
+            <li class="empty-tip">暂无数据，请先输入单号查询。</li>
+          </ul>
+        </div>
+        <div class="summary-card">
+          <div class="block-title">包裹概况</div>
+          <div class="summary-body" id="summaryBody">
+            <div class="empty-tip">将为你展示预计送达时间、寄件地/收件地等信息。</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    const kdInput = document.getElementById('kdNo');
+    const clearBtn = document.getElementById('clearBtn');
+    const queryBtn = document.getElementById('queryBtn');
+    const spinner = document.getElementById('spinner');
+    const errorEl = document.getElementById('error');
+    const statusBar = document.getElementById('statusBar');
+    const companyPill = document.getElementById('companyPill');
+    const latestStatusPill = document.getElementById('latestStatusPill');
+    const statusMeta = document.getElementById('statusMeta');
+    const timelineList = document.getElementById('timelineList');
+    const summaryBody = document.getElementById('summaryBody');
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        spinner.style.display = 'inline-block';
+        queryBtn.setAttribute('disabled', 'disabled');
+      } else {
+        spinner.style.display = 'none';
+        queryBtn.removeAttribute('disabled');
+      }
+    }
+
+    clearBtn.addEventListener('click', () => {
+      kdInput.value = '';
+      kdInput.focus();
+      errorEl.textContent = '';
+      statusBar.style.display = 'none';
+      timelineList.innerHTML = '<li class="empty-tip">暂无数据，请先输入单号查询。</li>';
+      summaryBody.innerHTML = '<div class="empty-tip">将为你展示预计送达时间、寄件地/收件地等信息。</div>';
+    });
+
+    kdInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        doQuery();
+      }
+    });
+
+    queryBtn.addEventListener('click', doQuery);
+
+    async function doQuery() {
+      const num = kdInput.value.trim();
+      errorEl.textContent = '';
+
+      if (!num) {
+        errorEl.textContent = '请输入快递单号。';
+        kdInput.focus();
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const autoRes = await fetch(`/api/autoCompany?num=${encodeURIComponent(num)}`);
+        const autoData = await autoRes.json();
+
+        if (!autoData || !autoData.length) {
+          throw new Error('未识别到对应快递公司，请检查单号是否正确。');
+        }
+
+        const mainCompany = autoData[0];
+        const companyName = mainCompany.name || mainCompany.companyName || '未知快递';
+        const comCode = mainCompany.comCode || mainCompany.code || '';
+
+        companyPill.textContent = `${companyName}`;
+        companyPill.title = comCode ? `公司编码：${comCode}` : '';
+
+        const trackRes = await fetch(`/api/track?com=${encodeURIComponent(comCode)}&num=${encodeURIComponent(num)}`);
+        const trackData = await trackRes.json();
+
+        renderTrack(num, companyName, trackData);
+      } catch (err) {
+        errorEl.textContent = err.message || '查询失败，请稍后重试。';
+        statusBar.style.display = 'none';
+        timelineList.innerHTML = '<li class="empty-tip">暂无数据，请稍后重试。</li>';
+        summaryBody.innerHTML = '<div class="empty-tip">暂无概况。</div>';
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderTrack(num, companyName, trackData) {
+      statusBar.style.display = 'flex';
+
+      const list = trackData.data || trackData.list || trackData.traces || [];
+      if (!list.length) {
+        latestStatusPill.textContent = '暂无轨迹';
+        statusMeta.textContent = `单号：${num}`;
+        timelineList.innerHTML = '<li class="empty-tip">暂无物流轨迹，请稍后再试。</li>';
+        summaryBody.innerHTML = '<div class="empty-tip">暂无概况信息。</div>';
+        return;
+      }
+
+      const events = list.map(item => ({
+        time: item.time || item.acceptTime || item.ftime || '',
+        status: item.status || item.state || item.statusDesc || '',
+        desc: item.context || item.desc || item.remark || ''
+      }));
+
+      const latest = events[0];
+      latestStatusPill.textContent = latest.status || '最新进展';
+      statusMeta.textContent = `单号：${num} · 最新时间：${latest.time || '—'}`;
+
+      timelineList.innerHTML = '';
+      events.forEach((e, idx) => {
+        const li = document.createElement('li');
+        li.className = 'timeline-item';
+        li.innerHTML = `
+          <span class="dot ${idx === 0 ? 'active' : ''}"></span>
+          <div class="log-time">${e.time || '时间未知'}</div>
+          <div class="log-status">${e.status || '物流更新'}</div>
+          <div class="log-desc">${e.desc || ''}</div>
+        `;
+        timelineList.appendChild(li);
+      });
+
+      const last = events[events.length - 1];
+      const isDelivered = (latest.status || '').includes('签收') || (latest.status || '').includes('已送达');
+
+      summaryBody.innerHTML = `
+        <div class="summary-row">
+          <span class="summary-label">快递公司</span>
+          <span class="summary-value">${companyName}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">当前状态</span>
+          <span class="summary-value">${latest.status || '—'}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">最近时间</span>
+          <span class="summary-value">${latest.time || '—'}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">起始时间</span>
+          <span class="summary-value">${last.time || '—'}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">是否已签收</span>
+          <span class="summary-value">${isDelivered ? '是' : '否'}</span>
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html>
