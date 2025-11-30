@@ -1,554 +1,685 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>智能快递查询</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-      background: radial-gradient(circle at top left, #4f46e5, #0f172a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      color: #0f172a;
-    }
-    .wrapper {
-      width: 100%;
-      max-width: 960px;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
-      padding: 24px 24px 20px;
-      backdrop-filter: blur(12px);
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-    .title-block {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .title-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #22c55e, #4ade80);
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
-      animation: pulse 1.8s infinite;
-    }
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .card-subtitle {
-      font-size: 13px;
-      color: #6b7280;
-    }
-    .card-header-right {
-      text-align: right;
-      font-size: 12px;
-      color: #9ca3af;
-    }
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .input-wrap {
-      flex: 1 1 220px;
-      position: relative;
-    }
-    .input-label {
-      font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .input {
-      width: 100%;
-      padding: 10px 12px;
-      padding-right: 44px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      font-size: 14px;
-      transition: all 0.18s ease;
-      outline: none;
-      background-color: #f9fafb;
-    }
-    .input:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-      background-color: #ffffff;
-    }
-    .clear-btn {
-      position: absolute;
-      right: 12px;
-      top: 32px;
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      border: none;
-      background: transparent;
-      color: #9ca3af;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      padding: 0;
-    }
-    .clear-btn:hover {
-      color: #6b7280;
-    }
-    .btn-primary {
-      flex: 0 0 auto;
-      padding: 10px 22px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 10px 22px rgba(79, 70, 229, 0.45);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease, opacity 0.2s ease;
-    }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(79, 70, 229, 0.5);
-      opacity: 0.96;
-    }
-    .btn-primary:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.5);
-    }
-    .btn-primary[disabled] {
-      cursor: not-allowed;
-      opacity: 0.6;
-      box-shadow: none;
-    }
-    .btn-text {
-      font-size: 14px;
-    }
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid rgba(248, 250, 252, 0.5);
-      border-top-color: #e5e7eb;
-      animation: spin 0.7s linear infinite;
-    }
-    .status-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border-radius: 12px;
-      background: #f3f4f6;
-      padding: 10px 12px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-    .status-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-    }
-    .pill {
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .pill-primary {
-      background: rgba(79, 70, 229, 0.08);
-      color: #4f46e5;
-    }
-    .pill-green {
-      background: rgba(34, 197, 94, 0.08);
-      color: #15803d;
-    }
-    .company-text {
-      font-weight: 600;
-      color: #111827;
-    }
-    .status-right {
-      font-size: 12px;
-      color: #6b7280;
-      text-align: right;
-    }
-    .result-wrapper {
-      display: grid;
-      grid-template-columns: 1.1fr 1.2fr;
-      gap: 16px;
-    }
-    .timeline-card, .summary-card {
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      padding: 12px 14px;
-      background: #f9fafb;
-      max-height: 360px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .block-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #4b5563;
-      margin-bottom: 8px;
-    }
-    .timeline-list {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-    .timeline-item {
-      position: relative;
-      padding-left: 16px;
-      padding-bottom: 14px;
-    }
-    .timeline-item:last-child {
-      padding-bottom: 0;
-    }
-    .timeline-item::before {
-      content: "";
-      position: absolute;
-      left: 4px;
-      top: 4px;
-      bottom: -4px;
-      width: 1px;
-      background: linear-gradient(to bottom, #e5e7eb, #d1d5db);
-    }
-    .timeline-item:last-child::before {
-      bottom: 12px;
-    }
-    .dot {
-      position: absolute;
-      left: 0;
-      top: 6px;
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #d1d5db;
-      border: 2px solid #f9fafb;
-    }
-    .dot.active {
-      background: #4f46e5;
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.18);
-    }
-    .log-time {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 2px;
-    }
-    .log-status {
-      font-size: 13px;
-      font-weight: 600;
-      color: #111827;
-      margin-bottom: 2px;
-    }
-    .log-desc {
-      font-size: 12px;
-      color: #4b5563;
-      line-height: 1.4;
-    }
-    .summary-body {
-      font-size: 13px;
-      color: #4b5563;
-    }
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      gap: 10px;
-    }
-    .summary-label {
-      color: #6b7280;
-    }
-    .summary-value {
-      font-weight: 500;
-      text-align: right;
-    }
-    .empty-tip {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-    .error-msg {
-      font-size: 13px;
-      color: #b91c1c;
-      margin-top: 6px;
-    }
-    @media (max-width: 768px) {
-      .card {
-        padding: 18px 16px 14px;
-      }
-      .card-title {
-        font-size: 18px;
-      }
-      .result-wrapper {
-        grid-template-columns: 1fr;
-      }
-      .status-bar {
-        align-items: flex-start;
-      }
-      .card-header-right {
-        text-align: left;
-      }
-    }
-    @media (max-width: 480px) {
-      .card-header {
-        align-items: flex-start;
-      }
-      .form-row {
-        flex-direction: column;
-      }
-      .btn-primary {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.25);
-        opacity: 0.4;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="title-block">
-            <span class="title-dot"></span>
-            <div class="card-title">智能快递查询</div>
-          </div>
-          <div class="card-subtitle">输入快递单号，自动识别快递公司并查询最新物流状态</div>
-        </div>
-        <div class="card-header-right">
-          <div>支持主流国内快递 · 实时轨迹更新</div>
-          <div>PC / 平板 / 手机自适应</div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="input-wrap">
-          <label class="input-label" for="kdNo">快递单号</label>
-          <input id="kdNo" class="input" type="text" placeholder="请输入或粘贴快递单号" />
-          <button class="clear-btn" type="button" id="clearBtn" title="清空">✕</button>
-        </div>
-        <button class="btn-primary" type="button" id="queryBtn">
-          <span class="btn-text">查询物流</span>
-          <span class="spinner" id="spinner" style="display:none;"></span>
-        </button>
-      </div>
-      <div class="error-msg" id="error"></div>
-
-      <div class="status-bar" id="statusBar" style="display:none;">
-        <div class="status-left">
-          <span class="pill pill-primary" id="companyPill">自动识别中</span>
-          <span class="pill pill-green" id="latestStatusPill">最新状态</span>
-        </div>
-        <div class="status-right" id="statusMeta"></div>
-      </div>
-
-      <div class="result-wrapper">
-        <div class="timeline-card">
-          <div class="block-title">物流轨迹</div>
-          <ul class="timeline-list" id="timelineList">
-            <li class="empty-tip">暂无数据，请先输入单号查询。</li>
-          </ul>
-        </div>
-        <div class="summary-card">
-          <div class="block-title">包裹概况</div>
-          <div class="summary-body" id="summaryBody">
-            <div class="empty-tip">将为你展示预计送达时间、寄件地/收件地等信息。</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const kdInput = document.getElementById('kdNo');
-    const clearBtn = document.getElementById('clearBtn');
-    const queryBtn = document.getElementById('queryBtn');
-    const spinner = document.getElementById('spinner');
-    const errorEl = document.getElementById('error');
-    const statusBar = document.getElementById('statusBar');
-    const companyPill = document.getElementById('companyPill');
-    const latestStatusPill = document.getElementById('latestStatusPill');
-    const statusMeta = document.getElementById('statusMeta');
-    const timelineList = document.getElementById('timelineList');
-    const summaryBody = document.getElementById('summaryBody');
-
-    function setLoading(isLoading) {
-      if (isLoading) {
-        spinner.style.display = 'inline-block';
-        queryBtn.setAttribute('disabled', 'disabled');
-      } else {
-        spinner.style.display = 'none';
-        queryBtn.removeAttribute('disabled');
-      }
-    }
-
-    clearBtn.addEventListener('click', () => {
-      kdInput.value = '';
-      kdInput.focus();
-      errorEl.textContent = '';
-      statusBar.style.display = 'none';
-      timelineList.innerHTML = '<li class="empty-tip">暂无数据，请先输入单号查询。</li>';
-      summaryBody.innerHTML = '<div class="empty-tip">将为你展示预计送达时间、寄件地/收件地等信息。</div>';
-    });
-
-    kdInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        doQuery();
-      }
-    });
-
-    queryBtn.addEventListener('click', doQuery);
-
-    async function doQuery() {
-      const num = kdInput.value.trim();
-      errorEl.textContent = '';
-
-      if (!num) {
-        errorEl.textContent = '请输入快递单号。';
-        kdInput.focus();
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const autoRes = await fetch(`/api/autoCompany?num=${encodeURIComponent(num)}`);
-        const autoData = await autoRes.json();
-
-        if (!autoData || !autoData.length) {
-          throw new Error('未识别到对应快递公司，请检查单号是否正确。');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超级计时器 Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="12" cy="12" r="8" fill="%2300ff00" opacity="0.6"/><circle cx="12" cy="12" r="3" fill="%23fff"/></svg>'), auto;
         }
 
-        const mainCompany = autoData[0];
-        const companyName = mainCompany.name || mainCompany.companyName || '未知快递';
-        const comCode = mainCompany.comCode || mainCompany.code || '';
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
 
-        companyPill.textContent = `${companyName}`;
-        companyPill.title = comCode ? `公司编码：${comCode}` : '';
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 800px;
+            width: 90%;
+            transition: transform 0.3s ease;
+        }
 
-        const trackRes = await fetch(`/api/track?com=${encodeURIComponent(comCode)}&num=${encodeURIComponent(num)}`);
-        const trackData = await trackRes.json();
+        .container:hover {
+            transform: translateY(-5px);
+        }
 
-        renderTrack(num, companyName, trackData);
-      } catch (err) {
-        errorEl.textContent = err.message || '查询失败，请稍后重试。';
-        statusBar.style.display = 'none';
-        timelineList.innerHTML = '<li class="empty-tip">暂无数据，请稍后重试。</li>';
-        summaryBody.innerHTML = '<div class="empty-tip">暂无概况。</div>';
-      } finally {
-        setLoading(false);
-      }
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
 
-    function renderTrack(num, companyName, trackData) {
-      statusBar.style.display = 'flex';
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+        }
 
-      const list = trackData.data || trackData.list || trackData.traces || [];
-      if (!list.length) {
-        latestStatusPill.textContent = '暂无轨迹';
-        statusMeta.textContent = `单号：${num}`;
-        timelineList.innerHTML = '<li class="empty-tip">暂无物流轨迹，请稍后再试。</li>';
-        summaryBody.innerHTML = '<div class="empty-tip">暂无概况信息。</div>';
-        return;
-      }
+        .timer-display {
+            font-size: 4em;
+            text-align: center;
+            margin: 30px 0;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
 
-      const events = list.map(item => ({
-        time: item.time || item.acceptTime || item.ftime || '',
-        status: item.status || item.state || item.statusDesc || '',
-        desc: item.context || item.desc || item.remark || ''
-      }));
+        .mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
 
-      const latest = events[0];
-      latestStatusPill.textContent = latest.status || '最新进展';
-      statusMeta.textContent = `单号：${num} · 最新时间：${latest.time || '—'}`;
+        .mode-tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            color: white;
+        }
 
-      timelineList.innerHTML = '';
-      events.forEach((e, idx) => {
-        const li = document.createElement('li');
-        li.className = 'timeline-item';
-        li.innerHTML = `
-          <span class="dot ${idx === 0 ? 'active' : ''}"></span>
-          <div class="log-time">${e.time || '时间未知'}</div>
-          <div class="log-status">${e.status || '物流更新'}</div>
-          <div class="log-desc">${e.desc || ''}</div>
-        `;
-        timelineList.appendChild(li);
-      });
+        .mode-tab:hover, .mode-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            transform: scale(1.05);
+        }
 
-      const last = events[events.length - 1];
-      const isDelivered = (latest.status || '').includes('签收') || (latest.status || '').includes('已送达');
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
 
-      summaryBody.innerHTML = `
-        <div class="summary-row">
-          <span class="summary-label">快递公司</span>
-          <span class="summary-value">${companyName}</span>
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-lap {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .input-section {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .laps {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .lap-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .gamepad-status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .presets {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏱️ 超级计时器 Pro</h1>
+        
+        <div class="mode-tabs">
+            <div class="mode-tab active" data-mode="stopwatch">⏱️ 秒表</div>
+            <div class="mode-tab" data-mode="countdown">⏲️ 倒计时</div>
+            <div class="mode-tab" data-mode="pomodoro">🍅 番茄钟</div>
+            <div class="mode-tab" data-mode="interval">⚡ 间隔训练</div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">当前状态</span>
-          <span class="summary-value">${latest.status || '—'}</span>
+
+        <div class="timer-display" id="display">00:00:00.00</div>
+
+        <div class="progress-bar" id="progressBar" style="display:none;">
+            <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">最近时间</span>
-          <span class="summary-value">${latest.time || '—'}</span>
+
+        <div class="input-section" id="inputSection" style="display:none;">
+            <input type="number" id="hours" placeholder="时" min="0" max="23">
+            <input type="number" id="minutes" placeholder="分" min="0" max="59">
+            <input type="number" id="seconds" placeholder="秒" min="0" max="59">
         </div>
-        <div class="summary-row">
-          <span class="summary-label">起始时间</span>
-          <span class="summary-value">${last.time || '—'}</span>
+
+        <div class="presets" id="presets" style="display:none;">
+            <button class="preset-btn" data-time="300">5分钟</button>
+            <button class="preset-btn" data-time="600">10分钟</button>
+            <button class="preset-btn" data-time="900">15分钟</button>
+            <button class="preset-btn" data-time="1800">30分钟</button>
+            <button class="preset-btn" data-time="3600">1小时</button>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">是否已签收</span>
-          <span class="summary-value">${isDelivered ? '是' : '否'}</span>
+
+        <div class="controls">
+            <button class="btn-start" id="startBtn">开始</button>
+            <button class="btn-pause" id="pauseBtn">暂停</button>
+            <button class="btn-reset" id="resetBtn">重置</button>
+            <button class="btn-lap" id="lapBtn">计次</button>
         </div>
-      `;
-    }
-  </script>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div>总会话</div>
+                <div class="stat-value" id="totalSessions">0</div>
+            </div>
+            <div class="stat-item">
+                <div>今日使用</div>
+                <div class="stat-value" id="todayTime">0分钟</div>
+            </div>
+            <div class="stat-item">
+                <div>最长记录</div>
+                <div class="stat-value" id="longestTime">0分钟</div>
+            </div>
+        </div>
+
+        <div class="laps" id="laps" style="display:none;"></div>
+
+        <div class="gamepad-status" id="gamepadStatus">
+            🎮 支持手柄操作: A键-开始/暂停 | B键-重置 | X键-计次 | 十字键-切换模式
+        </div>
+    </div>
+
+    <script>
+        class SuperTimer {
+            constructor() {
+                this.mode = 'stopwatch';
+                this.isRunning = false;
+                this.isPaused = false;
+                this.startTime = 0;
+                this.elapsedTime = 0;
+                this.pausedTime = 0;
+                this.countdownTotal = 0;
+                this.laps = [];
+                this.lapCount = 0;
+                this.interval = null;
+                this.gamepadIndex = null;
+                this.lastButtonStates = {};
+                
+                this.initElements();
+                this.initEventListeners();
+                this.loadFromStorage();
+                this.initGamepad();
+                this.updateStats();
+            }
+
+            initElements() {
+                this.display = document.getElementById('display');
+                this.startBtn = document.getElementById('startBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.lapBtn = document.getElementById('lapBtn');
+                this.lapsContainer = document.getElementById('laps');
+                this.inputSection = document.getElementById('inputSection');
+                this.presets = document.getElementById('presets');
+                this.progressBar = document.getElementById('progressBar');
+                this.progressFill = document.getElementById('progressFill');
+                this.modeTabs = document.querySelectorAll('.mode-tab');
+            }
+
+            initEventListeners() {
+                this.startBtn.addEventListener('click', () => this.start());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.resetBtn.addEventListener('click', () => this.reset());
+                this.lapBtn.addEventListener('click', () => this.recordLap());
+
+                this.modeTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        this.modeTabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        this.mode = tab.dataset.mode;
+                        this.switchMode(this.mode);
+                    });
+                });
+
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const time = parseInt(btn.dataset.time);
+                        this.setCountdown(time);
+                    });
+                });
+            }
+
+            switchMode(mode) {
+                this.reset();
+                this.inputSection.style.display = 'none';
+                this.presets.style.display = 'none';
+                this.progressBar.style.display = 'none';
+
+                if (mode === 'countdown') {
+                    this.inputSection.style.display = 'flex';
+                    this.presets.style.display = 'flex';
+                    this.progressBar.style.display = 'block';
+                } else if (mode === 'pomodoro') {
+                    this.setCountdown(25 * 60);
+                    this.progressBar.style.display = 'block';
+                } else if (mode === 'interval') {
+                    this.progressBar.style.display = 'block';
+                }
+            }
+
+            start() {
+                if (this.isRunning) return;
+
+                if (this.mode === 'countdown' && !this.countdownTotal && !this.isPaused) {
+                    const hours = parseInt(document.getElementById('hours').value) || 0;
+                    const minutes = parseInt(document.getElementById('minutes').value) || 0;
+                    const seconds = parseInt(document.getElementById('seconds').value) || 0;
+                    this.countdownTotal = hours * 3600 + minutes * 60 + seconds;
+                    if (this.countdownTotal === 0) return;
+                    this.elapsedTime = this.countdownTotal * 1000;
+                }
+
+                this.isRunning = true;
+                this.isPaused = false;
+                this.startTime = Date.now() - (this.pausedTime || 0);
+                
+                this.saveToStorage();
+                this.updateDisplay();
+                
+                this.interval = setInterval(() => {
+                    this.updateDisplay();
+                    this.saveToStorage();
+                }, 10);
+
+                this.startBtn.textContent = '运行中...';
+            }
+
+            pause() {
+                if (!this.isRunning) return;
+                
+                this.isRunning = false;
+                this.isPaused = true;
+                clearInterval(this.interval);
+                this.pausedTime = Date.now() - this.startTime;
+                this.saveToStorage();
+                this.startBtn.textContent = '继续';
+            }
+
+            reset() {
+                this.isRunning = false;
+                this.isPaused = false;
+                clearInterval(this.interval);
+                this.startTime = 0;
+                this.elapsedTime = 0;
+                this.pausedTime = 0;
+                this.countdownTotal = 0;
+                this.laps = [];
+                this.lapCount = 0;
+                this.lapsContainer.innerHTML = '';
+                this.lapsContainer.style.display = 'none';
+                this.display.textContent = '00:00:00.00';
+                this.progressFill.style.width = '0%';
+                this.startBtn.textContent = '开始';
+                
+                localStorage.removeItem('timer-state');
+                
+                document.getElementById('hours').value = '';
+                document.getElementById('minutes').value = '';
+                document.getElementById('seconds').value = '';
+            }
+
+            updateDisplay() {
+                let currentTime;
+                
+                if (this.mode === 'stopwatch') {
+                    currentTime = Date.now() - this.startTime;
+                    this.display.textContent = this.formatTime(currentTime);
+                } else if (this.mode === 'countdown' || this.mode === 'pomodoro') {
+                    const elapsed = Date.now() - this.startTime;
+                    currentTime = this.elapsedTime - elapsed;
+                    
+                    if (currentTime <= 0) {
+                        currentTime = 0;
+                        this.pause();
+                        this.playSound();
+                        alert('时间到！');
+                        this.updateSessionStats(this.countdownTotal);
+                    }
+                    
+                    this.display.textContent = this.formatTime(currentTime);
+                    const progress = ((this.elapsedTime - currentTime) / this.elapsedTime) * 100;
+                    this.progressFill.style.width = progress + '%';
+                }
+            }
+
+            formatTime(ms) {
+                const totalSeconds = Math.floor(ms / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                const milliseconds = Math.floor((ms % 1000) / 10);
+
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
+            }
+
+            recordLap() {
+                if (!this.isRunning && !this.isPaused) return;
+                
+                this.lapCount++;
+                const currentTime = this.display.textContent;
+                const lapElement = document.createElement('div');
+                lapElement.className = 'lap-item';
+                lapElement.innerHTML = `<span>计次 ${this.lapCount}</span><span>${currentTime}</span>`;
+                this.lapsContainer.insertBefore(lapElement, this.lapsContainer.firstChild);
+                this.lapsContainer.style.display = 'block';
+                this.laps.push(currentTime);
+            }
+
+            setCountdown(seconds) {
+                this.countdownTotal = seconds;
+                this.elapsedTime = seconds * 1000;
+                this.display.textContent = this.formatTime(this.elapsedTime);
+            }
+
+            saveToStorage() {
+                const state = {
+                    mode: this.mode,
+                    isRunning: this.isRunning,
+                    isPaused: this.isPaused,
+                    startTime: this.startTime,
+                    elapsedTime: this.elapsedTime,
+                    pausedTime: this.pausedTime,
+                    countdownTotal: this.countdownTotal,
+                    savedAt: Date.now()
+                };
+                localStorage.setItem('timer-state', JSON.stringify(state));
+            }
+
+            loadFromStorage() {
+                const saved = localStorage.getItem('timer-state');
+                if (!saved) return;
+
+                const state = JSON.parse(saved);
+                const timeSinceLastSave = Date.now() - state.savedAt;
+
+                this.mode = state.mode;
+                this.countdownTotal = state.countdownTotal;
+                this.elapsedTime = state.elapsedTime;
+
+                if (state.isRunning) {
+                    this.startTime = state.startTime + timeSinceLastSave;
+                    this.start();
+                } else if (state.isPaused) {
+                    this.pausedTime = state.pausedTime;
+                    this.isPaused = true;
+                    this.startTime = Date.now() - this.pausedTime;
+                    this.updateDisplay();
+                }
+
+                this.modeTabs.forEach(tab => {
+                    if (tab.dataset.mode === this.mode) {
+                        this.modeTabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        this.switchMode(this.mode);
+                    }
+                });
+            }
+
+            initGamepad() {
+                window.addEventListener('gamepadconnected', (e) => {
+                    this.gamepadIndex = e.gamepad.index;
+                    document.getElementById('gamepadStatus').textContent = `🎮 手柄已连接: ${e.gamepad.id}`;
+                });
+
+                window.addEventListener('gamepaddisconnected', () => {
+                    this.gamepadIndex = null;
+                    document.getElementById('gamepadStatus').textContent = '🎮 手柄已断开';
+                });
+
+                setInterval(() => this.pollGamepad(), 100);
+            }
+
+            pollGamepad() {
+                if (this.gamepadIndex === null) return;
+
+                const gamepad = navigator.getGamepads()[this.gamepadIndex];
+                if (!gamepad) return;
+
+                // A按钮 (按钮0) - 开始/暂停
+                if (this.isButtonPressed(gamepad, 0)) {
+                    if (this.isRunning) this.pause();
+                    else this.start();
+                }
+
+                // B按钮 (按钮1) - 重置
+                if (this.isButtonPressed(gamepad, 1)) {
+                    this.reset();
+                }
+
+                // X按钮 (按钮2) - 计次
+                if (this.isButtonPressed(gamepad, 2)) {
+                    this.recordLap();
+                }
+
+                // 十字键切换模式
+                if (this.isButtonPressed(gamepad, 12)) { // 上
+                    this.switchToMode(0);
+                }
+                if (this.isButtonPressed(gamepad, 14)) { // 左
+                    this.switchToMode(1);
+                }
+                if (this.isButtonPressed(gamepad, 15)) { // 右
+                    this.switchToMode(2);
+                }
+                if (this.isButtonPressed(gamepad, 13)) { // 下
+                    this.switchToMode(3);
+                }
+            }
+
+            isButtonPressed(gamepad, buttonIndex) {
+                const currentState = gamepad.buttons[buttonIndex]?.pressed;
+                const lastState = this.lastButtonStates[buttonIndex];
+                this.lastButtonStates[buttonIndex] = currentState;
+                return currentState && !lastState;
+            }
+
+            switchToMode(index) {
+                const tabs = Array.from(this.modeTabs);
+                if (tabs[index]) {
+                    tabs[index].click();
+                }
+            }
+
+            playSound() {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            updateSessionStats(duration) {
+                const stats = JSON.parse(localStorage.getItem('timer-stats') || '{}');
+                stats.totalSessions = (stats.totalSessions || 0) + 1;
+                stats.totalTime = (stats.totalTime || 0) + duration;
+                stats.longestSession = Math.max(stats.longestSession || 0, duration);
+                
+                const today = new Date().toDateString();
+                if (!stats.dailyTime) stats.dailyTime = {};
+                stats.dailyTime[today] = (stats.dailyTime[today] || 0) + duration;
+                
+                localStorage.setItem('timer-stats', JSON.stringify(stats));
+                this.updateStats();
+            }
+
+            updateStats() {
+                const stats = JSON.parse(localStorage.getItem('timer-stats') || '{}');
+                const today = new Date().toDateString();
+                
+                document.getElementById('totalSessions').textContent = stats.totalSessions || 0;
+                document.getElementById('todayTime').textContent = Math.floor((stats.dailyTime?.[today] || 0) / 60) + '分钟';
+                document.getElementById('longestTime').textContent = Math.floor((stats.longestSession || 0) / 60) + '分钟';
+            }
+        }
+
+        // 初始化计时器
+        const timer = new SuperTimer();
+    </script>
 </body>
 </html>
