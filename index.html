@@ -9,47 +9,54 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="12" cy="12" r="8" fill="%2300ff00" opacity="0.6"/><circle cx="12" cy="12" r="3" fill="%23fff"/></svg>'), auto;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            overflow: hidden;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        body.gamepad-active {
+            cursor: none;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(16, 185, 129, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.3);
+            border: 2px solid rgba(16, 185, 129, 0.3);
             max-width: 800px;
             width: 90%;
             transition: transform 0.3s ease;
+            margin: 50px 0;
         }
 
         .container:hover {
             transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.5);
         }
 
         h1 {
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
             animation: glow 2s ease-in-out infinite alternate;
+            color: #10b981;
         }
 
         @keyframes glow {
-            from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
-            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+            from { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+            to { text-shadow: 0 0 25px rgba(16, 185, 129, 1); }
         }
 
         .timer-display {
@@ -58,8 +65,9 @@
             margin: 30px 0;
             font-weight: bold;
             letter-spacing: 5px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
             font-variant-numeric: tabular-nums;
+            color: #34d399;
         }
 
         .mode-tabs {
@@ -72,19 +80,27 @@
 
         .mode-tab {
             padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(16, 185, 129, 0.2);
             border: 2px solid transparent;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1em;
-            color: white;
+            color: #d1fae5;
         }
 
-        .mode-tab:hover, .mode-tab.active {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: white;
+        .mode-tab:hover {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
             transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
+        .mode-tab.active {
+            background: rgba(16, 185, 129, 0.4);
+            border-color: #10b981;
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
         }
 
         .controls {
@@ -103,32 +119,32 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-start {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
 
         .btn-pause {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
         }
 
         .btn-reset {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
         }
 
         .btn-lap {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
             color: white;
         }
 
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
         }
 
         button:active {
@@ -148,33 +164,41 @@
             padding: 10px;
             font-size: 1.2em;
             border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.1);
             color: white;
             text-align: center;
         }
 
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
         input[type="number"]::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .laps {
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-top: 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 15px;
             padding: 15px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .lap-item {
             padding: 10px;
             margin: 5px 0;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(16, 185, 129, 0.15);
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             animation: slideIn 0.3s ease;
+            border-left: 3px solid #10b981;
         }
 
         @keyframes slideIn {
@@ -195,20 +219,15 @@
             border-radius: 10px;
             overflow: hidden;
             margin: 20px 0;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
             transition: width 0.3s ease;
             border-radius: 10px;
-        }
-
-        .gamepad-status {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9em;
-            opacity: 0.8;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
         }
 
         .presets {
@@ -222,16 +241,18 @@
         .preset-btn {
             padding: 8px 16px;
             font-size: 0.9em;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(16, 185, 129, 0.2);
+            color: #d1fae5;
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .preset-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
 
         .stats {
@@ -243,17 +264,89 @@
         }
 
         .stat-item {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(16, 185, 129, 0.15);
             padding: 15px;
             border-radius: 15px;
             text-align: center;
             min-width: 120px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .stat-value {
             font-size: 1.5em;
             font-weight: bold;
             margin-top: 5px;
+            color: #34d399;
+        }
+
+        /* 虚拟光标样式 */
+        .virtual-cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8));
+        }
+
+        .virtual-cursor.active {
+            display: block;
+        }
+
+        .cursor-arrow {
+            width: 0;
+            height: 0;
+            border-left: 12px solid #10b981;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            transform: rotate(-45deg);
+            position: relative;
+        }
+
+        .cursor-arrow::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            top: 50%;
+            left: -3px;
+            transform: translateY(-50%);
+        }
+
+        /* Toast 通知 */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
+            border: 1px solid #10b981;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+            border-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
         }
 
         ::-webkit-scrollbar {
@@ -261,21 +354,46 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(16, 185, 129, 0.1);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(16, 185, 129, 0.4);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(16, 185, 129, 0.6);
+        }
+
+        .custom-time-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .custom-time-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+        }
+
+        label {
+            color: #d1fae5;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
+    <div class="virtual-cursor" id="virtualCursor">
+        <div class="cursor-arrow"></div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="container">
         <h1>⏱️ 超级计时器 Pro</h1>
         
@@ -292,13 +410,20 @@
             <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <div class="input-section" id="inputSection" style="display:none;">
-            <input type="number" id="hours" placeholder="时" min="0" max="23">
-            <input type="number" id="minutes" placeholder="分" min="0" max="59">
-            <input type="number" id="seconds" placeholder="秒" min="0" max="59">
+        <div class="custom-time-section" id="customTimeSection" style="display:none;">
+            <div class="custom-time-input">
+                <label>自定义时间:</label>
+            </div>
+            <div class="input-section">
+                <input type="number" id="hours" placeholder="时" min="0" max="23">
+                <input type="number" id="minutes" placeholder="分" min="0" max="59">
+                <input type="number" id="seconds" placeholder="秒" min="0" max="59">
+            </div>
         </div>
 
         <div class="presets" id="presets" style="display:none;">
+            <button class="preset-btn" data-time="60">1分钟</button>
+            <button class="preset-btn" data-time="180">3分钟</button>
             <button class="preset-btn" data-time="300">5分钟</button>
             <button class="preset-btn" data-time="600">10分钟</button>
             <button class="preset-btn" data-time="900">15分钟</button>
@@ -329,10 +454,6 @@
         </div>
 
         <div class="laps" id="laps" style="display:none;"></div>
-
-        <div class="gamepad-status" id="gamepadStatus">
-            🎮 支持手柄操作: A键-开始/暂停 | B键-重置 | X键-计次 | 十字键-切换模式
-        </div>
     </div>
 
     <script>
@@ -348,8 +469,14 @@
                 this.laps = [];
                 this.lapCount = 0;
                 this.interval = null;
+                
+                // 手柄相关
                 this.gamepadIndex = null;
                 this.lastButtonStates = {};
+                this.cursorX = window.innerWidth / 2;
+                this.cursorY = window.innerHeight / 2;
+                this.cursorSpeed = 8;
+                this.scrollSpeed = 10;
                 
                 this.initElements();
                 this.initEventListeners();
@@ -365,11 +492,12 @@
                 this.resetBtn = document.getElementById('resetBtn');
                 this.lapBtn = document.getElementById('lapBtn');
                 this.lapsContainer = document.getElementById('laps');
-                this.inputSection = document.getElementById('inputSection');
+                this.customTimeSection = document.getElementById('customTimeSection');
                 this.presets = document.getElementById('presets');
                 this.progressBar = document.getElementById('progressBar');
                 this.progressFill = document.getElementById('progressFill');
                 this.modeTabs = document.querySelectorAll('.mode-tab');
+                this.virtualCursor = document.getElementById('virtualCursor');
             }
 
             initEventListeners() {
@@ -393,16 +521,29 @@
                         this.setCountdown(time);
                     });
                 });
+
+                // 键盘快捷键
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        if (this.isRunning) this.pause();
+                        else this.start();
+                    } else if (e.code === 'KeyR') {
+                        this.reset();
+                    } else if (e.code === 'KeyL') {
+                        this.recordLap();
+                    }
+                });
             }
 
             switchMode(mode) {
                 this.reset();
-                this.inputSection.style.display = 'none';
+                this.customTimeSection.style.display = 'none';
                 this.presets.style.display = 'none';
                 this.progressBar.style.display = 'none';
 
                 if (mode === 'countdown') {
-                    this.inputSection.style.display = 'flex';
+                    this.customTimeSection.style.display = 'block';
                     this.presets.style.display = 'flex';
                     this.progressBar.style.display = 'block';
                 } else if (mode === 'pomodoro') {
@@ -410,6 +551,7 @@
                     this.progressBar.style.display = 'block';
                 } else if (mode === 'interval') {
                     this.progressBar.style.display = 'block';
+                    this.setCountdown(30);
                 }
             }
 
@@ -421,7 +563,10 @@
                     const minutes = parseInt(document.getElementById('minutes').value) || 0;
                     const seconds = parseInt(document.getElementById('seconds').value) || 0;
                     this.countdownTotal = hours * 3600 + minutes * 60 + seconds;
-                    if (this.countdownTotal === 0) return;
+                    if (this.countdownTotal === 0) {
+                        this.showToast('请设置倒计时时间', 'error');
+                        return;
+                    }
                     this.elapsedTime = this.countdownTotal * 1000;
                 }
 
@@ -480,7 +625,7 @@
                 if (this.mode === 'stopwatch') {
                     currentTime = Date.now() - this.startTime;
                     this.display.textContent = this.formatTime(currentTime);
-                } else if (this.mode === 'countdown' || this.mode === 'pomodoro') {
+                } else if (this.mode === 'countdown' || this.mode === 'pomodoro' || this.mode === 'interval') {
                     const elapsed = Date.now() - this.startTime;
                     currentTime = this.elapsedTime - elapsed;
                     
@@ -488,7 +633,7 @@
                         currentTime = 0;
                         this.pause();
                         this.playSound();
-                        alert('时间到！');
+                        this.showToast('⏰ 时间到！');
                         this.updateSessionStats(this.countdownTotal);
                     }
                     
@@ -574,15 +719,19 @@
             initGamepad() {
                 window.addEventListener('gamepadconnected', (e) => {
                     this.gamepadIndex = e.gamepad.index;
-                    document.getElementById('gamepadStatus').textContent = `🎮 手柄已连接: ${e.gamepad.id}`;
+                    this.showToast(`🎮 手柄已连接: ${e.gamepad.id.substring(0, 30)}...`);
+                    this.virtualCursor.classList.add('active');
+                    document.body.classList.add('gamepad-active');
                 });
 
                 window.addEventListener('gamepaddisconnected', () => {
                     this.gamepadIndex = null;
-                    document.getElementById('gamepadStatus').textContent = '🎮 手柄已断开';
+                    this.showToast('🎮 手柄已断开', 'error');
+                    this.virtualCursor.classList.remove('active');
+                    document.body.classList.remove('gamepad-active');
                 });
 
-                setInterval(() => this.pollGamepad(), 100);
+                setInterval(() => this.pollGamepad(), 16);
             }
 
             pollGamepad() {
@@ -591,10 +740,30 @@
                 const gamepad = navigator.getGamepads()[this.gamepadIndex];
                 if (!gamepad) return;
 
-                // A按钮 (按钮0) - 开始/暂停
+                // 左摇杆控制光标 (axes 0, 1)
+                const leftStickX = Math.abs(gamepad.axes[0]) > 0.1 ? gamepad.axes[0] : 0;
+                const leftStickY = Math.abs(gamepad.axes[1]) > 0.1 ? gamepad.axes[1] : 0;
+
+                if (leftStickX !== 0 || leftStickY !== 0) {
+                    this.cursorX += leftStickX * this.cursorSpeed;
+                    this.cursorY += leftStickY * this.cursorSpeed;
+
+                    this.cursorX = Math.max(0, Math.min(window.innerWidth, this.cursorX));
+                    this.cursorY = Math.max(0, Math.min(window.innerHeight, this.cursorY));
+
+                    this.virtualCursor.style.left = this.cursorX + 'px';
+                    this.virtualCursor.style.top = this.cursorY + 'px';
+                }
+
+                // 右摇杆控制滚动 (axes 2, 3)
+                const rightStickY = Math.abs(gamepad.axes[3]) > 0.2 ? gamepad.axes[3] : 0;
+                if (rightStickY !== 0) {
+                    window.scrollBy(0, rightStickY * this.scrollSpeed);
+                }
+
+                // A按钮 (按钮0) - 确认/点击
                 if (this.isButtonPressed(gamepad, 0)) {
-                    if (this.isRunning) this.pause();
-                    else this.start();
+                    this.clickAtCursor();
                 }
 
                 // B按钮 (按钮1) - 重置
@@ -607,18 +776,20 @@
                     this.recordLap();
                 }
 
-                // 十字键切换模式
-                if (this.isButtonPressed(gamepad, 12)) { // 上
-                    this.switchToMode(0);
+                // Y按钮 (按钮3) - 开始/暂停
+                if (this.isButtonPressed(gamepad, 3)) {
+                    if (this.isRunning) this.pause();
+                    else this.start();
                 }
-                if (this.isButtonPressed(gamepad, 14)) { // 左
-                    this.switchToMode(1);
+
+                // LB (按钮4) - 上一个模式
+                if (this.isButtonPressed(gamepad, 4)) {
+                    this.switchToPreviousMode();
                 }
-                if (this.isButtonPressed(gamepad, 15)) { // 右
-                    this.switchToMode(2);
-                }
-                if (this.isButtonPressed(gamepad, 13)) { // 下
-                    this.switchToMode(3);
+
+                // RB (按钮5) - 下一个模式
+                if (this.isButtonPressed(gamepad, 5)) {
+                    this.switchToNextMode();
                 }
             }
 
@@ -629,11 +800,30 @@
                 return currentState && !lastState;
             }
 
-            switchToMode(index) {
-                const tabs = Array.from(this.modeTabs);
-                if (tabs[index]) {
-                    tabs[index].click();
+            clickAtCursor() {
+                const element = document.elementFromPoint(this.cursorX, this.cursorY);
+                if (element && (element.tagName === 'BUTTON' || element.classList.contains('mode-tab') || element.classList.contains('preset-btn'))) {
+                    element.click();
+                    // 视觉反馈
+                    element.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        element.style.transform = '';
+                    }, 100);
                 }
+            }
+
+            switchToPreviousMode() {
+                const tabs = Array.from(this.modeTabs);
+                const currentIndex = tabs.findIndex(tab => tab.classList.contains('active'));
+                const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                tabs[prevIndex].click();
+            }
+
+            switchToNextMode() {
+                const tabs = Array.from(this.modeTabs);
+                const currentIndex = tabs.findIndex(tab => tab.classList.contains('active'));
+                const nextIndex = (currentIndex + 1) % tabs.length;
+                tabs[nextIndex].click();
             }
 
             playSound() {
@@ -652,6 +842,26 @@
                 
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                
+                toastContainer.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toastContainer.removeChild(toast);
+                    }, 300);
+                }, 3000);
             }
 
             updateSessionStats(duration) {
