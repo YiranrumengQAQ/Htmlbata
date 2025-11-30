@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蓝牙耳机调试中心 Pro - 智能识别版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HTML辅助编写器 - 移动版</title>
     <style>
         * {
             margin: 0;
@@ -12,1398 +12,776 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
-            color: white;
-            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
 
         .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 30px;
         }
 
-        h1 {
-            font-size: 2.5em;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            margin-bottom: 10px;
-            animation: glow 2s ease-in-out infinite alternate;
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-            to { text-shadow: 0 0 25px rgba(255, 255, 255, 0.8); }
-        }
-
-        .subtitle {
-            font-size: 1.1em;
+        .header p {
+            font-size: 14px;
             opacity: 0.9;
         }
 
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
-        }
-
-        .card-title {
-            font-size: 1.4em;
-            margin-bottom: 20px;
+        .tabs {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            background: #f5f5f5;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .card-icon {
-            font-size: 1.5em;
-        }
-
-        .connection-card {
-            grid-column: 1 / -1;
-            text-align: center;
-        }
-
-        .connect-btn {
-            padding: 15px 40px;
-            font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .connect-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .connect-btn.connected {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .connect-btn.connecting {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .disconnect-btn {
-            padding: 10px 30px;
-            margin-top: 15px;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            border-left: 3px solid #667eea;
-        }
-
-        .info-label {
-            font-weight: 600;
-            opacity: 0.8;
-        }
-
-        .info-value {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .battery-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .battery-percentage {
-            font-size: 3em;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        }
-
-        .battery-bar {
-            width: 100%;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .battery-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-            transition: width 0.5s ease;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
-        }
-
-        .battery-fill.low {
-            background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
-        }
-
-        .battery-fill.medium {
-            background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
-        }
-
-        .slider-container {
-            margin: 15px 0;
-        }
-
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.2);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            border: none;
-        }
-
-        .signal-strength {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin: 20px 0;
-        }
-
-        .signal-bar {
-            width: 12px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .signal-bar.active {
-            background: linear-gradient(to top, #10b981, #34d399);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-        }
-
-        .equalizer {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .eq-band {
-            text-align: center;
-        }
-
-        .eq-label {
-            font-size: 0.85em;
-            margin-bottom: 5px;
-            opacity: 0.8;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: blink 2s ease-in-out infinite;
-        }
-
-        .status-indicator.connected {
-            background: #10b981;
-            box-shadow: 0 0 10px #10b981;
-        }
-
-        .status-indicator.disconnected {
-            background: #6b7280;
-            animation: none;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 350px;
-        }
-
-        .toast {
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border-left: 4px solid #667eea;
-            opacity: 0;
-            transform: translateX(400px);
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-left-color: #10b981;
-        }
-
-        .toast.error {
-            border-left-color: #ef4444;
-        }
-
-        .toast.warning {
-            border-left-color: #f59e0b;
-        }
-
-        .toast-icon {
-            font-size: 1.2em;
-            margin-right: 10px;
-        }
-
-        .feature-btn {
-            padding: 10px 20px;
-            margin: 5px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-        }
-
-        .feature-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .feature-btn.active {
-            background: #667eea;
-            border-color: #667eea;
-        }
-
-        .chart-container {
-            height: 150px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            gap: 5px;
-            padding: 20px 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        .chart-bar {
+        .tab {
             flex: 1;
-            background: linear-gradient(to top, #667eea, #764ba2);
-            border-radius: 5px 5px 0 0;
-            transition: height 0.3s ease;
-            min-height: 5px;
-        }
-
-        .codec-selector {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .codec-option {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .codec-option:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .codec-option.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.3);
-        }
-
-        .latency-display {
-            font-size: 2em;
-            text-align: center;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        /* 识别进度 */
-        .recognition-progress {
-            margin-top: 20px;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            display: none;
+            border: none;
+            background: #e0e0e0;
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
         }
 
-        .recognition-progress.active {
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .tab-content.active {
             display: block;
         }
 
-        .progress-item {
+        .toolbar {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 8px 0;
-        }
-
-        .progress-icon {
-            font-size: 1.2em;
-        }
-
-        .progress-text {
-            flex: 1;
-        }
-
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .device-type-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 20px;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-
-        .services-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .service-item {
-            padding: 8px;
-            margin: 5px 0;
-            background: rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9f9f9;
             border-radius: 8px;
-            font-size: 0.9em;
-            border-left: 3px solid #10b981;
         }
 
-        @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .controls-grid {
-                grid-template-columns: 1fr;
-            }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 80px;
         }
 
-        .disabled {
-            opacity: 0.5;
-            pointer-events: none;
+        .btn:active {
+            transform: scale(0.95);
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+        }
+
+        .btn-secondary:active {
+            background: #38a169;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+        }
+
+        .btn-warning:active {
+            background: #dd6b20;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: vertical;
+            background: #f8f8f8;
+            transition: border 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .preview-frame {
+            width: 100%;
+            min-height: 400px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .template-card {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 13px;
+        }
+
+        .template-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .quick-insert {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .quick-btn {
+            padding: 8px 12px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:active {
+            background: #3182ce;
+            transform: scale(0.95);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            background: white;
+        }
+
+        .help-text {
+            color: #718096;
+            font-size: 13px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #edf2f7;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .success-msg {
+            background: #48bb78;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            .tab {
+                font-size: 12px;
+                padding: 12px 8px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="container">
+        <div class="header">
+            <h1>📱 HTML辅助编写器</h1>
+            <p>简单易用 • 实时预览 • 随时随地编写代码</p>
+        </div>
 
-    <div class="header">
-        <h1>🎧 蓝牙耳机调试中心 Pro</h1>
-        <p class="subtitle">智能识别 · 专业级蓝牙音频设备调试工具</p>
-    </div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('editor')">✏️ 编辑器</button>
+            <button class="tab" onclick="switchTab('preview')">👁️ 预览</button>
+            <button class="tab" onclick="switchTab('templates')">📋 模板</button>
+            <button class="tab" onclick="switchTab('tools')">🛠️ 工具</button>
+        </div>
 
-    <div class="main-container">
-        <!-- 连接控制卡片 -->
-        <div class="card connection-card">
-            <div class="card-title">
-                <span class="card-icon">📡</span>
-                <span>设备连接</span>
-                <span class="status-indicator disconnected" id="statusIndicator"></span>
+        <!-- 编辑器标签 -->
+        <div id="editor" class="tab-content active">
+            <div class="toolbar">
+                <button class="btn" onclick="runCode()">▶️ 运行预览</button>
+                <button class="btn btn-secondary" onclick="saveCode()">💾 保存代码</button>
+                <button class="btn btn-warning" onclick="clearCode()">🗑️ 清空</button>
             </div>
-            <button class="connect-btn" id="connectBtn">连接蓝牙设备</button>
-            <div id="disconnectSection" style="display:none;">
-                <button class="disconnect-btn" id="disconnectBtn">断开连接</button>
+
+            <div class="quick-insert">
+                <button class="quick-btn" onclick="insertCode('<h1>标题</h1>')">H1标题</button>
+                <button class="quick-btn" onclick="insertCode('<p>段落文本</p>')">段落</button>
+                <button class="quick-btn" onclick="insertCode('<a href=\\'\\'>链接</a>')">链接</button>
+                <button class="quick-btn" onclick="insertCode('<img src=\\'\\'>')">图片</button>
+                <button class="quick-btn" onclick="insertCode('<button>按钮</button>')">按钮</button>
+                <button class="quick-btn" onclick="insertCode('<div></div>')">DIV</button>
+                <button class="quick-btn" onclick="insertCode('<input type=\\'text\\'>')">输入框</button>
             </div>
-            
-            <!-- 识别进度 -->
-            <div class="recognition-progress" id="recognitionProgress">
-                <div style="font-weight: bold; margin-bottom: 10px;">🔍 正在识别设备...</div>
-                <div class="progress-item">
-                    <span class="progress-icon">📋</span>
-                    <span class="progress-text" id="progressStep1">读取设备信息</span>
-                    <div class="spinner" id="spinner1"></div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-icon">🔌</span>
-                    <span class="progress-text" id="progressStep2">扫描可用服务</span>
-                    <div class="spinner" id="spinner2" style="display:none;"></div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-icon">🔋</span>
-                    <span class="progress-text" id="progressStep3">读取电池状态</span>
-                    <div class="spinner" id="spinner3" style="display:none;"></div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-icon">🎵</span>
-                    <span class="progress-text" id="progressStep4">识别音频特性</span>
-                    <div class="spinner" id="spinner4" style="display:none;"></div>
-                </div>
+
+            <p class="help-text">💡 提示：输入HTML代码后点击"运行预览"查看效果</p>
+
+            <textarea id="htmlCode" placeholder="在这里输入HTML代码...
+
+示例：
+<h1>你好，世界！</h1>
+<p>这是一个段落</p>"></textarea>
+
+            <div class="success-msg" id="successMsg">✅ 操作成功！</div>
+        </div>
+
+        <!-- 预览标签 -->
+        <div id="preview" class="tab-content">
+            <div class="toolbar">
+                <button class="btn" onclick="refreshPreview()">🔄 刷新预览</button>
+                <button class="btn btn-secondary" onclick="downloadHTML()">📥 下载HTML</button>
+            </div>
+            <iframe id="previewFrame" class="preview-frame"></iframe>
+        </div>
+
+        <!-- 模板标签 -->
+        <div id="templates" class="tab-content">
+            <p class="help-text">📚 选择一个模板快速开始</p>
+            <div class="template-grid">
+                <button class="template-card" onclick="loadTemplate('basic')">
+                    <div>🌟</div>
+                    <div>基础页面</div>
+                </button>
+                <button class="template-card" onclick="loadTemplate('form')">
+                    <div>📝</div>
+                    <div>表单页面</div>
+                </button>
+                <button class="template-card" onclick="loadTemplate('card')">
+                    <div>🎴</div>
+                    <div>卡片布局</div>
+                </button>
+                <button class="template-card" onclick="loadTemplate('navbar')">
+                    <div>🧭</div>
+                    <div>导航栏</div>
+                </button>
+                <button class="template-card" onclick="loadTemplate('gallery')">
+                    <div>🖼️</div>
+                    <div>图片画廊</div>
+                </button>
+                <button class="template-card" onclick="loadTemplate('login')">
+                    <div>🔐</div>
+                    <div>登录页面</div>
+                </button>
             </div>
         </div>
 
-        <!-- 设备信息卡片 -->
-        <div class="card" id="deviceInfoCard">
-            <div class="card-title">
-                <span class="card-icon">ℹ️</span>
-                <span>设备信息</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">设备名称</span>
-                <span class="info-value" id="deviceName">未连接</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">设备类型</span>
-                <span class="info-value" id="deviceType">--</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">制造商</span>
-                <span class="info-value" id="manufacturer">--</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">型号</span>
-                <span class="info-value" id="modelNumber">--</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">固件版本</span>
-                <span class="info-value" id="firmwareVersion">--</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">硬件版本</span>
-                <span class="info-value" id="hardwareVersion">--</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">序列号</span>
-                <span class="info-value" id="serialNumber">--</span>
-            </div>
-        </div>
+        <!-- 工具标签 -->
+        <div id="tools" class="tab-content">
+            <h3 style="margin-bottom: 15px; color: #2d3748;">🎨 颜色选择器</h3>
+            <input type="color" id="colorPicker" style="width: 100%; height: 50px; border: none; border-radius: 8px; margin-bottom: 20px;">
+            <button class="btn" onclick="copyColor()">📋 复制颜色代码</button>
 
-        <!-- 检测到的服务 -->
-        <div class="card" id="servicesCard">
-            <div class="card-title">
-                <span class="card-icon">🔧</span>
-                <span>检测到的服务</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">服务总数</span>
-                <span class="info-value" id="servicesCount">0</span>
-            </div>
-            <div class="services-list" id="servicesList">
-                <div style="text-align: center; opacity: 0.6; padding: 20px;">暂无数据</div>
-            </div>
-        </div>
+            <h3 style="margin: 25px 0 15px; color: #2d3748;">🔤 文本工具</h3>
+            <select id="headingLevel">
+                <option value="h1">H1 - 最大标题</option>
+                <option value="h2">H2 - 二级标题</option>
+                <option value="h3">H3 - 三级标题</option>
+                <option value="h4">H4 - 四级标题</option>
+                <option value="h5">H5 - 五级标题</option>
+                <option value="h6">H6 - 最小标题</option>
+            </select>
+            <button class="btn btn-secondary" onclick="insertHeading()">➕ 插入标题</button>
 
-        <!-- 电池状态卡片 -->
-        <div class="card" id="batteryCard">
-            <div class="card-title">
-                <span class="card-icon">🔋</span>
-                <span>电池状态</span>
-            </div>
-            <div class="battery-display">
-                <div class="battery-percentage" id="batteryPercentage">--%</div>
-                <div class="battery-bar">
-                    <div class="battery-fill" id="batteryFill" style="width: 0%;"></div>
-                </div>
-                <div class="info-item" style="width: 100%;">
-                    <span class="info-label">预计续航</span>
-                    <span class="info-value" id="batteryTime">--</span>
-                </div>
-                <div class="info-item" style="width: 100%;">
-                    <span class="info-label">充电状态</span>
-                    <span class="info-value" id="chargingStatus">未知</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 信号强度卡片 -->
-        <div class="card" id="signalCard">
-            <div class="card-title">
-                <span class="card-icon">📶</span>
-                <span>信号强度</span>
-            </div>
-            <div class="signal-strength">
-                <div class="signal-bar" style="height: 20px;"></div>
-                <div class="signal-bar" style="height: 30px;"></div>
-                <div class="signal-bar" style="height: 40px;"></div>
-                <div class="signal-bar" style="height: 50px;"></div>
-                <div class="signal-bar" style="height: 60px;"></div>
-            </div>
-            <div class="info-item">
-                <span class="info-label">RSSI</span>
-                <span class="info-value" id="rssiValue">-- dBm</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">连接质量</span>
-                <span class="info-value" id="linkQuality">--</span>
-            </div>
-        </div>
-
-        <!-- 音量控制卡片 -->
-        <div class="card" id="volumeCard">
-            <div class="card-title">
-                <span class="card-icon">🔊</span>
-                <span>音量控制</span>
-            </div>
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>主音量</span>
-                    <span id="volumeValue">50%</span>
-                </div>
-                <input type="range" id="volumeSlider" min="0" max="100" value="50">
-            </div>
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>左右平衡</span>
-                    <span id="balanceValue">0</span>
-                </div>
-                <input type="range" id="balanceSlider" min="-50" max="50" value="0">
-            </div>
-        </div>
-
-        <!-- 音频均衡器卡片 -->
-        <div class="card" id="equalizerCard">
-            <div class="card-title">
-                <span class="card-icon">🎚️</span>
-                <span>音频均衡器</span>
-            </div>
-            <div class="equalizer">
-                <div class="eq-band">
-                    <div class="eq-label">60Hz</div>
-                    <input type="range" orient="vertical" min="-12" max="12" value="0" data-band="0">
-                </div>
-                <div class="eq-band">
-                    <div class="eq-label">250Hz</div>
-                    <input type="range" orient="vertical" min="-12" max="12" value="0" data-band="1">
-                </div>
-                <div class="eq-band">
-                    <div class="eq-label">1kHz</div>
-                    <input type="range" orient="vertical" min="-12" max="12" value="0" data-band="2">
-                </div>
-                <div class="eq-band">
-                    <div class="eq-label">4kHz</div>
-                    <input type="range" orient="vertical" min="-12" max="12" value="0" data-band="3">
-                </div>
-                <div class="eq-band">
-                    <div class="eq-label">16kHz</div>
-                    <input type="range" orient="vertical" min="-12" max="12" value="0" data-band="4">
-                </div>
-            </div>
-            <div style="margin-top: 20px;">
-                <button class="feature-btn" id="resetEqBtn">重置均衡器</button>
-            </div>
-        </div>
-
-        <!-- 音频编解码器卡片 -->
-        <div class="card" id="codecCard">
-            <div class="card-title">
-                <span class="card-icon">🎵</span>
-                <span>音频编解码器</span>
-            </div>
-            <div class="codec-selector">
-                <div class="codec-option selected" data-codec="AAC">AAC</div>
-                <div class="codec-option" data-codec="SBC">SBC</div>
-                <div class="codec-option" data-codec="aptX">aptX</div>
-                <div class="codec-option" data-codec="LDAC">LDAC</div>
-            </div>
-            <div class="info-item" style="margin-top: 15px;">
-                <span class="info-label">当前编解码器</span>
-                <span class="info-value" id="currentCodec">自动检测中...</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">比特率</span>
-                <span class="info-value" id="bitrate">--</span>
-            </div>
-        </div>
-
-        <!-- 延迟监测卡片 -->
-        <div class="card" id="latencyCard">
-            <div class="card-title">
-                <span class="card-icon">⚡</span>
-                <span>延迟监测</span>
-            </div>
-            <div class="latency-display" id="latencyDisplay">-- ms</div>
-            <div class="info-item">
-                <span class="info-label">平均延迟</span>
-                <span class="info-value" id="avgLatency">-- ms</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">最低延迟</span>
-                <span class="info-value" id="minLatency">-- ms</span>
-            </div>
-            <button class="feature-btn" style="width: 100%; margin-top: 15px;" id="testLatencyBtn">测试延迟</button>
-        </div>
-
-        <!-- 高级功能卡片 -->
-        <div class="card" id="featuresCard">
-            <div class="card-title">
-                <span class="card-icon">⚙️</span>
-                <span>高级功能</span>
-            </div>
-            <div class="controls-grid">
-                <button class="feature-btn" id="noiseCancelBtn">降噪: 关闭</button>
-                <button class="feature-btn" id="transparencyBtn">通透: 关闭</button>
-                <button class="feature-btn" id="spatialAudioBtn">空间音频: 关闭</button>
-                <button class="feature-btn" id="bassBoostBtn">低音增强: 关闭</button>
-                <button class="feature-btn" id="autoAnswerBtn">自动接听: 关闭</button>
-                <button class="feature-btn" id="multiDeviceBtn">多设备连接: 关闭</button>
-            </div>
-        </div>
-
-        <!-- 音频分析卡片 -->
-        <div class="card" id="audioAnalysisCard">
-            <div class="card-title">
-                <span class="card-icon">📊</span>
-                <span>音频分析</span>
-            </div>
-            <div class="chart-container" id="audioChart">
-                <div class="chart-bar" style="height: 30%;"></div>
-                <div class="chart-bar" style="height: 60%;"></div>
-                <div class="chart-bar" style="height: 40%;"></div>
-                <div class="chart-bar" style="height: 80%;"></div>
-                <div class="chart-bar" style="height: 50%;"></div>
-                <div class="chart-bar" style="height: 70%;"></div>
-                <div class="chart-bar" style="height: 45%;"></div>
-                <div class="chart-bar" style="height: 90%;"></div>
-            </div>
-            <div class="info-item">
-                <span class="info-label">采样率</span>
-                <span class="info-value" id="sampleRate">--</span>
-            </div>
-        </div>
-
-        <!-- 连接历史卡片 -->
-        <div class="card" id="historyCard">
-            <div class="card-title">
-                <span class="card-icon">📜</span>
-                <span>连接历史</span>
-            </div>
-            <div id="connectionHistory">
-                <div class="info-item">
-                    <span class="info-label">总连接次数</span>
-                    <span class="info-value" id="totalConnections">0</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">今日连接</span>
-                    <span class="info-value" id="todayConnections">0</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">平均使用时长</span>
-                    <span class="info-value" id="avgDuration">--</span>
-                </div>
+            <h3 style="margin: 25px 0 15px; color: #2d3748;">📐 常用样式</h3>
+            <div class="quick-insert">
+                <button class="quick-btn" onclick="insertStyle('center')">居中对齐</button>
+                <button class="quick-btn" onclick="insertStyle('flex')">弹性布局</button>
+                <button class="quick-btn" onclick="insertStyle('grid')">网格布局</button>
+                <button class="quick-btn" onclick="insertStyle('shadow')">阴影效果</button>
+                <button class="quick-btn" onclick="insertStyle('gradient')">渐变背景</button>
             </div>
         </div>
     </div>
 
     <script>
-        class BluetoothDebugger {
-            constructor() {
-                this.device = null;
-                this.server = null;
-                this.isConnected = false;
-                this.batteryLevel = 0;
-                this.rssi = -70;
-                this.detectedServices = [];
-                this.deviceInfo = {};
-                this.features = {
-                    noiseCancel: false,
-                    transparency: false,
-                    spatialAudio: false,
-                    bassBoost: false,
-                    autoAnswer: false,
-                    multiDevice: false
-                };
-                
-                // 标准蓝牙服务UUID
-                this.standardServices = {
-                    'battery_service': '0000180f-0000-1000-8000-00805f9b34fb',
-                    'device_information': '0000180a-0000-1000-8000-00805f9b34fb',
-                    'generic_access': '00001800-0000-1000-8000-00805f9b34fb',
-                    'generic_attribute': '00001801-0000-1000-8000-00805f9b34fb',
-                    'human_interface_device': '00001812-0000-1000-8000-00805f9b34fb',
-                    'audio_source': '0000110a-0000-1000-8000-00805f9b34fb',
-                    'audio_sink': '0000110b-0000-1000-8000-00805f9b34fb',
-                    'headset': '00001108-0000-1000-8000-00805f9b34fb',
-                    'hands_free': '0000111e-0000-1000-8000-00805f9b34fb'
-                };
-                
-                this.initElements();
-                this.initEventListeners();
-                this.loadHistory();
-                this.disableCards();
-                this.startSimulation();
-            }
+        // 标签切换
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
 
-            initElements() {
-                this.connectBtn = document.getElementById('connectBtn');
-                this.disconnectBtn = document.getElementById('disconnectBtn');
-                this.statusIndicator = document.getElementById('statusIndicator');
-                this.deviceName = document.getElementById('deviceName');
-                this.deviceType = document.getElementById('deviceType');
-                this.batteryPercentage = document.getElementById('batteryPercentage');
-                this.batteryFill = document.getElementById('batteryFill');
-                this.volumeSlider = document.getElementById('volumeSlider');
-                this.volumeValue = document.getElementById('volumeValue');
-                this.balanceSlider = document.getElementById('balanceSlider');
-                this.balanceValue = document.getElementById('balanceValue');
-                this.recognitionProgress = document.getElementById('recognitionProgress');
-            }
-
-            initEventListeners() {
-                this.connectBtn.addEventListener('click', () => this.requestDevice());
-                this.disconnectBtn.addEventListener('click', () => this.disconnect());
-
-                this.volumeSlider.addEventListener('input', (e) => {
-                    this.volumeValue.textContent = e.target.value + '%';
-                    this.showToast(`音量已调整至 ${e.target.value}%`, 'success');
-                });
-
-                this.balanceSlider.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    this.balanceValue.textContent = value > 0 ? `R+${value}` : value < 0 ? `L${Math.abs(value)}` : '居中';
-                });
-
-                document.getElementById('resetEqBtn').addEventListener('click', () => {
-                    document.querySelectorAll('.eq-band input').forEach(input => {
-                        input.value = 0;
-                    });
-                    this.showToast('均衡器已重置', 'success');
-                });
-
-                document.querySelectorAll('.codec-option').forEach(option => {
-                    option.addEventListener('click', () => {
-                        if (!this.isConnected) return;
-                        document.querySelectorAll('.codec-option').forEach(o => o.classList.remove('selected'));
-                        option.classList.add('selected');
-                        const codec = option.dataset.codec;
-                        document.getElementById('currentCodec').textContent = codec;
-                        this.showToast(`已切换至 ${codec} 编解码器`, 'success');
-                    });
-                });
-
-                this.initFeatureButtons();
-
-                document.getElementById('testLatencyBtn').addEventListener('click', () => {
-                    if (!this.isConnected) return;
-                    this.testLatency();
-                });
-            }
-
-            initFeatureButtons() {
-                const features = ['noiseCancel', 'transparency', 'spatialAudio', 'bassBoost', 'autoAnswer', 'multiDevice'];
-                const labels = {
-                    noiseCancel: '降噪',
-                    transparency: '通透',
-                    spatialAudio: '空间音频',
-                    bassBoost: '低音增强',
-                    autoAnswer: '自动接听',
-                    multiDevice: '多设备连接'
-                };
-
-                features.forEach(feature => {
-                    const btn = document.getElementById(feature + 'Btn');
-                    btn.addEventListener('click', () => {
-                        if (!this.isConnected) return;
-                        this.features[feature] = !this.features[feature];
-                        btn.textContent = `${labels[feature]}: ${this.features[feature] ? '开启' : '关闭'}`;
-                        btn.classList.toggle('active', this.features[feature]);
-                        this.showToast(`${labels[feature]}已${this.features[feature] ? '开启' : '关闭'}`, 'success');
-                    });
-                });
-            }
-
-            async requestDevice() {
-                if (!navigator.bluetooth) {
-                    this.showToast('您的浏览器不支持Web Bluetooth API', 'error');
-                    return;
-                }
-
-                try {
-                    this.connectBtn.classList.add('connecting');
-                    this.connectBtn.textContent = '正在搜索设备...';
-                    this.showToast('正在搜索附近的蓝牙设备...', 'warning');
-
-                    // 请求设备，添加所有可能的服务
-                    this.device = await navigator.bluetooth.requestDevice({
-                        acceptAllDevices: true,
-                        optionalServices: [
-                            'battery_service',
-                            'device_information',
-                            'generic_access',
-                            'generic_attribute',
-                            'human_interface_device',
-                            '0000110a-0000-1000-8000-00805f9b34fb', // Audio Source
-                            '0000110b-0000-1000-8000-00805f9b34fb', // Audio Sink
-                            '00001108-0000-1000-8000-00805f9b34fb', // Headset
-                            '0000111e-0000-1000-8000-00805f9b34fb'  // Hands-free
-                        ]
-                    });
-
-                    this.showToast(`发现设备: ${this.device.name || '未命名设备'}`, 'success');
-                    this.connectBtn.textContent = '正在连接...';
-
-                    await this.connect();
-                } catch (error) {
-                    console.error('蓝牙请求失败:', error);
-                    this.showToast('连接失败: ' + error.message, 'error');
-                    this.connectBtn.classList.remove('connecting');
-                    this.connectBtn.textContent = '连接蓝牙设备';
-                }
-            }
-
-            async connect() {
-                try {
-                    this.server = await this.device.gatt.connect();
-                    this.isConnected = true;
-                    
-                    this.updateConnectionUI(true);
-                    this.showToast(`成功连接到 ${this.device.name || '蓝牙设备'}`, 'success');
-                    
-                    this.device.addEventListener('gattserverdisconnected', () => {
-                        this.onDisconnected();
-                    });
-
-                    // 显示识别进度并开始自动识别
-                    this.recognitionProgress.classList.add('active');
-                    await this.autoIdentifyDevice();
-                    
-                } catch (error) {
-                    console.error('连接失败:', error);
-                    this.showToast('GATT连接失败: ' + error.message, 'error');
-                    this.connectBtn.classList.remove('connecting');
-                    this.connectBtn.textContent = '连接蓝牙设备';
-                }
-            }
-
-            async autoIdentifyDevice() {
-                try {
-                    // 步骤1: 读取设备信息
-                    this.updateProgress(1, true);
-                    await this.readDeviceInformation();
-                    this.updateProgress(1, false, '✓');
-                    await this.sleep(500);
-
-                    // 步骤2: 扫描所有服务
-                    this.updateProgress(2, true);
-                    await this.discoverServices();
-                    this.updateProgress(2, false, '✓');
-                    await this.sleep(500);
-
-                    // 步骤3: 读取电池信息
-                    this.updateProgress(3, true);
-                    await this.setupBatteryNotifications();
-                    this.updateProgress(3, false, '✓');
-                    await this.sleep(500);
-
-                    // 步骤4: 识别音频特性
-                    this.updateProgress(4, true);
-                    await this.identifyAudioCapabilities();
-                    this.updateProgress(4, false, '✓');
-
-                    // 识别完成
-                    setTimeout(() => {
-                        this.recognitionProgress.classList.remove('active');
-                        this.showToast('设备识别完成！', 'success');
-                        this.enableCards();
-                        this.updateConnectionHistory();
-                    }, 1000);
-
-                } catch (error) {
-                    console.error('设备识别失败:', error);
-                    this.showToast('部分信息读取失败，使用模拟数据', 'warning');
-                    this.recognitionProgress.classList.remove('active');
-                    this.enableCards();
-                    this.updateConnectionHistory();
-                }
-            }
-
-            updateProgress(step, loading, icon = '') {
-                const spinner = document.getElementById(`spinner${step}`);
-                const text = document.getElementById(`progressStep${step}`);
-                
-                if (loading) {
-                    spinner.style.display = 'block';
-                } else {
-                    spinner.style.display = 'none';
-                    if (icon) {
-                        text.innerHTML = text.innerHTML.split(' ')[0] + ' ' + text.innerHTML.split(' ').slice(1).join(' ') + ' ' + icon;
-                    }
-                }
-            }
-
-            async readDeviceInformation() {
-                try {
-                    const service = await this.server.getPrimaryService('device_information');
-                    
-                    // 读取制造商名称
-                    try {
-                        const char = await service.getCharacteristic('manufacturer_name_string');
-                        const value = await char.readValue();
-                        this.deviceInfo.manufacturer = new TextDecoder().decode(value);
-                        document.getElementById('manufacturer').textContent = this.deviceInfo.manufacturer;
-                    } catch (e) {
-                        console.log('制造商信息不可用');
-                    }
-
-                    // 读取型号
-                    try {
-                        const char = await service.getCharacteristic('model_number_string');
-                        const value = await char.readValue();
-                        this.deviceInfo.model = new TextDecoder().decode(value);
-                        document.getElementById('modelNumber').textContent = this.deviceInfo.model;
-                    } catch (e) {
-                        console.log('型号信息不可用');
-                    }
-
-                    // 读取固件版本
-                    try {
-                        const char = await service.getCharacteristic('firmware_revision_string');
-                        const value = await char.readValue();
-                        this.deviceInfo.firmware = new TextDecoder().decode(value);
-                        document.getElementById('firmwareVersion').textContent = this.deviceInfo.firmware;
-                    } catch (e) {
-                        console.log('固件版本不可用');
-                    }
-
-                    // 读取硬件版本
-                    try {
-                        const char = await service.getCharacteristic('hardware_revision_string');
-                        const value = await char.readValue();
-                        this.deviceInfo.hardware = new TextDecoder().decode(value);
-                        document.getElementById('hardwareVersion').textContent = this.deviceInfo.hardware;
-                    } catch (e) {
-                        console.log('硬件版本不可用');
-                    }
-
-                    // 读取序列号
-                    try {
-                        const char = await service.getCharacteristic('serial_number_string');
-                        const value = await char.readValue();
-                        this.deviceInfo.serial = new TextDecoder().decode(value);
-                        document.getElementById('serialNumber').textContent = this.deviceInfo.serial;
-                    } catch (e) {
-                        console.log('序列号不可用');
-                    }
-
-                } catch (error) {
-                    console.log('设备信息服务不可用，使用模拟数据');
-                    // 使用模拟数据
-                    document.getElementById('manufacturer').textContent = '未知厂商';
-                    document.getElementById('modelNumber').textContent = 'BT-' + Math.floor(Math.random() * 10000);
-                    document.getElementById('firmwareVersion').textContent = 'v' + (Math.random() * 10 + 1).toFixed(1);
-                    document.getElementById('hardwareVersion').textContent = 'v' + (Math.random() * 5 + 1).toFixed(1);
-                    document.getElementById('serialNumber').textContent = 'SN' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                }
-            }
-
-            async discoverServices() {
-                try {
-                    const services = await this.server.getPrimaryServices();
-                    this.detectedServices = services;
-                    
-                    document.getElementById('servicesCount').textContent = services.length;
-                    
-                    const servicesList = document.getElementById('servicesList');
-                    servicesList.innerHTML = '';
-                    
-                    for (const service of services) {
-                        const serviceDiv = document.createElement('div');
-                        serviceDiv.className = 'service-item';
-                        const serviceName = this.getServiceName(service.uuid);
-                        serviceDiv.innerHTML = `
-                            <div style="font-weight: bold;">${serviceName}</div>
-                            <div style="font-size: 0.8em; opacity: 0.7; margin-top: 3px;">${service.uuid}</div>
-                        `;
-                        servicesList.appendChild(serviceDiv);
-                    }
-
-                    // 根据服务判断设备类型
-                    this.identifyDeviceType(services);
-
-                } catch (error) {
-                    console.error('服务发现失败:', error);
-                    document.getElementById('servicesCount').textContent = '检测失败';
-                }
-            }
-
-            getServiceName(uuid) {
-                const serviceNames = {
-                    '0000180f-0000-1000-8000-00805f9b34fb': '🔋 电池服务',
-                    '0000180a-0000-1000-8000-00805f9b34fb': 'ℹ️ 设备信息',
-                    '00001800-0000-1000-8000-00805f9b34fb': '📋 通用访问',
-                    '00001801-0000-1000-8000-00805f9b34fb': '🔧 通用属性',
-                    '00001812-0000-1000-8000-00805f9b34fb': '🎮 人机接口设备',
-                    '0000110a-0000-1000-8000-00805f9b34fb': '🎵 音频源',
-                    '0000110b-0000-1000-8000-00805f9b34fb': '🔊 音频接收器',
-                    '00001108-0000-1000-8000-00805f9b34fb': '🎧 耳机服务',
-                    '0000111e-0000-1000-8000-00805f9b34fb': '📞 免提服务'
-                };
-                
-                return serviceNames[uuid] || '🔹 自定义服务';
-            }
-
-            identifyDeviceType(services) {
-                const serviceUUIDs = services.map(s => s.uuid);
-                let deviceType = '未知设备';
-                
-                if (serviceUUIDs.includes('00001108-0000-1000-8000-00805f9b34fb') || 
-                    serviceUUIDs.includes('0000111e-0000-1000-8000-00805f9b34fb')) {
-                    deviceType = '🎧 蓝牙耳机';
-                } else if (serviceUUIDs.includes('0000110b-0000-1000-8000-00805f9b34fb')) {
-                    deviceType = '🔊 蓝牙音箱';
-                } else if (serviceUUIDs.includes('00001812-0000-1000-8000-00805f9b34fb')) {
-                    deviceType = '🎮 HID设备';
-                } else if (serviceUUIDs.includes('0000180f-0000-1000-8000-00805f9b34fb')) {
-                    deviceType = '📱 蓝牙设备';
-                }
-                
-                document.getElementById('deviceType').textContent = deviceType;
-                this.showToast(`已识别为: ${deviceType}`, 'success');
-            }
-
-            async setupBatteryNotifications() {
-                try {
-                    const service = await this.server.getPrimaryService('battery_service');
-                    const characteristic = await service.getCharacteristic('battery_level');
-                    
-                    await characteristic.startNotifications();
-                    characteristic.addEventListener('characteristicvaluechanged', (event) => {
-                        const value = event.target.value;
-                        this.batteryLevel = value.getUint8(0);
-                        this.updateBatteryDisplay();
-                    });
-
-                    const value = await characteristic.readValue();
-                    this.batteryLevel = value.getUint8(0);
-                    this.updateBatteryDisplay();
-                    
-                    this.showToast(`电池电量: ${this.batteryLevel}%`, 'success');
-                } catch (error) {
-                    console.log('电池服务不可用，使用模拟数据');
-                    this.simulateBattery();
-                }
-            }
-
-            async identifyAudioCapabilities() {
-                // 模拟识别音频编解码器
-                const codecs = ['AAC', 'SBC', 'aptX', 'LDAC'];
-                const detectedCodec = codecs[Math.floor(Math.random() * codecs.length)];
-                
-                document.getElementById('currentCodec').textContent = detectedCodec;
-                
-                // 设置比特率
-                const bitrates = {
-                    'AAC': '256 kbps',
-                    'SBC': '328 kbps',
-                    'aptX': '352 kbps',
-                    'LDAC': '990 kbps'
-                };
-                document.getElementById('bitrate').textContent = bitrates[detectedCodec];
-                
-                // 设置采样率
-                const sampleRates = ['44.1 kHz', '48 kHz', '96 kHz'];
-                document.getElementById('sampleRate').textContent = sampleRates[Math.floor(Math.random() * sampleRates.length)];
-                
-                this.showToast(`检测到编解码器: ${detectedCodec}`, 'success');
-            }
-
-            simulateBattery() {
-                this.batteryLevel = Math.floor(Math.random() * 100);
-                this.updateBatteryDisplay();
-                
-                setInterval(() => {
-                    if (this.isConnected && this.batteryLevel > 0) {
-                        this.batteryLevel = Math.max(0, this.batteryLevel - Math.random() * 0.5);
-                        this.updateBatteryDisplay();
-                    }
-                }, 10000);
-            }
-
-            updateBatteryDisplay() {
-                this.batteryPercentage.textContent = Math.floor(this.batteryLevel) + '%';
-                this.batteryFill.style.width = this.batteryLevel + '%';
-                
-                this.batteryFill.className = 'battery-fill';
-                if (this.batteryLevel < 20) {
-                    this.batteryFill.classList.add('low');
-                } else if (this.batteryLevel < 50) {
-                    this.batteryFill.classList.add('medium');
-                }
-
-                const hours = Math.floor(this.batteryLevel / 10);
-                const minutes = Math.floor((this.batteryLevel % 10) * 6);
-                document.getElementById('batteryTime').textContent = `${hours}小时${minutes}分钟`;
-                
-                // 模拟充电状态
-                const isCharging = Math.random() > 0.7;
-                document.getElementById('chargingStatus').textContent = isCharging ? '充电中' : '未充电';
-            }
-
-            disconnect() {
-                if (this.device && this.device.gatt.connected) {
-                    this.device.gatt.disconnect();
-                    this.showToast('设备已断开连接', 'warning');
-                }
-                this.onDisconnected();
-            }
-
-            onDisconnected() {
-                this.isConnected = false;
-                this.device = null;
-                this.server = null;
-                this.detectedServices = [];
-                
-                this.updateConnectionUI(false);
-                this.disableCards();
-                this.showToast('蓝牙设备已断开', 'error');
-                
-                // 重置显示
-                document.getElementById('servicesList').innerHTML = '<div style="text-align: center; opacity: 0.6; padding: 20px;">暂无数据</div>';
-                document.getElementById('servicesCount').textContent = '0';
-            }
-
-            updateConnectionUI(connected) {
-                this.connectBtn.classList.remove('connecting');
-                
-                if (connected) {
-                    this.connectBtn.textContent = '已连接';
-                    this.connectBtn.classList.add('connected');
-                    this.statusIndicator.classList.remove('disconnected');
-                    this.statusIndicator.classList.add('connected');
-                    document.getElementById('disconnectSection').style.display = 'block';
-                    this.deviceName.textContent = this.device.name || '未命名设备';
-                } else {
-                    this.connectBtn.textContent = '连接蓝牙设备';
-                    this.connectBtn.classList.remove('connected');
-                    this.statusIndicator.classList.remove('connected');
-                    this.statusIndicator.classList.add('disconnected');
-                    document.getElementById('disconnectSection').style.display = 'none';
-                    this.deviceName.textContent = '未连接';
-                    this.deviceType.textContent = '--';
-                    document.getElementById('manufacturer').textContent = '--';
-                    document.getElementById('modelNumber').textContent = '--';
-                    document.getElementById('firmwareVersion').textContent = '--';
-                    document.getElementById('hardwareVersion').textContent = '--';
-                    document.getElementById('serialNumber').textContent = '--';
-                    document.getElementById('currentCodec').textContent = '自动检测中...';
-                    document.getElementById('bitrate').textContent = '--';
-                    document.getElementById('sampleRate').textContent = '--';
-                }
-            }
-
-            disableCards() {
-                const cards = ['batteryCard', 'signalCard', 'volumeCard', 'equalizerCard', 
-                              'codecCard', 'latencyCard', 'featuresCard', 'audioAnalysisCard', 'servicesCard'];
-                cards.forEach(id => {
-                    document.getElementById(id).classList.add('disabled');
-                });
-            }
-
-            enableCards() {
-                const cards = ['batteryCard', 'signalCard', 'volumeCard', 'equalizerCard', 
-                              'codecCard', 'latencyCard', 'featuresCard', 'audioAnalysisCard', 'servicesCard'];
-                cards.forEach(id => {
-                    document.getElementById(id).classList.remove('disabled');
-                });
-            }
-
-            startSimulation() {
-                setInterval(() => {
-                    if (!this.isConnected) return;
-
-                    // 模拟RSSI变化
-                    this.rssi = -70 + Math.random() * 30;
-                    document.getElementById('rssiValue').textContent = Math.floor(this.rssi) + ' dBm';
-                    
-                    // 更新信号强度条
-                    const signalBars = document.querySelectorAll('.signal-bar');
-                    const strength = Math.floor((this.rssi + 100) / 10);
-                    signalBars.forEach((bar, index) => {
-                        bar.classList.toggle('active', index < strength);
-                    });
-
-                    const quality = this.rssi > -60 ? '优秀' : this.rssi > -70 ? '良好' : '一般';
-                    document.getElementById('linkQuality').textContent = quality;
-
-                    // 更新音频分析图表
-                    const bars = document.querySelectorAll('.chart-bar');
-                    bars.forEach(bar => {
-                        bar.style.height = (Math.random() * 80 + 20) + '%';
-                    });
-                }, 1000);
-            }
-
-            testLatency() {
-                this.showToast('正在测试延迟...', 'warning');
-                let count = 0;
-                const interval = setInterval(() => {
-                    const latency = Math.random() * 50 + 20;
-                    document.getElementById('latencyDisplay').textContent = Math.floor(latency) + ' ms';
-                    count++;
-                    
-                    if (count >= 5) {
-                        clearInterval(interval);
-                        document.getElementById('avgLatency').textContent = Math.floor(Math.random() * 20 + 30) + ' ms';
-                        document.getElementById('minLatency').textContent = Math.floor(Math.random() * 10 + 15) + ' ms';
-                        this.showToast('延迟测试完成', 'success');
-                    }
-                }, 500);
-            }
-
-            sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            showToast(message, type = 'success') {
-                const toastContainer = document.getElementById('toastContainer');
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                
-                const icons = {
-                    success: '✓',
-                    error: '✗',
-                    warning: '⚠'
-                };
-                
-                toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ'}</span>${message}`;
-                
-                toastContainer.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 10);
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toastContainer.removeChild(toast);
-                        }
-                    }, 300);
-                }, 3000);
-            }
-
-            updateConnectionHistory() {
-                const history = JSON.parse(localStorage.getItem('bluetooth-history') || '{}');
-                history.totalConnections = (history.totalConnections || 0) + 1;
-                
-                const today = new Date().toDateString();
-                if (!history.daily) history.daily = {};
-                history.daily[today] = (history.daily[today] || 0) + 1;
-                
-                localStorage.setItem('bluetooth-history', JSON.stringify(history));
-                this.loadHistory();
-            }
-
-            loadHistory() {
-                const history = JSON.parse(localStorage.getItem('bluetooth-history') || '{}');
-                const today = new Date().toDateString();
-                
-                document.getElementById('totalConnections').textContent = history.totalConnections || 0;
-                document.getElementById('todayConnections').textContent = history.daily?.[today] || 0;
-                document.getElementById('avgDuration').textContent = (Math.random() * 2 + 1).toFixed(1) + ' 小时';
+            if (tabName === 'preview') {
+                refreshPreview();
             }
         }
 
-        // 初始化蓝牙调试器
-        const debugger = new BluetoothDebugger();
+        // 运行代码
+        function runCode() {
+            refreshPreview();
+            switchTab('preview');
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            showSuccess();
+        }
+
+        // 刷新预览
+        function refreshPreview() {
+            const code = document.getElementById('htmlCode').value;
+            const iframe = document.getElementById('previewFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            iframeDoc.open();
+            iframeDoc.write(code);
+            iframeDoc.close();
+        }
+
+        // 插入代码
+        function insertCode(code) {
+            const textarea = document.getElementById('htmlCode');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            
+            textarea.value = text.substring(0, start) + code + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + code.length;
+            showSuccess();
+        }
+
+        // 保存代码
+        function saveCode() {
+            const code = document.getElementById('htmlCode').value;
+            localStorage.setItem('savedHTML', code);
+            showSuccess('代码已保存到本地');
+        }
+
+        // 加载保存的代码
+        window.onload = function() {
+            const saved = localStorage.getItem('savedHTML');
+            if (saved) {
+                document.getElementById('htmlCode').value = saved;
+            }
+        }
+
+        // 清空代码
+        function clearCode() {
+            if (confirm('确定要清空所有代码吗？')) {
+                document.getElementById('htmlCode').value = '';
+                showSuccess('已清空');
+            }
+        }
+
+        // 下载HTML
+        function downloadHTML() {
+            const code = document.getElementById('htmlCode').value;
+            const blob = new Blob([code], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mypage.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showSuccess('开始下载');
+        }
+
+        // 加载模板
+        function loadTemplate(type) {
+            const templates = {
+                basic: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; }
+        p { line-height: 1.6; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到我的网页</h1>
+    <p>这是一个基础的HTML页面模板。</p>
+</body>
+</html>`,
+                
+                form: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>表单页面</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            padding: 50px 20px;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>联系表单</h2>
+        <input type="text" placeholder="姓名">
+        <input type="email" placeholder="邮箱">
+        <textarea placeholder="留言内容" rows="4"></textarea>
+        <button>提交</button>
+    </div>
+</body>
+</html>`,
+
+                card: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>卡片布局</title>
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 { color: #667eea; margin-top: 0; }
+        .card p { color: #666; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="card-grid">
+        <div class="card">
+            <h3>卡片标题 1</h3>
+            <p>这是卡片的内容描述。</p>
+        </div>
+        <div class="card">
+            <h3>卡片标题 2</h3>
+            <p>这是卡片的内容描述。</p>
+        </div>
+        <div class="card">
+            <h3>卡片标题 3</h3>
+            <p>这是卡片的内容描述。</p>
+        </div>
+    </div>
+</body>
+</html>`,
+
+                navbar: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>导航栏</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        nav {
+            background: #333;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #667eea; }
+        .content {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#">首页</a></li>
+            <li><a href="#">关于</a></li>
+            <li><a href="#">服务</a></li>
+            <li><a href="#">联系</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        <h1>欢迎访问</h1>
+        <p>这是一个带导航栏的页面模板。</p>
+    </div>
+</body>
+</html>`,
+
+                gallery: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图片画廊</title>
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .gallery-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>图片画廊</h1>
+    <div class="gallery">
+        <div class="gallery-item">图片 1</div>
+        <div class="gallery-item">图片 2</div>
+        <div class="gallery-item">图片 3</div>
+        <div class="gallery-item">图片 4</div>
+        <div class="gallery-item">图片 5</div>
+        <div class="gallery-item">图片 6</div>
+    </div>
+</body>
+</html>`,
+
+                login: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>🔐 用户登录</h2>
+        <input type="text" placeholder="用户名">
+        <input type="password" placeholder="密码">
+        <button>登录</button>
+    </div>
+</body>
+</html>`
+            };
+
+            document.getElementById('htmlCode').value = templates[type];
+            switchTab('editor');
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            showSuccess('模板已加载');
+        }
+
+        // 复制颜色
+        function copyColor() {
+            const color = document.getElementById('colorPicker').value;
+            navigator.clipboard.writeText(color);
+            showSuccess('颜色代码已复制: ' + color);
+        }
+
+        // 插入标题
+        function insertHeading() {
+            const level = document.getElementById('headingLevel').value;
+            const code = `<${level}>标题文本</${level}>`;
+            insertCode(code);
+        }
+
+        // 插入样式
+        function insertStyle(type) {
+            const styles = {
+                center: `<div style="text-align: center;">
+    居中内容
+</div>`,
+                flex: `<div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <div>项目1</div>
+    <div>项目2</div>
+</div>`,
+                grid: `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+    <div>格子1</div>
+    <div>格子2</div>
+    <div>格子3</div>
+</div>`,
+                shadow: `<div style="box-shadow: 0 5px 15px rgba(0,0,0,0.2); padding: 20px; border-radius: 8px;">
+    有阴影的盒子
+</div>`,
+                gradient: `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; color: white; border-radius: 10px;">
+    渐变背景
+</div>`
+            };
+            insertCode(styles[type]);
+        }
+
+        // 显示成功消息
+        function showSuccess(msg = '操作成功') {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = '✅ ' + msg;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 2000);
+        }
     </script>
 </body>
 </html>
