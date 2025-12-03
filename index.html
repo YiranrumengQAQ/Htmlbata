@@ -24,7 +24,6 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box;
-            /* 禁止选择文本 */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -35,14 +34,71 @@
             font-family: 'Poppins', sans-serif;
             background: #f5f5f5;
             overflow-x: hidden;
-        }
-        
-        /* 禁止复制 */
-        body {
             -webkit-touch-callout: none;
         }
         
-        /* ========== 风景界面样式 ========== */
+        /* 虚拟光标 */
+        #gamepadCursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.6));
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            display: none;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(118, 75, 162, 0.4);
+            transition: transform 0.05s ease;
+        }
+        
+        #gamepadCursor.active {
+            display: block;
+        }
+        
+        #gamepadCursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        /* 手柄连接提示 */
+        .gamepad-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 100000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .gamepad-toast.show {
+            display: block;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 风景界面 */
         #landscapeView {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -97,7 +153,7 @@
             cursor: pointer;
         }
         
-        .image-card:hover {
+        .image-card:hover, .image-card.gamepad-hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
@@ -165,7 +221,7 @@
             z-index: 50;
         }
         
-        .refresh-btn:hover {
+        .refresh-btn:hover, .refresh-btn.gamepad-hover {
             transform: rotate(180deg) scale(1.1);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
@@ -178,12 +234,10 @@
             margin-top: 60px;
         }
         
-        /* 秘密触发器 - 完全隐藏 */
         #secretTrigger {
             cursor: default;
         }
         
-        /* 石头掉落弹窗 */
         .stone-modal {
             position: fixed;
             top: 0;
@@ -236,7 +290,6 @@
             }
         }
         
-        /* 隐藏的石头按钮 */
         .hidden-stone {
             position: fixed;
             bottom: 120px;
@@ -254,7 +307,7 @@
             display: block;
         }
         
-        /* ========== 隐藏的功能界面样式 ========== */
+        /* 功能界面 */
         #appView {
             display: none;
         }
@@ -285,7 +338,7 @@
             transition: all 0.3s;
         }
         
-        .exit-btn:hover {
+        .exit-btn:hover, .exit-btn.gamepad-hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(245, 101, 101, 0.6);
         }
@@ -370,7 +423,8 @@
             background: white;
         }
         
-        input[type="number"]:focus, select:focus {
+        input[type="number"]:focus, select:focus, 
+        input[type="number"].gamepad-focus, select.gamepad-focus {
             outline: none;
             border-color: var(--primary-light);
             box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.1);
@@ -445,7 +499,8 @@
             flex-shrink: 0;
         }
         
-        .checkbox-wrapper input[type="checkbox"]:hover {
+        .checkbox-wrapper input[type="checkbox"]:hover,
+        .checkbox-wrapper input[type="checkbox"].gamepad-hover {
             border-color: var(--primary-light);
             transform: scale(1.1);
         }
@@ -571,7 +626,8 @@
             box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
         }
         
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover:not(:disabled),
+        .btn-primary.gamepad-hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
         }
@@ -581,7 +637,8 @@
             color: white;
         }
         
-        .btn-secondary:hover:not(:disabled) {
+        .btn-secondary:hover:not(:disabled),
+        .btn-secondary.gamepad-hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
@@ -861,24 +918,6 @@
         
         .hidden { display: none !important; }
         
-        @media (max-width: 768px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .logo {
-                font-size: 1.8em;
-            }
-            
-            .gallery-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .landscape-title {
-                font-size: 1.8em;
-            }
-        }
-        
         .celebration {
             position: fixed;
             top: 50%;
@@ -903,9 +942,141 @@
         .spinner {
             animation: spin 1s linear infinite;
         }
+        
+        /* 响应式设计 - 平板 */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            .landscape-title {
+                font-size: 2em;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+        }
+        
+        /* 响应式设计 - 手机 */
+        @media (max-width: 768px) {
+            body.app-mode {
+                padding: 10px;
+            }
+            
+            .app-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 1.8em;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .landscape-title {
+                font-size: 1.8em;
+            }
+            
+            .landscape-container {
+                padding: 20px 10px;
+            }
+            
+            .refresh-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.5em;
+            }
+            
+            .hidden-stone {
+                bottom: 90px;
+                right: 20px;
+                font-size: 2em;
+            }
+            
+            .exit-btn {
+                top: 10px;
+                right: 10px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 2em;
+            }
+            
+            .log-container {
+                height: 300px;
+                font-size: 0.8em;
+            }
+            
+            .gamepad-toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+            
+            #gamepadCursor {
+                width: 40px;
+                height: 40px;
+                border-width: 4px;
+            }
+        }
+        
+        /* 响应式设计 - 小手机 */
+        @media (max-width: 480px) {
+            .landscape-title {
+                font-size: 1.5em;
+            }
+            
+            .logo {
+                font-size: 1.5em;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+            
+            .form-group label {
+                font-size: 0.9em;
+            }
+            
+            input[type="number"], select {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- 虚拟光标 -->
+    <div id="gamepadCursor"></div>
+    
+    <!-- 手柄连接提示 -->
+    <div class="gamepad-toast" id="gamepadToast"></div>
+    
     <!-- 石头掉落弹窗 -->
     <div class="stone-modal" id="stoneModal">
         <div class="stone-drop">🪨</div>
@@ -1095,24 +1266,205 @@
     </div>
 
     <script>
-        // 禁止复制和右键菜单
+        // 禁止复制
         document.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('copy', (e) => e.preventDefault());
         document.addEventListener('cut', (e) => e.preventDefault());
-        
-        // 禁止键盘复制快捷键
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) {
                 e.preventDefault();
             }
         });
         
+        // ========== 手柄控制系统 ==========
+        const GamepadController = {
+            connected: false,
+            gamepad: null,
+            cursorX: window.innerWidth / 2,
+            cursorY: window.innerHeight / 2,
+            lastButtons: [],
+            scrollSpeed: 20,
+            cursorSpeed: 8,
+            deadzone: 0.15,
+            updateInterval: null,
+            
+            init() {
+                window.addEventListener('gamepadconnected', (e) => this.onConnect(e));
+                window.addEventListener('gamepaddisconnected', (e) => this.onDisconnect(e));
+                this.checkGamepads();
+            },
+            
+            checkGamepads() {
+                const gamepads = navigator.getGamepads();
+                if (gamepads && gamepads[0]) {
+                    if (!this.connected) {
+                        this.onConnect({ gamepad: gamepads[0] });
+                    }
+                }
+            },
+            
+            onConnect(e) {
+                this.connected = true;
+                this.gamepad = e.gamepad;
+                this.showToast(`🎮 手柄已连接: ${e.gamepad.id}`);
+                this.showCursor();
+                this.startUpdate();
+            },
+            
+            onDisconnect(e) {
+                this.connected = false;
+                this.showToast('❌ 手柄已断开');
+                this.hideCursor();
+                this.stopUpdate();
+            },
+            
+            showToast(message) {
+                const toast = document.getElementById('gamepadToast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            },
+            
+            showCursor() {
+                const cursor = document.getElementById('gamepadCursor');
+                cursor.classList.add('active');
+                cursor.style.left = this.cursorX + 'px';
+                cursor.style.top = this.cursorY + 'px';
+            },
+            
+            hideCursor() {
+                document.getElementById('gamepadCursor').classList.remove('active');
+            },
+            
+            startUpdate() {
+                if (this.updateInterval) return;
+                this.updateInterval = setInterval(() => this.update(), 16);
+            },
+            
+            stopUpdate() {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                    this.updateInterval = null;
+                }
+            },
+            
+            update() {
+                const gamepads = navigator.getGamepads();
+                if (!gamepads || !gamepads[0]) return;
+                
+                const gp = gamepads[0];
+                
+                // 左摇杆 - 控制光标
+                const leftX = this.applyDeadzone(gp.axes[0]);
+                const leftY = this.applyDeadzone(gp.axes[1]);
+                
+                if (leftX !== 0 || leftY !== 0) {
+                    this.cursorX += leftX * this.cursorSpeed;
+                    this.cursorY += leftY * this.cursorSpeed;
+                    
+                    this.cursorX = Math.max(0, Math.min(window.innerWidth, this.cursorX));
+                    this.cursorY = Math.max(0, Math.min(window.innerHeight, this.cursorY));
+                    
+                    const cursor = document.getElementById('gamepadCursor');
+                    cursor.style.left = this.cursorX + 'px';
+                    cursor.style.top = this.cursorY + 'px';
+                    
+                    this.updateHoverElement();
+                }
+                
+                // 右摇杆 - 上下翻页
+                const rightY = this.applyDeadzone(gp.axes[3]);
+                if (Math.abs(rightY) > 0) {
+                    window.scrollBy(0, rightY * this.scrollSpeed);
+                }
+                
+                // 按钮处理
+                this.handleButtons(gp);
+            },
+            
+            applyDeadzone(value) {
+                return Math.abs(value) < this.deadzone ? 0 : value;
+            },
+            
+            updateHoverElement() {
+                const element = document.elementFromPoint(this.cursorX, this.cursorY);
+                
+                // 移除所有悬停效果
+                document.querySelectorAll('.gamepad-hover').forEach(el => {
+                    el.classList.remove('gamepad-hover');
+                });
+                
+                // 添加悬停效果
+                if (element) {
+                    if (element.matches('button, a, input, select, .image-card, .btn-mini')) {
+                        element.classList.add('gamepad-hover');
+                    }
+                }
+            },
+            
+            handleButtons(gp) {
+                const buttons = gp.buttons;
+                
+                // A键 (0) - 确认/点击
+                if (this.isButtonPressed(buttons[0], 0)) {
+                    this.simulateClick();
+                }
+                
+                // B键 (1) - 退出隐藏界面
+                if (this.isButtonPressed(buttons[1], 1)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        exitApp();
+                    }
+                }
+                
+                // X键 (2) - 刷新网页
+                if (this.isButtonPressed(buttons[2], 2)) {
+                    location.reload();
+                }
+                
+                // RT (右扳机) (7) - 开始会话
+                if (this.isButtonPressed(buttons[7], 7)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        const startBtn = document.getElementById('startBtn');
+                        if (!startBtn.disabled) {
+                            startSession();
+                        }
+                    }
+                }
+                
+                // RB (右肩键) (5) - 停止会话
+                if (this.isButtonPressed(buttons[5], 5)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        if (session.isRunning) {
+                            stopSession();
+                        }
+                    }
+                }
+                
+                this.lastButtons = buttons.map(b => b.pressed);
+            },
+            
+            isButtonPressed(button, index) {
+                const pressed = button.pressed;
+                const wasPressed = this.lastButtons[index] || false;
+                return pressed && !wasPressed;
+            },
+            
+            simulateClick() {
+                const element = document.elementFromPoint(this.cursorX, this.cursorY);
+                if (element) {
+                    element.click();
+                }
+            }
+        };
+        
         // ========== 秘密触发机制 ==========
         let triggerClickCount = 0;
         let stoneClickCount = 0;
         let stoneVisible = false;
         
-        // 第一步：点击页脚不起眼的字母"r" 10次
         document.getElementById('secretTrigger').addEventListener('click', function(e) {
             e.stopPropagation();
             triggerClickCount++;
@@ -1123,7 +1475,6 @@
             }
         });
         
-        // 显示石头掉落动画
         function showStoneModal() {
             const modal = document.getElementById('stoneModal');
             modal.classList.add('active');
@@ -1134,14 +1485,12 @@
             }, 2000);
         }
         
-        // 显示隐藏的石头
         function showHiddenStone() {
             const stone = document.getElementById('hiddenStone');
             stone.classList.add('visible');
             stoneVisible = true;
         }
         
-        // 第二步：点击石头10次（无任何反馈）
         document.getElementById('hiddenStone').addEventListener('click', function(e) {
             e.stopPropagation();
             if (!stoneVisible) return;
@@ -1226,7 +1575,6 @@
             document.getElementById('appView').classList.remove('active');
             document.body.classList.remove('app-mode');
             
-            // 重置计数器和石头状态
             triggerClickCount = 0;
             stoneClickCount = 0;
             document.getElementById('hiddenStone').classList.remove('visible');
@@ -1235,9 +1583,10 @@
         
         window.addEventListener('DOMContentLoaded', () => {
             loadGallery();
+            GamepadController.init();
         });
         
-        // ========== 功能界面逻辑 ==========
+        // ========== 功能界面逻辑（保持完整代码） ==========
         const StorageManager = {
             KEYS: {
                 CURRENT_SETTINGS: 'pleasureAnalytics_currentSettings',
