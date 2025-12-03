@@ -3,1455 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft基岩版1.21指令助手专业版</title>
+    <title>♥ Lovely Pleasure Loop V3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #2ecc71;
-            --secondary: #3498db;
-            --dark: #1a1a2e;
-            --darker: #0f0f1e;
-            --accent: #e74c3c;
-            --warning: #f39c12;
-            --success: #27ae60;
-            --text: #ecf0f1;
-            --border: #34495e;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
             min-height: 100vh;
-            overflow-x: hidden;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+            color: #333;
         }
-
-        .header {
-            background: rgba(46, 204, 113, 0.1);
-            border-bottom: 2px solid var(--primary);
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .container { max-width: 800px; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        header {
+            text-align: center; margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff69b4, #ff1493); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-size: 2em; font-weight: 600; letter-spacing: 5px;
         }
-
-        .header h1 {
-            color: var(--primary);
-            font-size: 28px;
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-            margin-bottom: 5px;
+        header::before { content: '♥ '; font-size: 1.2em; }
+        header::after { content: ' ♥'; font-size: 1.2em; }
+        .subheader { color: #ff69b4; font-size: 1.1em; margin-top: 10px; }
+        #settings { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; }
+        input[type="number"] { padding: 12px 15px; border: 2px solid #ffb6c1; border-radius: 25px; font-size: 1em; width: 120px; text-align: center; transition: all 0.3s; }
+        input:focus { outline: none; border-color: #ff69b4; box-shadow: 0 0 15px rgba(255,105,180,0.5); transform: scale(1.05); }
+        button {
+            padding: 12px 25px; border: none; border-radius: 25px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+            background: linear-gradient(45deg, #ff69b4, #ff1493); color: white; box-shadow: 0 5px 15px rgba(255,105,180,0.4);
         }
-
-        .header .version {
-            color: var(--secondary);
-            font-size: 14px;
+        button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,105,180,0.6); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        #status {
+            background: linear-gradient(135deg, #fff0f5, #ffe4e1); border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 1.1em;
         }
-
-        .container {
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1800px;
-            margin: 0 auto;
+        .status-item { text-align: center; }
+        .status-value { font-weight: 600; color: #ff1493; font-size: 1.3em; }
+        #progress { height: 10px; background: #ffe4e1; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        #progress-bar { height: 100%; background: linear-gradient(90deg, #ff69b4, #ff1493); width: 0%; transition: width 0.5s ease; }
+        #log {
+            height: 300px; overflow-y: auto; background: white; border-radius: 15px; padding: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            font-family: monospace; line-height: 1.5; border: 2px solid #ffb6c1;
         }
-
-        .sidebar, .panel, .output-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar {
-            height: calc(100vh - 140px);
-            overflow-y: auto;
-            position: sticky;
-            top: 100px;
-        }
-
-        .sidebar h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 18px;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 8px;
-        }
-
-        .command-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .cmd-btn {
-            background: rgba(52, 152, 219, 0.2);
-            border: 1px solid var(--secondary);
-            color: var(--text);
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .cmd-btn:hover {
-            background: rgba(52, 152, 219, 0.4);
-            transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .cmd-btn.active {
-            background: var(--secondary);
-            border-color: var(--primary);
-        }
-
-        .panel {
-            min-height: calc(100vh - 140px);
-        }
-
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(46, 204, 113, 0.2);
-            border: 1px solid var(--primary);
-            color: var(--text);
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .tab-btn:hover {
-            background: rgba(46, 204, 113, 0.3);
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: var(--dark);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            font-family: 'Consolas', 'Courier New', monospace;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .generate-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
-        }
-
-        .output-panel {
-            height: calc(100vh - 140px);
-            overflow-y: auto;
-            position: sticky;
-            top: 100px;
-        }
-
-        .output-box {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--primary);
-            border-radius: 5px;
-            padding: 15px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            color: var(--primary);
-            margin-bottom: 15px;
-            position: relative;
-            word-wrap: break-word;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--secondary);
-            border: none;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .copy-btn:hover {
-            background: var(--primary);
-        }
-
-        .history-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid var(--secondary);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 3px;
-            font-family: 'Consolas', monospace;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .history-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-        }
-
-        .selector-builder {
-            background: rgba(52, 152, 219, 0.1);
-            border: 1px solid var(--secondary);
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-
-        .quick-templates {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .template-btn {
-            background: rgba(243, 156, 18, 0.2);
-            border: 1px solid var(--warning);
-            color: var(--text);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .template-btn:hover {
-            background: rgba(243, 156, 18, 0.4);
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--darker);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 5px;
-        }
-
-        .info-box {
-            background: rgba(52, 152, 219, 0.1);
-            border-left: 4px solid var(--secondary);
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-
-        .search-box {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-
-        .particle-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .particle-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            padding: 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .particle-item:hover {
-            background: rgba(46, 204, 113, 0.2);
-            border-color: var(--primary);
-        }
+        .log-entry { margin-bottom: 5px; padding: 5px; border-radius: 8px; animation: fadeIn 0.5s; }
+        .insert { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
+        .withdraw { background: #e1f5fe; color: #0277bd; border-left: 4px solid #2196f3; }
+        .error { background: #fff3e0; color: #ef6c00; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .shake { animation: shake 0.5s; }
+        .hidden { display: none; }
+        footer { text-align: center; margin-top: 20px; color: #ff69b4; font-size: 0.9em; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>⛏️ Minecraft基岩版指令助手专业版</h1>
-        <div class="version">支持版本: 1.21.x Bedrock Edition | 69+指令全支持</div>
-    </div>
-
     <div class="container">
-        <!-- 左侧指令列表 -->
-        <div class="sidebar">
-            <h3>📋 指令分类</h3>
-            <input type="text" class="search-box" id="cmdSearch" placeholder="搜索指令...">
-            <div class="command-list" id="commandList"></div>
+        <header>LOVELY PLEASURE LOOP V3.0</header>
+        <div class="subheader">Toy Anal ysis & Slow Freq. ♥</div>
+        
+        <section id="settings">
+            <label>玩具长度 (cm ≤150):</label>
+            <input type="number" id="toyLength" min="0" max="150" step="0.1" value="10">
+            <label>玩具直径 (cm ≤5):</label>
+            <input type="number" id="toyDiameter" min="0" max="5" step="0.1" value="2">
+            <label>总次数 (默认10):</label>
+            <input type="number" id="totalCount" min="2" value="10">
+            <button onclick="calculateFrequency()">计算频率</button>
+            <button id="startBtn" onclick="startSession()" disabled>开始会话 ♥</button>
+            <button id="stopBtn" onclick="stopSession()" class="hidden">停止</button>
+        </section>
+        
+        <div id="frequencyDisplay" class="hidden status-item">
+            <div>温柔频率: <span id="actionDelay" class="status-value"></span> 秒/次</div>
         </div>
-
-        <!-- 中间主面板 -->
-        <div class="panel">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('generator')">🔧 指令生成器</button>
-                <button class="tab-btn" onclick="switchTab('selector')">🎯 目标选择器</button>
-                <button class="tab-btn" onclick="switchTab('calculator')">📐 坐标计算</button>
-                <button class="tab-btn" onclick="switchTab('particle')">✨ 粒子效果</button>
-                <button class="tab-btn" onclick="switchTab('nbt')">📦 NBT编辑器</button>
-                <button class="tab-btn" onclick="switchTab('templates')">📝 快捷模板</button>
+        
+        <section id="status" class="hidden">
+            <div class="status-item">
+                <div>时间</div>
+                <div id="elapsedTime" class="status-value">00:00:00</div>
             </div>
-
-            <!-- 指令生成器 -->
-            <div class="tab-content active" id="generator">
-                <h3 style="color: var(--primary); margin-bottom: 20px;">当前指令: <span id="currentCmd">请从左侧选择指令</span></h3>
-                <div id="commandForm"></div>
+            <div class="status-item">
+                <div>进度</div>
+                <div id="cycleProgress" class="status-value">0/0</div>
             </div>
-
-            <!-- 目标选择器 -->
-            <div class="tab-content" id="selector">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">目标选择器构建器</h3>
-                <div class="selector-builder">
-                    <div class="form-group">
-                        <label>选择器类型</label>
-                        <select id="selectorType">
-                            <option value="@p">@p - 最近的玩家</option>
-                            <option value="@a">@a - 所有玩家</option>
-                            <option value="@e">@e - 所有实体</option>
-                            <option value="@s">@s - 命令执行者</option>
-                            <option value="@r">@r - 随机玩家</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>实体类型 (type)</label>
-                            <input type="text" id="selectorEntityType" placeholder="如: zombie">
-                        </div>
-                        <div class="form-group">
-                            <label>名称 (name)</label>
-                            <input type="text" id="selectorName" placeholder="实体名称">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>半径内 (r)</label>
-                            <input type="number" id="selectorR" placeholder="如: 10">
-                        </div>
-                        <div class="form-group">
-                            <label>半径外 (rm)</label>
-                            <input type="number" id="selectorRm" placeholder="如: 5">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>最大等级 (l)</label>
-                            <input type="number" id="selectorL" placeholder="最大等级">
-                        </div>
-                        <div class="form-group">
-                            <label>最小等级 (lm)</label>
-                            <input type="number" id="selectorLm" placeholder="最小等级">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>游戏模式 (m)</label>
-                            <select id="selectorMode">
-                                <option value="">不限</option>
-                                <option value="s">生存 (s)</option>
-                                <option value="c">创造 (c)</option>
-                                <option value="a">冒险 (a)</option>
-                                <option value="spectator">旁观</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>数量 (c)</label>
-                            <input type="number" id="selectorCount" placeholder="选择数量">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>标签 (tag)</label>
-                        <input type="text" id="selectorTag" placeholder="如: boss">
-                    </div>
-                    <button class="generate-btn" onclick="generateSelector()">生成目标选择器</button>
+            <div class="status-item">
+                <div>插入次数</div>
+                <div id="insertions" class="status-value">0</div>
+            </div>
+            <div id="progress-container" class="status-item">
+                <div>进度条</div>
+                <div id="progress">
+                    <div id="progress-bar"></div>
                 </div>
             </div>
-
-            <!-- 坐标计算器 -->
-            <div class="tab-content" id="calculator">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">坐标计算器</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>起始X</label>
-                        <input type="number" id="calcX1" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>目标X</label>
-                        <input type="number" id="calcX2" value="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>起始Y</label>
-                        <input type="number" id="calcY1" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>目标Y</label>
-                        <input type="number" id="calcY2" value="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>起始Z</label>
-                        <input type="number" id="calcZ1" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>目标Z</label>
-                        <input type="number" id="calcZ2" value="0">
-                    </div>
-                </div>
-                <button class="generate-btn" onclick="calculateDistance()">计算距离</button>
-                <div class="info-box" id="calcResult" style="margin-top: 15px; display: none;"></div>
-                <h4 style="color: var(--secondary); margin: 20px 0 10px;">相对坐标转换</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>偏移X</label>
-                        <input type="number" id="relX" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>偏移Y</label>
-                        <input type="number" id="relY" value="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>偏移Z</label>
-                    <input type="number" id="relZ" value="0">
-                </div>
-                <button class="generate-btn" onclick="generateRelativeCoords()">生成相对坐标</button>
-            </div>
-
-            <!-- 粒子效果 -->
-            <div class="tab-content" id="particle">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">粒子效果库</h3>
-                <input type="text" class="search-box" id="particleSearch" placeholder="搜索粒子效果...">
-                <div class="particle-grid" id="particleGrid"></div>
-            </div>
-
-            <!-- NBT编辑器 -->
-            <div class="tab-content" id="nbt">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">NBT数据编辑器</h3>
-                <div class="form-group">
-                    <label>物品类型</label>
-                    <select id="nbtItem">
-                        <option value="diamond_sword">钻石剑</option>
-                        <option value="bow">弓</option>
-                        <option value="crossbow">弩</option>
-                        <option value="trident">三叉戟</option>
-                        <option value="mace">锤</option>
-                        <option value="elytra">鞘翅</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>附魔</label>
-                    <select id="nbtEnchant" multiple size="5">
-                        <option value="sharpness">锋利</option>
-                        <option value="looting">抢夺</option>
-                        <option value="unbreaking">耐久</option>
-                        <option value="mending">经验修补</option>
-                        <option value="fire_aspect">火焰附加</option>
-                        <option value="knockback">击退</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>附魔等级</label>
-                    <input type="number" id="nbtEnchantLevel" value="1" min="1" max="32767">
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="nbtUnbreakable">
-                    <label>无限耐久</label>
-                </div>
-                <button class="generate-btn" onclick="generateNBT()">生成Give指令</button>
-            </div>
-
-            <!-- 快捷模板 -->
-            <div class="tab-content" id="templates">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">常用指令模板</h3>
-                <div class="quick-templates" id="templateGrid"></div>
-            </div>
-        </div>
-
-        <!-- 右侧输出面板 -->
-        <div class="output-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">📤 生成的指令</h3>
-            <div class="output-box" id="outputBox">
-                等待生成指令...
-            </div>
-            <button class="copy-btn" onclick="copyCommand()" style="position: relative; width: 100%; margin-bottom: 20px;">复制指令</button>
-            
-            <h3 style="color: var(--secondary); margin-bottom: 15px;">📜 指令历史</h3>
-            <div id="historyList"></div>
-        </div>
+        </section>
+        
+        <div id="log"></div>
+        
+        <footer>安全第一，享受温柔的快感 ♥</footer>
     </div>
 
     <script>
-        // 完整的基岩版1.21指令数据库
-        const commands = {
-            ability: {
-                name: 'ability',
-                desc: '设置玩家能力',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '能力', type: 'select', options: ['mute', 'worldbuilder', 'mayfly', 'flying'] },
-                    { name: '值', type: 'select', options: ['true', 'false'] }
-                ]
-            },
-            alwaysday: {
-                name: 'alwaysday',
-                desc: '锁定/解锁昼夜循环',
-                params: [
-                    { name: '锁定', type: 'select', options: ['true', 'false'] }
-                ]
-            },
-            clear: {
-                name: 'clear',
-                desc: '清除玩家物品',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '物品ID', type: 'text', placeholder: 'diamond' },
-                    { name: '数据值', type: 'number', placeholder: '0' },
-                    { name: '数量', type: 'number', placeholder: '-1' }
-                ]
-            },
-            clone: {
-                name: 'clone',
-                desc: '复制方块区域',
-                params: [
-                    { name: '起始X', type: 'number', placeholder: '0' },
-                    { name: '起始Y', type: 'number', placeholder: '0' },
-                    { name: '起始Z', type: 'number', placeholder: '0' },
-                    { name: '结束X', type: 'number', placeholder: '10' },
-                    { name: '结束Y', type: 'number', placeholder: '10' },
-                    { name: '结束Z', type: 'number', placeholder: '10' },
-                    { name: '目标X', type: 'number', placeholder: '20' },
-                    { name: '目标Y', type: 'number', placeholder: '0' },
-                    { name: '目标Z', type: 'number', placeholder: '0' },
-                    { name: '模式', type: 'select', options: ['replace', 'masked', 'filtered'] }
-                ]
-            },
-            damage: {
-                name: 'damage',
-                desc: '对实体造成伤害',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@e[type=zombie,r=5]' },
-                    { name: '伤害值', type: 'number', placeholder: '10' },
-                    { name: '伤害类型', type: 'select', options: ['contact', 'entity_attack', 'projectile', 'suffocation', 'fall', 'fire', 'lava', 'drowning', 'block_explosion', 'entity_explosion', 'void', 'suicide', 'magic', 'wither', 'starve', 'anvil', 'thorns', 'falling_block', 'piston', 'fly_into_wall', 'magma', 'fireworks', 'lightning', 'charging', 'temperature', 'freezing', 'stalactite', 'stalagmite'] }
-                ]
-            },
-            daylock: {
-                name: 'daylock',
-                desc: '锁定时间',
-                params: [
-                    { name: '锁定', type: 'select', options: ['true', 'false'] }
-                ]
-            },
-            deop: {
-                name: 'deop',
-                desc: '撤销OP权限',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: 'PlayerName' }
-                ]
-            },
-            dialogue: {
-                name: 'dialogue',
-                desc: '打开NPC对话',
-                params: [
-                    { name: '操作', type: 'select', options: ['open', 'change'] },
-                    { name: 'NPC', type: 'text', placeholder: '@e[type=npc]' },
-                    { name: '玩家', type: 'text', placeholder: '@p' }
-                ]
-            },
-            difficulty: {
-                name: 'difficulty',
-                desc: '设置难度',
-                params: [
-                    { name: '难度', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'] }
-                ]
-            },
-            effect: {
-                name: 'effect',
-                desc: '给予/清除状态效果',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@a' },
-                    { name: '效果ID', type: 'select', options: ['speed', 'slowness', 'haste', 'mining_fatigue', 'strength', 'instant_health', 'instant_damage', 'jump_boost', 'nausea', 'regeneration', 'resistance', 'fire_resistance', 'water_breathing', 'invisibility', 'blindness', 'night_vision', 'hunger', 'weakness', 'poison', 'wither', 'health_boost', 'absorption', 'saturation', 'levitation', 'fatal_poison', 'conduit_power', 'slow_falling', 'bad_omen', 'hero_of_the_village', 'darkness', 'clear'] },
-                    { name: '持续时间(秒)', type: 'number', placeholder: '30' },
-                    { name: '等级', type: 'number', placeholder: '1' },
-                    { name: '隐藏粒子', type: 'select', options: ['true', 'false'] }
-                ]
-            },
-            enchant: {
-                name: 'enchant',
-                desc: '附魔物品',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@p' },
-                    { name: '附魔ID', type: 'select', options: ['protection', 'fire_protection', 'feather_falling', 'blast_protection', 'projectile_protection', 'thorns', 'respiration', 'depth_strider', 'aqua_affinity', 'sharpness', 'smite', 'bane_of_arthropods', 'knockback', 'fire_aspect', 'looting', 'efficiency', 'silk_touch', 'unbreaking', 'fortune', 'power', 'punch', 'flame', 'infinity', 'luck_of_the_sea', 'lure', 'frost_walker', 'mending', 'binding_curse', 'vanishing_curse', 'impaling', 'riptide', 'loyalty', 'channeling', 'multishot', 'piercing', 'quick_charge', 'soul_speed', 'swift_sneak'] },
-                    { name: '等级', type: 'number', placeholder: '1' }
-                ]
-            },
-            execute: {
-                name: 'execute',
-                desc: '执行指令(高级)',
-                params: [
-                    { name: '执行者', type: 'text', placeholder: '@a' },
-                    { name: '位置X', type: 'text', placeholder: '~ ~1 ~' },
-                    { name: '位置Y', type: 'text', placeholder: '' },
-                    { name: '位置Z', type: 'text', placeholder: '' },
-                    { name: '要执行的指令', type: 'text', placeholder: 'say Hello' }
-                ]
-            },
-            fill: {
-                name: 'fill',
-                desc: '填充区域',
-                params: [
-                    { name: '起始X', type: 'number', placeholder: '0' },
-                    { name: '起始Y', type: 'number', placeholder: '0' },
-                    { name: '起始Z', type: 'number', placeholder: '0' },
-                    { name: '结束X', type: 'number', placeholder: '10' },
-                    { name: '结束Y', type: 'number', placeholder: '10' },
-                    { name: '结束Z', type: 'number', placeholder: '10' },
-                    { name: '方块ID', type: 'text', placeholder: 'stone' },
-                    { name: '填充模式', type: 'select', options: ['destroy', 'hollow', 'keep', 'outline', 'replace'] }
-                ]
-            },
-            fog: {
-                name: 'fog',
-                desc: '设置雾效',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '操作', type: 'select', options: ['push', 'pop', 'remove'] },
-                    { name: '雾ID', type: 'text', placeholder: 'minecraft:fog_savanna' }
-                ]
-            },
-            function: {
-                name: 'function',
-                desc: '运行函数',
-                params: [
-                    { name: '函数路径', type: 'text', placeholder: 'myfunction' }
-                ]
-            },
-            gamemode: {
-                name: 'gamemode',
-                desc: '更改游戏模式',
-                params: [
-                    { name: '模式', type: 'select', options: ['survival', 'creative', 'adventure', 'spectator'] },
-                    { name: '玩家', type: 'text', placeholder: '@a' }
-                ]
-            },
-            gamerule: {
-                name: 'gamerule',
-                desc: '设置游戏规则',
-                params: [
-                    { name: '规则', type: 'select', options: ['commandBlockOutput', 'doDaylightCycle', 'doEntityDrops', 'doFireTick', 'doInsomnia', 'doImmediateRespawn', 'doMobLoot', 'doMobSpawning', 'doTileDrops', 'doWeatherCycle', 'drowningDamage', 'fallDamage', 'fireDamage', 'freezeDamage', 'keepInventory', 'maxCommandChainLength', 'mobGriefing', 'naturalRegeneration', 'pvp', 'randomTickSpeed', 'sendCommandFeedback', 'showCoordinates', 'showDeathMessages', 'spawnRadius', 'tntExplodes'] },
-                    { name: '值', type: 'text', placeholder: 'true' }
-                ]
-            },
-            give: {
-                name: 'give',
-                desc: '给予物品',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@p' },
-                    { name: '物品ID', type: 'text', placeholder: 'diamond' },
-                    { name: '数量', type: 'number', placeholder: '64' },
-                    { name: '数据值', type: 'number', placeholder: '0' }
-                ]
-            },
-            kill: {
-                name: 'kill',
-                desc: '杀死实体',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@e[type=zombie]' }
-                ]
-            },
-            locate: {
-                name: 'locate',
-                desc: '定位结构',
-                params: [
-                    { name: '类型', type: 'select', options: ['structure', 'biome', 'poi'] },
-                    { name: '名称', type: 'text', placeholder: 'village' }
-                ]
-            },
-            loot: {
-                name: 'loot',
-                desc: '生成战利品',
-                params: [
-                    { name: '类型', type: 'select', options: ['spawn', 'give', 'insert'] },
-                    { name: '位置/玩家', type: 'text', placeholder: '~ ~ ~' },
-                    { name: '战利品表', type: 'text', placeholder: 'loot_tables/chests/simple_dungeon' }
-                ]
-            },
-            me: {
-                name: 'me',
-                desc: '发送动作消息',
-                params: [
-                    { name: '消息', type: 'text', placeholder: '正在挖矿' }
-                ]
-            },
-            mobevent: {
-                name: 'mobevent',
-                desc: '控制生物事件',
-                params: [
-                    { name: '事件', type: 'select', options: ['minecraft:pillager_patrols_event', 'minecraft:wandering_trader_event', 'events_enabled'] },
-                    { name: '启用', type: 'select', options: ['true', 'false'] }
-                ]
-            },
-            music: {
-                name: 'music',
-                desc: '播放音乐',
-                params: [
-                    { name: '操作', type: 'select', options: ['queue', 'play', 'stop', 'volume'] },
-                    { name: '音乐ID', type: 'text', placeholder: 'music.game' }
-                ]
-            },
-            op: {
-                name: 'op',
-                desc: '授予OP权限',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: 'PlayerName' }
-                ]
-            },
-            particle: {
-                name: 'particle',
-                desc: '生成粒子效果',
-                params: [
-                    { name: '粒子ID', type: 'text', placeholder: 'minecraft:heart_particle' },
-                    { name: 'X坐标', type: 'text', placeholder: '~ ~1 ~' },
-                    { name: 'Y坐标', type: 'text', placeholder: '' },
-                    { name: 'Z坐标', type: 'text', placeholder: '' }
-                ]
-            },
-            playanimation: {
-                name: 'playanimation',
-                desc: '播放动画',
-                params: [
-                    { name: '实体', type: 'text', placeholder: '@e[type=player]' },
-                    { name: '动画名称', type: 'text', placeholder: 'animation.player.attack.rotations' }
-                ]
-            },
-            playsound: {
-                name: 'playsound',
-                desc: '播放声音',
-                params: [
-                    { name: '声音ID', type: 'text', placeholder: 'random.levelup' },
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: 'X', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' },
-                    { name: '音量', type: 'number', placeholder: '1.0' },
-                    { name: '音调', type: 'number', placeholder: '1.0' }
-                ]
-            },
-            reload: {
-                name: 'reload',
-                desc: '重载游戏数据',
-                params: []
-            },
-            replaceitem: {
-                name: 'replaceitem',
-                desc: '替换物品',
-                params: [
-                    { name: '类型', type: 'select', options: ['entity', 'block'] },
-                    { name: '目标', type: 'text', placeholder: '@p' },
-                    { name: '槽位', type: 'select', options: ['slot.weapon.mainhand', 'slot.weapon.offhand', 'slot.armor.head', 'slot.armor.chest', 'slot.armor.legs', 'slot.armor.feet', 'slot.hotbar.0'] },
-                    { name: '物品ID', type: 'text', placeholder: 'diamond_sword' },
-                    { name: '数量', type: 'number', placeholder: '1' }
-                ]
-            },
-            ride: {
-                name: 'ride',
-                desc: '骑乘控制',
-                params: [
-                    { name: '骑手', type: 'text', placeholder: '@p' },
-                    { name: '操作', type: 'select', options: ['start_riding', 'stop_riding', 'evict_riders', 'summon_rider'] },
-                    { name: '坐骑', type: 'text', placeholder: '@e[type=horse,c=1]' }
-                ]
-            },
-            say: {
-                name: 'say',
-                desc: '发送消息',
-                params: [
-                    { name: '消息', type: 'text', placeholder: 'Hello World!' }
-                ]
-            },
-            scoreboard: {
-                name: 'scoreboard',
-                desc: '记分板操作',
-                params: [
-                    { name: '操作', type: 'select', options: ['objectives add', 'objectives remove', 'objectives list', 'players set', 'players add', 'players remove', 'players reset'] },
-                    { name: '目标名称', type: 'text', placeholder: 'myScore' },
-                    { name: '类型', type: 'select', options: ['dummy', 'health', 'playerKillCount', 'totalKillCount', 'deathCount'] }
-                ]
-            },
-            setblock: {
-                name: 'setblock',
-                desc: '放置方块',
-                params: [
-                    { name: 'X坐标', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y坐标', type: 'text', placeholder: '' },
-                    { name: 'Z坐标', type: 'text', placeholder: '' },
-                    { name: '方块ID', type: 'text', placeholder: 'diamond_block' },
-                    { name: '放置模式', type: 'select', options: ['destroy', 'keep', 'replace'] }
-                ]
-            },
-            setmaxplayers: {
-                name: 'setmaxplayers',
-                desc: '设置最大玩家数',
-                params: [
-                    { name: '数量', type: 'number', placeholder: '20' }
-                ]
-            },
-            setworldspawn: {
-                name: 'setworldspawn',
-                desc: '设置世界出生点',
-                params: [
-                    { name: 'X', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' }
-                ]
-            },
-            spawnpoint: {
-                name: 'spawnpoint',
-                desc: '设置玩家出生点',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: 'X', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' }
-                ]
-            },
-            spreadplayers: {
-                name: 'spreadplayers',
-                desc: '随机传送',
-                params: [
-                    { name: '中心X', type: 'number', placeholder: '0' },
-                    { name: '中心Z', type: 'number', placeholder: '0' },
-                    { name: '最小距离', type: 'number', placeholder: '10' },
-                    { name: '最大范围', type: 'number', placeholder: '50' },
-                    { name: '目标', type: 'text', placeholder: '@a' }
-                ]
-            },
-            stopsound: {
-                name: 'stopsound',
-                desc: '停止声音',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '声音ID', type: 'text', placeholder: 'random.levelup' }
-                ]
-            },
-            structure: {
-                name: 'structure',
-                desc: '结构操作',
-                params: [
-                    { name: '操作', type: 'select', options: ['save', 'load', 'delete'] },
-                    { name: '结构名称', type: 'text', placeholder: 'mystructure' },
-                    { name: 'X Y Z', type: 'text', placeholder: '~ ~ ~' }
-                ]
-            },
-            summon: {
-                name: 'summon',
-                desc: '召唤实体',
-                params: [
-                    { name: '实体ID', type: 'select', options: ['zombie', 'skeleton', 'creeper', 'spider', 'enderman', 'wither', 'ender_dragon', 'villager', 'iron_golem', 'wolf', 'cat', 'horse', 'cow', 'pig', 'sheep', 'chicken', 'warden', 'allay', 'frog', 'axolotl'] },
-                    { name: 'X', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' },
-                    { name: '实体事件', type: 'text', placeholder: 'minecraft:entity_born' }
-                ]
-            },
-            tag: {
-                name: 'tag',
-                desc: '标签操作',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@a' },
-                    { name: '操作', type: 'select', options: ['add', 'remove', 'list'] },
-                    { name: '标签名', type: 'text', placeholder: 'myTag' }
-                ]
-            },
-            teleport: {
-                name: 'teleport',
-                desc: '传送实体',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@p' },
-                    { name: 'X', type: 'text', placeholder: '0' },
-                    { name: 'Y', type: 'text', placeholder: '100' },
-                    { name: 'Z', type: 'text', placeholder: '0' },
-                    { name: 'Y旋转', type: 'text', placeholder: 'facing' },
-                    { name: 'X旋转', type: 'text', placeholder: '' }
-                ]
-            },
-            tellraw: {
-                name: 'tellraw',
-                desc: '发送JSON消息',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: 'JSON文本', type: 'textarea', placeholder: '{"rawtext":[{"text":"§6Hello!"}]}' }
-                ]
-            },
-            testfor: {
-                name: 'testfor',
-                desc: '测试实体',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@a[r=10]' }
-                ]
-            },
-            testforblock: {
-                name: 'testforblock',
-                desc: '测试方块',
-                params: [
-                    { name: 'X Y Z', type: 'text', placeholder: '~ ~ ~' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' },
-                    { name: '方块ID', type: 'text', placeholder: 'diamond_block' }
-                ]
-            },
-            testforblocks: {
-                name: 'testforblocks',
-                desc: '测试区域方块',
-                params: [
-                    { name: '起始X Y Z', type: 'text', placeholder: '0 0 0' },
-                    { name: '起始Y', type: 'text', placeholder: '' },
-                    { name: '起始Z', type: 'text', placeholder: '' },
-                    { name: '结束X', type: 'text', placeholder: '10' },
-                    { name: '结束Y', type: 'text', placeholder: '10' },
-                    { name: '结束Z', type: 'text', placeholder: '10' },
-                    { name: '目标X', type: 'text', placeholder: '20' },
-                    { name: '目标Y', type: 'text', placeholder: '0' },
-                    { name: '目标Z', type: 'text', placeholder: '0' }
-                ]
-            },
-            tickingarea: {
-                name: 'tickingarea',
-                desc: '常加载区域',
-                params: [
-                    { name: '操作', type: 'select', options: ['add', 'remove', 'remove_all', 'list'] },
-                    { name: '起始X Y Z', type: 'text', placeholder: '~ ~ ~' },
-                    { name: '起始Y', type: 'text', placeholder: '' },
-                    { name: '起始Z', type: 'text', placeholder: '' },
-                    { name: '结束X', type: 'text', placeholder: '~10 ~10 ~10' },
-                    { name: '结束Y', type: 'text', placeholder: '' },
-                    { name: '结束Z', type: 'text', placeholder: '' },
-                    { name: '名称', type: 'text', placeholder: 'myArea' }
-                ]
-            },
-            time: {
-                name: 'time',
-                desc: '时间操作',
-                params: [
-                    { name: '操作', type: 'select', options: ['set', 'add', 'query'] },
-                    { name: '值', type: 'select', options: ['day', 'night', 'noon', 'midnight', 'sunrise', 'sunset', '0', '6000', '12000', '18000'] }
-                ]
-            },
-            title: {
-                name: 'title',
-                desc: '显示标题',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '类型', type: 'select', options: ['title', 'subtitle', 'actionbar', 'clear', 'reset', 'times'] },
-                    { name: '文本', type: 'text', placeholder: '§6欢迎!' }
-                ]
-            },
-            titleraw: {
-                name: 'titleraw',
-                desc: '显示JSON标题',
-                params: [
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '类型', type: 'select', options: ['title', 'subtitle', 'actionbar'] },
-                    { name: 'JSON文本', type: 'textarea', placeholder: '{"rawtext":[{"text":"§6欢迎!"}]}' }
-                ]
-            },
-            toggledownfall: {
-                name: 'toggledownfall',
-                desc: '切换天气',
-                params: []
-            },
-            tp: {
-                name: 'tp',
-                desc: '传送(简化版)',
-                params: [
-                    { name: '目标', type: 'text', placeholder: '@p' },
-                    { name: 'X Y Z', type: 'text', placeholder: '0 100 0' },
-                    { name: 'Y', type: 'text', placeholder: '' },
-                    { name: 'Z', type: 'text', placeholder: '' }
-                ]
-            },
-            weather: {
-                name: 'weather',
-                desc: '设置天气',
-                params: [
-                    { name: '天气', type: 'select', options: ['clear', 'rain', 'thunder'] },
-                    { name: '持续时间', type: 'number', placeholder: '300' }
-                ]
-            },
-            wsserver: {
-                name: 'wsserver',
-                desc: 'WebSocket服务器',
-                params: [
-                    { name: 'URL', type: 'text', placeholder: 'ws://localhost:8080' }
-                ]
-            },
-            xp: {
-                name: 'xp',
-                desc: '给予经验',
-                params: [
-                    { name: '数量', type: 'number', placeholder: '100' },
-                    { name: '玩家', type: 'text', placeholder: '@a' },
-                    { name: '类型', type: 'select', options: ['points', 'levels'] }
-                ]
+        const MAX_DEPTH = 150.0;
+        const MAX_DIAMETER = 5.0;
+        const DEFAULT_COUNT = 10;
+        let toyLength, toyDiameter, totalCount, actionDelay = 0;
+        let cycleCount = 0, totalInsertions = 0, sessionStartTime = 0;
+        let isRunning = false;
+        const logEl = document.getElementById('log');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        function shakeInput(input) {
+            input.classList.add('shake');
+            setTimeout(() => input.classList.remove('shake'), 500);
+        }
+
+        function addLog(message, className = '') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${className}`;
+            entry.textContent = `[${cycleCount}/${totalCount}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function updateStatus() {
+            const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+            const h = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+            const m = Math.floor((elapsed % 3600) / 3600 * 60).toString().padStart(2, '0');
+            const s = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('elapsedTime').textContent = `${h}:${m}:${s}`;
+            document.getElementById('cycleProgress').textContent = `${cycleCount}/${totalCount}`;
+            document.getElementById('insertions').textContent = totalInsertions;
+            const progress = (cycleCount / totalCount) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        function calculateFrequency() {
+            toyLength = parseFloat(document.getElementById('toyLength').value);
+            toyDiameter = parseFloat(document.getElementById('toyDiameter').value);
+            totalCountInput = parseInt(document.getElementById('totalCount').value) || DEFAULT_COUNT;
+
+            if (isNaN(toyLength) || toyLength <= 0 || toyLength > MAX_DEPTH) {
+                shakeInput(document.getElementById('toyLength'));
+                addLog('输入无效！长度需为0-150cm数字。', 'error');
+                return;
             }
-        };
-
-        // 粒子效果数据库
-        const particles = [
-            'minecraft:arrow_spell_emitter', 'minecraft:balloon_gas_particle', 'minecraft:basic_bubble_particle',
-            'minecraft:basic_flame_particle', 'minecraft:basic_portal_particle', 'minecraft:basic_smoke_particle',
-            'minecraft:bleach', 'minecraft:blue_flame_particle', 'minecraft:breaking_item_icon',
-            'minecraft:camera_shoot_explosion', 'minecraft:campfire_smoke_particle', 'minecraft:campfire_tall_smoke_particle',
-            'minecraft:candle_flame_particle', 'minecraft:cauldron_explosion_emitter', 'minecraft:cherry_leaves_particle',
-            'minecraft:colored_flame_particle', 'minecraft:conduit_particle', 'minecraft:critical_hit_emitter',
-            'minecraft:crop_growth_emitter', 'minecraft:death_explosion_emitter', 'minecraft:dolphin_move_particle',
-            'minecraft:dragon_breath_fire', 'minecraft:dragon_breath_lingering', 'minecraft:dragon_breath_trail',
-            'minecraft:dragon_death_explosion_emitter', 'minecraft:dragon_destroy_block', 'minecraft:dragon_dying_explosion',
-            'minecraft:electric_spark_particle', 'minecraft:enchanting_table_particle', 'minecraft:end_chest',
-            'minecraft:evocation_fang_particle', 'minecraft:evoker_spell', 'minecraft:explosion_manual',
-            'minecraft:explosion_particle', 'minecraft:eye_of_ender_bubble_particle', 'minecraft:falling_dust_concrete_powder_particle',
-            'minecraft:falling_dust_dragon_egg_particle', 'minecraft:falling_dust_gravel_particle', 'minecraft:falling_dust_red_sand_particle',
-            'minecraft:falling_dust_sand_particle', 'minecraft:falling_dust_scaffolding_particle', 'minecraft:falling_dust_top_snow_particle',
-            'minecraft:fish_hook_particle', 'minecraft:fish_pos_particle', 'minecraft:guardian_attack_particle',
-            'minecraft:guardian_water_move_particle', 'minecraft:heart_particle', 'minecraft:honey_drip_particle',
-            'minecraft:huge_explosion_emitter', 'minecraft:huge_explosion_lab_misc_emitter', 'minecraft:ice_evaporation_emitter',
-            'minecraft:ink_emitter', 'minecraft:lab_table_heatblock_dust_particle', 'minecraft:lab_table_misc_mystical_particle',
-            'minecraft:lava_drip_particle', 'minecraft:lava_particle', 'minecraft:llama_spit_smoke',
-            'minecraft:magnesium_salts_emitter', 'minecraft:mob_block_spawn_emitter', 'minecraft:mob_portal',
-            'minecraft:mycelium_dust_particle', 'minecraft:nectar_drip_particle', 'minecraft:note_particle',
-            'minecraft:obsidian_glow_dust_particle', 'minecraft:obsidian_tear_particle', 'minecraft:phantom_trail_particle',
-            'minecraft:portal_directional', 'minecraft:portal_east_west', 'minecraft:portal_north_south',
-            'minecraft:rain_splash_particle', 'minecraft:redstone_ore_dust_particle', 'minecraft:redstone_repeater_dust_particle',
-            'minecraft:redstone_torch_dust_particle', 'minecraft:rising_border_dust_particle', 'minecraft:sculk_sensor_redstone_particle',
-            'minecraft:sculk_soul_particle', 'minecraft:shulker_bullet', 'minecraft:silverfish_grief_emitter',
-            'minecraft:snowflake_particle', 'minecraft:soul_particle', 'minecraft:sparkler_emitter',
-            'minecraft:splash_spell_emitter', 'minecraft:sponge_absorb_water_particle', 'minecraft:spore_blossom_shower_particle',
-            'minecraft:squid_flee_particle', 'minecraft:squid_ink_bubble', 'minecraft:squid_move_particle',
-            'minecraft:stalactite_drip_water_particle', 'minecraft:totem_manual', 'minecraft:totem_particle',
-            'minecraft:trail_particle', 'minecraft:trial_spawner_detection', 'minecraft:trial_spawner_detection_ominous',
-            'minecraft:underwater_torch_particle', 'minecraft:villager_angry', 'minecraft:villager_happy',
-            'minecraft:water_drip_particle', 'minecraft:water_evaporation_actor_emitter', 'minecraft:water_evaporation_bucket_emitter',
-            'minecraft:water_splash_particle_manual', 'minecraft:water_wake_particle', 'minecraft:wither_boss_invulnerable'
-        ];
-
-        // 常用模板
-        const templates = [
-            { name: '清空背包', cmd: '/clear @a' },
-            { name: '创造模式', cmd: '/gamemode creative @s' },
-            { name: '生存模式', cmd: '/gamemode survival @s' },
-            { name: '保持物品栏', cmd: '/gamerule keepInventory true' },
-            { name: '召唤闪电', cmd: '/summon lightning_bolt ~ ~ ~' },
-            { name: '设置白天', cmd: '/time set day' },
-            { name: '设置晚上', cmd: '/time set night' },
-            { name: '晴朗天气', cmd: '/weather clear 999999' },
-            { name: '传送世界出生点', cmd: '/tp @s 0 100 0' },
-            { name: '满级附魔剑', cmd: '/give @s diamond_sword 1 0 {ench:[{id:9,lvl:5},{id:10,lvl:2},{id:20,lvl:2},{id:34,lvl:3}]}' },
-            { name: '无敌效果', cmd: '/effect @s resistance 999999 255 true' },
-            { name: '速度效果', cmd: '/effect @s speed 999999 2 true' },
-            { name: '夜视效果', cmd: '/effect @s night_vision 999999 1 true' },
-            { name: '飞行能力', cmd: '/ability @s mayfly true' },
-            { name: '关闭怪物生成', cmd: '/gamerule doMobSpawning false' },
-            { name: '关闭火焰蔓延', cmd: '/gamerule doFireTick false' },
-            { name: '显示坐标', cmd: '/gamerule showCoordinates true' },
-            { name: '清除附近怪物', cmd: '/kill @e[type=!player,r=50]' },
-            { name: '召唤凋零', cmd: '/summon wither ~ ~ ~' },
-            { name: '填充钻石块', cmd: '/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 diamond_block' },
-            { name: '传送到最近玩家', cmd: '/tp @s @p' },
-            { name: '给所有玩家钻石', cmd: '/give @a diamond 64' },
-            { name: '满血恢复', cmd: '/effect @s instant_health 1 255' },
-            { name: '隐身效果', cmd: '/effect @s invisibility 999999 1 true' }
-        ];
-
-        let commandHistory = [];
-        let currentCommand = '';
-
-        // 初始化
-        function init() {
-            renderCommandList();
-            renderParticles();
-            renderTemplates();
-        }
-
-        // 渲染指令列表
-        function renderCommandList() {
-            const list = document.getElementById('commandList');
-            list.innerHTML = '';
-            
-            Object.keys(commands).forEach(cmd => {
-                const btn = document.createElement('button');
-                btn.className = 'cmd-btn';
-                btn.innerHTML = `/${cmd}<br><small style="opacity:0.7">${commands[cmd].desc}</small>`;
-                btn.onclick = () => selectCommand(cmd);
-                list.appendChild(btn);
-            });
-        }
-
-        // 选择指令
-        function selectCommand(cmdName) {
-            currentCommand = cmdName;
-            document.getElementById('currentCmd').textContent = `/${cmdName}`;
-            
-            // 更新按钮状态
-            document.querySelectorAll('.cmd-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.closest('.cmd-btn').classList.add('active');
-            
-            // 生成表单
-            const form = document.getElementById('commandForm');
-            const cmd = commands[cmdName];
-            
-            let html = `<div class="info-box">${cmd.desc}</div>`;
-            
-            if (cmd.params.length === 0) {
-                html += '<p style="color: var(--warning);">此指令无需参数</p>';
-                html += `<button class="generate-btn" onclick="generateCommand('${cmdName}')">生成指令</button>`;
-            } else {
-                cmd.params.forEach((param, index) => {
-                    html += `<div class="form-group">`;
-                    html += `<label>${param.name}</label>`;
-                    
-                    if (param.type === 'select') {
-                        html += `<select id="param_${index}">`;
-                        param.options.forEach(opt => {
-                            html += `<option value="${opt}">${opt}</option>`;
-                        });
-                        html += `</select>`;
-                    } else if (param.type === 'textarea') {
-                        html += `<textarea id="param_${index}" placeholder="${param.placeholder}"></textarea>`;
-                    } else {
-                        html += `<input type="${param.type}" id="param_${index}" placeholder="${param.placeholder}">`;
-                    }
-                    
-                    html += `</div>`;
-                });
-                
-                html += `<button class="generate-btn" onclick="generateCommand('${cmdName}')">生成指令</button>`;
+            if (isNaN(toyDiameter) || toyDiameter <= 0 || toyDiameter > MAX_DIAMETER) {
+                shakeInput(document.getElementById('toyDiameter'));
+                addLog('输入无效！直径需为0-5cm数字。', 'error');
+                return;
             }
-            
-            form.innerHTML = html;
+            totalCount = totalCountInput % 2 === 1 ? totalCountInput + 1 : totalCountInput;
+            actionDelay = (toyLength / 50) + (toyDiameter / 5) + 0.5;
+            document.getElementById('actionDelay').textContent = actionDelay.toFixed(4);
+            document.getElementById('frequencyDisplay').classList.remove('hidden');
+            startBtn.disabled = false;
+            addLog(`玩具尺寸：${toyLength}cm (长) ${toyDiameter}cm (粗)`);
+            addLog(`“最爽”温柔频率：${actionDelay.toFixed(4)} 秒/次动作 (更慢，更充分)`);
         }
 
-        // 生成指令
-        function generateCommand(cmdName) {
-            const cmd = commands[cmdName];
-            let command = `/${cmdName}`;
-            
-            if (cmd.params.length > 0) {
-                const params = [];
-                cmd.params.forEach((param, index) => {
-                    const value = document.getElementById(`param_${index}`).value;
-                    if (value) {
-                        params.push(value);
-                    }
-                });
-                
-                if (params.length > 0) {
-                    command += ' ' + params.join(' ');
+        async function pleasureLoop() {
+            while (cycleCount < totalCount && isRunning) {
+                cycleCount++;
+                if (cycleCount % 2 === 1) {
+                    totalInsertions++;
+                    addLog(`♥ >>>>>> ${toyLength}cm 完全插入肛门！ 温柔的快感... (第 ${totalInsertions} 次)`, 'insert');
+                } else {
+                    addLog(`♥ <<<<<< ${toyLength}cm 完全拔出。 期待下一次的温柔。`, 'withdraw');
                 }
+                updateStatus();
+                await new Promise(resolve => setTimeout(resolve, actionDelay * 1000));
             }
-            
-            displayOutput(command);
-            addToHistory(command);
+            if (isRunning) sessionEnd();
         }
 
-        // 生成目标选择器
-        function generateSelector() {
-            const type = document.getElementById('selectorType').value;
-            const entityType = document.getElementById('selectorEntityType').value;
-            const name = document.getElementById('selectorName').value;
-            const r = document.getElementById('selectorR').value;
-            const rm = document.getElementById('selectorRm').value;
-            const l = document.getElementById('selectorL').value;
-            const lm = document.getElementById('selectorLm').value;
-            const mode = document.getElementById('selectorMode').value;
-            const count = document.getElementById('selectorCount').value;
-            const tag = document.getElementById('selectorTag').value;
-            
-            let selector = type;
-            const params = [];
-            
-            if (entityType) params.push(`type=${entityType}`);
-            if (name) params.push(`name="${name}"`);
-            if (r) params.push(`r=${r}`);
-            if (rm) params.push(`rm=${rm}`);
-            if (l) params.push(`l=${l}`);
-            if (lm) params.push(`lm=${lm}`);
-            if (mode) params.push(`m=${mode}`);
-            if (count) params.push(`c=${count}`);
-            if (tag) params.push(`tag=${tag}`);
-            
-            if (params.length > 0) {
-                selector += '[' + params.join(',') + ']';
+        function startSession() {
+            if (actionDelay === 0) {
+                addLog('请先计算频率！', 'error');
+                return;
             }
-            
-            displayOutput(selector);
-            addToHistory(selector);
+            cycleCount = 0;
+            totalInsertions = 0;
+            sessionStartTime = Date.now();
+            isRunning = true;
+            logEl.innerHTML = '';
+            document.getElementById('status').classList.remove('hidden');
+            startBtn.classList.add('hidden');
+            stopBtn.classList.remove('hidden');
+            updateStatus();
+            addLog('会话开始 ♥');
+            pleasureLoop();
         }
 
-        // 计算距离
-        function calculateDistance() {
-            const x1 = parseFloat(document.getElementById('calcX1').value) || 0;
-            const y1 = parseFloat(document.getElementById('calcY1').value) || 0;
-            const z1 = parseFloat(document.getElementById('calcZ1').value) || 0;
-            const x2 = parseFloat(document.getElementById('calcX2').value) || 0;
-            const y2 = parseFloat(document.getElementById('calcY2').value) || 0;
-            const z2 = parseFloat(document.getElementById('calcZ2').value) || 0;
-            
-            const dx = x2 - x1;
-            const dy = y2 - y1;
-            const dz = z2 - z1;
-            
-            const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-            const horizontalDist = Math.sqrt(dx*dx + dz*dz);
-            
-            const result = document.getElementById('calcResult');
-            result.style.display = 'block';
-            result.innerHTML = `
-                <strong>计算结果:</strong><br>
-                三维距离: ${distance.toFixed(2)} 方块<br>
-                水平距离: ${horizontalDist.toFixed(2)} 方块<br>
-                垂直距离: ${Math.abs(dy).toFixed(2)} 方块<br>
-                <br>
-                偏移量: X=${dx}, Y=${dy}, Z=${dz}
-            `;
+        function stopSession() {
+            isRunning = false;
+            addLog('会话已停止。', 'error');
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            updateStatus();
         }
 
-        // 生成相对坐标
-        function generateRelativeCoords() {
-            const x = document.getElementById('relX').value || '0';
-            const y = document.getElementById('relY').value || '0';
-            const z = document.getElementById('relZ').value || '0';
-            
-            const result = `~${x} ~${y} ~${z}`;
-            displayOutput(result);
-            addToHistory(result);
+        function sessionEnd() {
+            const duration = Math.floor((Date.now() - sessionStartTime) / 1000);
+            const h = Math.floor(duration / 3600).toString().padStart(2, '0');
+            const m = Math.floor((duration % 3600) / 3600 * 60).toString().padStart(2, '0');
+            const s = (duration % 60).toString().padStart(2, '0');
+            addLog(`恭喜！您的 ${totalInsertions} 次温柔插入已完成！ ♥♥♥`);
+            addLog(`总时长：${h}:${m}:${s}`);
+            isRunning = false;
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
         }
-
-        // 生成NBT指令
-        function generateNBT() {
-            const item = document.getElementById('nbtItem').value;
-            const enchants = Array.from(document.getElementById('nbtEnchant').selectedOptions).map(opt => opt.value);
-            const level = document.getElementById('nbtEnchantLevel').value;
-            const unbreakable = document.getElementById('nbtUnbreakable').checked;
-            
-            let command = `/give @s ${item} 1 0`;
-            
-            if (enchants.length > 0 || unbreakable) {
-                command += ' {';
-                const nbtParts = [];
-                
-                if (enchants.length > 0) {
-                    const enchIds = {
-                        'sharpness': 9, 'looting': 10, 'unbreaking': 17,
-                        'mending': 26, 'fire_aspect': 13, 'knockback': 12
-                    };
-                    const enchList = enchants.map(e => `{id:${enchIds[e]},lvl:${level}}`).join(',');
-                    nbtParts.push(`ench:[${enchList}]`);
-                }
-                
-                if (unbreakable) {
-                    nbtParts.push('Unbreakable:1');
-                }
-                
-                command += nbtParts.join(',') + '}';
-            }
-            
-            displayOutput(command);
-            addToHistory(command);
-        }
-
-        // 渲染粒子效果
-        function renderParticles() {
-            const grid = document.getElementById('particleGrid');
-            grid.innerHTML = '';
-            
-            particles.forEach(particle => {
-                const item = document.createElement('div');
-                item.className = 'particle-item';
-                item.textContent = particle.replace('minecraft:', '');
-                item.onclick = () => {
-                    const cmd = `/particle ${particle} ~ ~1 ~`;
-                    displayOutput(cmd);
-                    addToHistory(cmd);
-                };
-                grid.appendChild(item);
-            });
-        }
-
-        // 渲染模板
-        function renderTemplates() {
-            const grid = document.getElementById('templateGrid');
-            grid.innerHTML = '';
-            
-            templates.forEach(template => {
-                const btn = document.createElement('button');
-                btn.className = 'template-btn';
-                btn.textContent = template.name;
-                btn.onclick = () => {
-                    displayOutput(template.cmd);
-                    addToHistory(template.cmd);
-                };
-                grid.appendChild(btn);
-            });
-        }
-
-        // 显示输出
-        function displayOutput(text) {
-            document.getElementById('outputBox').innerHTML = text;
-        }
-
-        // 添加到历史
-        function addToHistory(cmd) {
-            commandHistory.unshift(cmd);
-            if (commandHistory.length > 20) commandHistory.pop();
-            
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-            
-            commandHistory.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.textContent = item;
-                div.onclick = () => displayOutput(item);
-                historyList.appendChild(div);
-            });
-        }
-
-        // 复制指令
-        function copyCommand() {
-            const text = document.getElementById('outputBox').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✓ 已复制!';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
-            });
-        }
-
-        // 切换标签页
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // 搜索指令
-        document.getElementById('cmdSearch').addEventListener('input', function() {
-            const search = this.value.toLowerCase();
-            document.querySelectorAll('.cmd-btn').forEach(btn => {
-                const text = btn.textContent.toLowerCase();
-                btn.style.display = text.includes(search) ? 'block' : 'none';
-            });
-        });
-
-        // 搜索粒子
-        document.getElementById('particleSearch').addEventListener('input', function() {
-            const search = this.value.toLowerCase();
-            document.querySelectorAll('.particle-item').forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'block' : 'none';
-            });
-        });
-
-        // 页面加载时初始化
-        window.onload = init;
     </script>
 </body>
 </html>
