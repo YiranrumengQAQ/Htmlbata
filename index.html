@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>♥ Advanced Pleasure Analytics V4.0</title>
+    <title>美景随享 - 精美风景图片集</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #ff1493;
             --primary-light: #ff69b4;
-            --secondary: #ff6b9d;
+            --secondary: #667eea;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
             --shadow: 0 20px 60px rgba(0,0,0,0.15);
@@ -17,15 +20,274 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            /* 禁止选择文本 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: var(--bg-gradient);
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+        
+        /* 禁止复制 */
+        body {
+            -webkit-touch-callout: none;
+        }
+        
+        /* ========== 风景界面样式 ========== */
+        #landscapeView {
             min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .landscape-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .landscape-title {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .landscape-subtitle {
+            text-align: center;
+            color: #718096;
+            margin-top: 8px;
+            font-size: 1em;
+        }
+        
+        .landscape-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #cbd5e0;
+            font-size: 1.2em;
+        }
+        
+        .image-info {
+            padding: 20px;
+        }
+        
+        .image-author {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .image-dimensions {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .refresh-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        
+        .landscape-footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            text-align: center;
+            color: #718096;
+            margin-top: 60px;
+        }
+        
+        /* 秘密触发器 - 完全隐藏 */
+        #secretTrigger {
+            cursor: default;
+        }
+        
+        /* 石头掉落弹窗 */
+        .stone-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .stone-modal.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .stone-drop {
+            font-size: 8em;
+            animation: stoneDrop 1s ease-out;
+        }
+        
+        @keyframes stoneDrop {
+            0% {
+                transform: translateY(-500px) rotate(0deg);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(0) rotate(360deg);
+                opacity: 1;
+            }
+            70% {
+                transform: translateY(-50px) rotate(380deg);
+            }
+            80% {
+                transform: translateY(0) rotate(360deg);
+            }
+            90% {
+                transform: translateY(-20px) rotate(370deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        /* 隐藏的石头按钮 */
+        .hidden-stone {
+            position: fixed;
+            bottom: 120px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            font-size: 2.5em;
+            cursor: pointer;
+            z-index: 60;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .hidden-stone.visible {
+            display: block;
+        }
+        
+        /* ========== 隐藏的功能界面样式 ========== */
+        #appView {
+            display: none;
+        }
+        
+        #appView.active {
+            display: block;
+        }
+        
+        body.app-mode {
+            background: var(--bg-gradient);
             padding: 20px;
             color: #2d3748;
-            overflow-x: hidden;
+        }
+        
+        .exit-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #fc8181, #f56565);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .exit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.6);
         }
         
         .app-container {
@@ -141,6 +403,151 @@
             background: white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .toggle-section {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border: 2px solid #7dd3fc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .toggle-section.active {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: var(--success);
+        }
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+            appearance: none;
+            background: white;
+            border: 3px solid #cbd5e0;
+            border-radius: 6px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:hover {
+            border-color: var(--primary-light);
+            transform: scale(1.1);
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, var(--success), #38a169);
+            border-color: var(--success);
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+        
+        .toggle-icon {
+            font-size: 1.8em;
+        }
+        
+        .toggle-status {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+        }
+        
+        .toggle-status.enabled {
+            color: #065f46;
+            background: rgba(167, 243, 208, 0.5);
+        }
+        
+        .settings-history {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .settings-history h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .history-item {
+            background: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-timestamp {
+            color: #78350f;
+            font-size: 0.8em;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-mini {
+            padding: 4px 10px;
+            font-size: 0.75em;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .btn-restore {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #fca5a5, #f87171);
+            color: white;
         }
         
         .btn {
@@ -306,15 +713,40 @@
             border-left: 4px solid #48bb78;
         }
         
+        .log-motivation {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-left: 4px solid #6366f1;
+        }
+        
         .safety-alert {
-            background: linear-gradient(135deg, #fed7d7, #fecaca);
-            border: 2px solid #f56565;
+            border: 2px solid;
             border-radius: 12px;
             padding: 15px;
             margin-top: 15px;
             display: flex;
             align-items: center;
             gap: 12px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .safety-alert.high {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: var(--success);
+        }
+        
+        .safety-alert.medium {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: var(--warning);
+        }
+        
+        .safety-alert.low {
+            background: linear-gradient(135deg, #fed7d7, #fecaca);
+            border-color: var(--danger);
         }
         
         .safety-icon {
@@ -368,6 +800,65 @@
             transform: scaleY(1.05);
         }
         
+        .health-report {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 3px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            animation: slideDown 0.5s ease;
+        }
+        
+        .health-report h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .health-item {
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .health-item strong {
+            color: #92400e;
+        }
+        
+        .care-tips {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .care-tips h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+        
+        .care-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .care-tips li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .care-tips li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
         .hidden { display: none !important; }
         
         @media (max-width: 768px) {
@@ -378,15 +869,14 @@
             .logo {
                 font-size: 1.8em;
             }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .landscape-title {
+                font-size: 1.8em;
+            }
         }
         
         .celebration {
@@ -405,148 +895,473 @@
             50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="card full-width">
-            <header>
-                <div class="logo">♥ PLEASURE ANALYTICS PRO ♥</div>
-                <div class="version">Version 4.0 - 智能计算 | 安全监控 | 数据分析</div>
-            </header>
+    <!-- 石头掉落弹窗 -->
+    <div class="stone-modal" id="stoneModal">
+        <div class="stone-drop">🪨</div>
+    </div>
+    
+    <!-- 隐藏的石头按钮 -->
+    <div class="hidden-stone" id="hiddenStone">🪨</div>
+    
+    <!-- 风景界面 -->
+    <div id="landscapeView">
+        <div class="landscape-header">
+            <h1 class="landscape-title">🌄 美景随享</h1>
+            <p class="landscape-subtitle">发现世界各地的精美风景照片</p>
         </div>
-
-        <!-- Settings Panel -->
-        <div class="card">
-            <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ 参数设置</h2>
-            
-            <div class="form-group">
-                <label>玩具长度 (cm)</label>
-                <div class="input-wrapper">
-                    <input type="number" id="toyLength" min="1" max="150" step="0.1" value="15">
-                    <span class="input-unit">cm</span>
-                </div>
-                <input type="range" class="range-slider" id="lengthSlider" min="1" max="150" step="0.1" value="15">
-            </div>
-            
-            <div class="form-group">
-                <label>玩具直径 (cm)</label>
-                <div class="input-wrapper">
-                    <input type="number" id="toyDiameter" min="0.5" max="10" step="0.1" value="3">
-                    <span class="input-unit">cm</span>
-                </div>
-                <input type="range" class="range-slider" id="diameterSlider" min="0.5" max="10" step="0.1" value="3">
-            </div>
-            
-            <div class="form-group">
-                <label>材质类型</label>
-                <select id="material">
-                    <option value="silicone">硅胶 (柔软)</option>
-                    <option value="tpe">TPE (中等)</option>
-                    <option value="glass">玻璃 (坚硬)</option>
-                    <option value="metal">金属 (非常硬)</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>使用次数</label>
-                <div class="input-wrapper">
-                    <input type="number" id="totalCount" min="2" max="100" step="2" value="10">
-                    <span class="input-unit">次</span>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>使用经验</label>
-                <select id="experience">
-                    <option value="beginner">初学者 (更慢)</option>
-                    <option value="intermediate" selected>中级 (适中)</option>
-                    <option value="advanced">高级 (更快)</option>
-                </select>
-            </div>
-            
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="calculateParams()">
-                    🧮 计算参数
-                </button>
-                <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled>
-                    ▶️ 开始会话
-                </button>
-            </div>
-            
-            <div id="calculationResult" class="hidden"></div>
-            <div id="safetyAlert" class="hidden"></div>
+        
+        <div class="landscape-container">
+            <div class="gallery-grid" id="gallery"></div>
         </div>
-
-        <!-- Statistics Panel -->
-        <div class="card">
-            <h2 style="margin-bottom: 20px; color: var(--primary);">📊 实时统计</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="stat-card">
-                    <div class="stat-label">运行时间</div>
-                    <div class="stat-value" id="timer">00:00:00</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">完成进度</div>
-                    <div class="stat-value" id="progress">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">插入次数</div>
-                    <div class="stat-value" id="insertCount">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">剩余时间</div>
-                    <div class="stat-value" id="remaining">--:--</div>
-                </div>
-            </div>
-            
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressBar"></div>
-                </div>
-            </div>
-            
-            <div class="btn-group hidden" id="controlButtons">
-                <button class="btn btn-secondary" onclick="pauseSession()">
-                    ⏸️ <span id="pauseText">暂停</span>
-                </button>
-                <button class="btn btn-danger" onclick="stopSession()">
-                    ⏹️ 停止
-                </button>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <h3 style="font-size: 1em; color: #4a5568; margin-bottom: 10px;">会话历史</h3>
-                <div class="chart-container" id="historyChart">
-                    <div style="text-align: center; width: 100%; color: #a0aec0;">暂无数据</div>
-                </div>
-            </div>
+        
+        <button class="refresh-btn" onclick="refreshGallery()" title="刷新图片">
+            🔄
+        </button>
+        
+        <div class="landscape-footer">
+            <p>图片来源: Lorem Picsum | 每次刷新都有新惊喜</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">© 2025 美景随享. All <span id="secretTrigger">r</span>ights reserved.</p>
         </div>
+    </div>
 
-        <!-- Log Panel -->
-        <div class="card full-width">
-            <h2 style="margin-bottom: 15px; color: var(--primary);">📝 活动日志</h2>
-            <div class="log-container" id="logContainer">
-                <div class="log-entry log-info">
-                    <span class="log-icon">ℹ️</span>
-                    <span>系统就绪，请设置参数并开始会话</span>
+    <!-- 功能界面 -->
+    <div id="appView">
+        <button class="exit-btn" onclick="exitApp()">← 返回风景</button>
+        
+        <div class="app-container">
+            <div class="card full-width">
+                <header>
+                    <div class="logo">♥ PLEASURE ANALYTICS PRO ♥</div>
+                    <div class="version">Version 5.0 - 智能计算 | 设置记忆 | 健康监测</div>
+                </header>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ 参数设置</h2>
+                
+                <div class="toggle-section" id="lubeSection">
+                    <div class="toggle-row">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="useLube" onchange="toggleLube()">
+                            <div class="checkbox-label">
+                                <span class="toggle-icon">💧</span>
+                                <span>使用润滑剂</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="toggle-status" id="lubeStatus">未使用润滑剂</div>
                 </div>
+                
+                <div class="toggle-section" id="tipsSection">
+                    <div class="toggle-row">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="showMotivation" checked onchange="toggleMotivation()">
+                            <div class="checkbox-label">
+                                <span class="toggle-icon">💬</span>
+                                <span>中途鼓励提示</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="toggle-status enabled" id="motivationStatus">已开启</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>玩具长度 (cm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="toyLength" min="1" max="150" step="0.1" value="15" onchange="saveSettings()">
+                        <span class="input-unit">cm</span>
+                    </div>
+                    <input type="range" class="range-slider" id="lengthSlider" min="1" max="150" step="0.1" value="15">
+                </div>
+                
+                <div class="form-group">
+                    <label>玩具直径 (cm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="toyDiameter" min="0.5" max="10" step="0.1" value="3" onchange="saveSettings()">
+                        <span class="input-unit">cm</span>
+                    </div>
+                    <input type="range" class="range-slider" id="diameterSlider" min="0.5" max="10" step="0.1" value="3">
+                </div>
+                
+                <div class="form-group">
+                    <label>使用次数</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="totalCount" min="2" max="100" step="2" value="10" onchange="saveSettings()">
+                        <span class="input-unit">次</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>使用经验</label>
+                    <select id="experience" onchange="saveSettings()">
+                        <option value="beginner">初学者</option>
+                        <option value="intermediate" selected>中级者</option>
+                        <option value="advanced">高级者</option>
+                        <option value="expert">专家级</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="calculateParams()">
+                        🧮 智能计算
+                    </button>
+                    <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled>
+                        ▶️ 开始会话
+                    </button>
+                </div>
+                
+                <div id="calculationResult" class="hidden"></div>
+                <div id="safetyAlert" class="hidden"></div>
+                
+                <div class="settings-history hidden" id="settingsHistory">
+                    <h4>📋 最近设置记录</h4>
+                    <div id="historyList"></div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="btn-mini" style="background: #64748b; color: white;" onclick="clearAllHistory()">
+                            清空所有记录
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">📊 实时统计</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-label">运行时间</div>
+                        <div class="stat-value" id="timer">00:00:00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">完成进度</div>
+                        <div class="stat-value" id="progress">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">插入次数</div>
+                        <div class="stat-value" id="insertCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">剩余时间</div>
+                        <div class="stat-value" id="remaining">--:--</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                </div>
+                
+                <div class="btn-group hidden" id="controlButtons">
+                    <button class="btn btn-secondary" onclick="pauseSession()">
+                        ⏸️ <span id="pauseText">暂停</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="stopSession()">
+                        ⏹️ 停止
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 1em; color: #4a5568; margin-bottom: 10px;">会话历史</h3>
+                    <div class="chart-container" id="historyChart">
+                        <div style="text-align: center; width: 100%; color: #a0aec0;">暂无数据</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <h2 style="margin-bottom: 15px; color: var(--primary);">📝 活动日志</h2>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry log-info">
+                        <span class="log-icon">ℹ️</span>
+                        <span>系统就绪 - 您的设置会自动保存</span>
+                    </div>
+                </div>
+                
+                <div id="healthReport" class="hidden"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Global Variables
+        // 禁止复制和右键菜单
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('cut', (e) => e.preventDefault());
+        
+        // 禁止键盘复制快捷键
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) {
+                e.preventDefault();
+            }
+        });
+        
+        // ========== 秘密触发机制 ==========
+        let triggerClickCount = 0;
+        let stoneClickCount = 0;
+        let stoneVisible = false;
+        
+        // 第一步：点击页脚不起眼的字母"r" 10次
+        document.getElementById('secretTrigger').addEventListener('click', function(e) {
+            e.stopPropagation();
+            triggerClickCount++;
+            
+            if (triggerClickCount >= 10) {
+                showStoneModal();
+                triggerClickCount = 0;
+            }
+        });
+        
+        // 显示石头掉落动画
+        function showStoneModal() {
+            const modal = document.getElementById('stoneModal');
+            modal.classList.add('active');
+            
+            setTimeout(() => {
+                modal.classList.remove('active');
+                showHiddenStone();
+            }, 2000);
+        }
+        
+        // 显示隐藏的石头
+        function showHiddenStone() {
+            const stone = document.getElementById('hiddenStone');
+            stone.classList.add('visible');
+            stoneVisible = true;
+        }
+        
+        // 第二步：点击石头10次（无任何反馈）
+        document.getElementById('hiddenStone').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!stoneVisible) return;
+            
+            stoneClickCount++;
+            
+            if (stoneClickCount >= 10) {
+                enterApp();
+                stoneClickCount = 0;
+                this.classList.remove('visible');
+                stoneVisible = false;
+            }
+        });
+        
+        // ========== 风景界面逻辑 ==========
+        function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            for (let i = 0; i < 12; i++) {
+                const randomId = Math.floor(Math.random() * 1000);
+                createImageCard(randomId, gallery);
+            }
+        }
+        
+        function createImageCard(id, container) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-wrapper';
+            
+            const loading = document.createElement('div');
+            loading.className = 'image-loading spinner';
+            loading.textContent = '⏳';
+            wrapper.appendChild(loading);
+            
+            const img = document.createElement('img');
+            img.src = `https://picsum.photos/id/${id}/400/300`;
+            img.alt = '风景照片';
+            img.style.display = 'none';
+            
+            img.onload = function() {
+                loading.style.display = 'none';
+                img.style.display = 'block';
+            };
+            
+            img.onerror = function() {
+                loading.textContent = '❌';
+                loading.classList.remove('spinner');
+            };
+            
+            wrapper.appendChild(img);
+            card.appendChild(wrapper);
+            
+            const info = document.createElement('div');
+            info.className = 'image-info';
+            info.innerHTML = `
+                <div class="image-author">Image #${id}</div>
+                <div class="image-dimensions">400 × 300 px</div>
+            `;
+            card.appendChild(info);
+            
+            container.appendChild(card);
+        }
+        
+        function refreshGallery() {
+            loadGallery();
+        }
+        
+        function enterApp() {
+            document.getElementById('landscapeView').style.display = 'none';
+            document.getElementById('appView').classList.add('active');
+            document.body.classList.add('app-mode');
+            loadSettings();
+            loadSessionHistory();
+            displaySettingsHistory();
+        }
+        
+        function exitApp() {
+            document.getElementById('landscapeView').style.display = 'block';
+            document.getElementById('appView').classList.remove('active');
+            document.body.classList.remove('app-mode');
+            
+            // 重置计数器和石头状态
+            triggerClickCount = 0;
+            stoneClickCount = 0;
+            document.getElementById('hiddenStone').classList.remove('visible');
+            stoneVisible = false;
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+        });
+        
+        // ========== 功能界面逻辑 ==========
+        const StorageManager = {
+            KEYS: {
+                CURRENT_SETTINGS: 'pleasureAnalytics_currentSettings',
+                SETTINGS_HISTORY: 'pleasureAnalytics_settingsHistory',
+                SESSION_HISTORY: 'pleasureAnalytics_sessionHistory'
+            },
+            
+            isAvailable() {
+                try {
+                    const test = '__storage_test__';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            saveCurrentSettings(settings) {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.setItem(this.KEYS.CURRENT_SETTINGS, JSON.stringify(settings));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            loadCurrentSettings() {
+                if (!this.isAvailable()) return null;
+                try {
+                    const data = localStorage.getItem(this.KEYS.CURRENT_SETTINGS);
+                    return data ? JSON.parse(data) : null;
+                } catch(e) {
+                    return null;
+                }
+            },
+            
+            addToHistory(settings) {
+                if (!this.isAvailable()) return false;
+                try {
+                    let history = this.getSettingsHistory();
+                    const newEntry = {
+                        ...settings,
+                        timestamp: new Date().toISOString(),
+                        id: Date.now()
+                    };
+                    
+                    history.unshift(newEntry);
+                    
+                    if (history.length > 10) {
+                        history = history.slice(0, 10);
+                    }
+                    
+                    localStorage.setItem(this.KEYS.SETTINGS_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            getSettingsHistory() {
+                if (!this.isAvailable()) return [];
+                try {
+                    const data = localStorage.getItem(this.KEYS.SETTINGS_HISTORY);
+                    return data ? JSON.parse(data) : [];
+                } catch(e) {
+                    return [];
+                }
+            },
+            
+            deleteHistoryItem(id) {
+                if (!this.isAvailable()) return false;
+                try {
+                    let history = this.getSettingsHistory();
+                    history = history.filter(item => item.id !== id);
+                    localStorage.setItem(this.KEYS.SETTINGS_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            clearHistory() {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.removeItem(this.KEYS.SETTINGS_HISTORY);
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            saveSessionHistory(history) {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.setItem(this.KEYS.SESSION_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            loadSessionHistory() {
+                if (!this.isAvailable()) return [];
+                try {
+                    const data = localStorage.getItem(this.KEYS.SESSION_HISTORY);
+                    return data ? JSON.parse(data) : [];
+                } catch(e) {
+                    return [];
+                }
+            }
+        };
+        
         let config = {
             length: 15,
             diameter: 3,
-            material: 'silicone',
+            useLube: false,
+            showMotivation: true,
             totalCount: 10,
             experience: 'intermediate',
             actionDelay: 0,
-            safetyScore: 100
+            safetyScore: 100,
+            originalDelay: 0
         };
         
         let session = {
@@ -558,29 +1373,183 @@
             pauseTime: 0,
             totalPauseTime: 0,
             intervalId: null,
-            timerInterval: null
+            timerInterval: null,
+            motivationShown: 0
         };
         
         let history = [];
         
-        // Material Coefficients
-        const MATERIAL_COEF = {
-            silicone: 1.0,
-            tpe: 1.15,
-            glass: 1.3,
-            metal: 1.5
-        };
-        
-        // Experience Multipliers
         const EXP_MULTIPLIER = {
             beginner: 1.5,
             intermediate: 1.0,
-            advanced: 0.7
+            advanced: 0.7,
+            expert: 0.5
         };
         
-        // Sync Inputs with Sliders
+        const MOTIVATION_MESSAGES = [
+            '💪 做得很好！继续保持温柔的节奏',
+            '🌟 你正在享受美好的时光，放松身心',
+            '✨ 注意呼吸，让身体自然放松',
+            '💖 感受每一次愉悦，享受当下',
+            '🎯 节奏很棒！继续保持这个状态',
+            '🌈 你做得非常好，身体正在适应',
+            '💫 放松肌肉，让一切自然流动',
+            '🦋 温柔而充满耐心，这很完美',
+            '🌸 你正在照顾好自己的身体',
+            '⭐ 继续保持，你做得很棒！'
+        ];
+        
+        function loadSettings() {
+            const saved = StorageManager.loadCurrentSettings();
+            if (saved) {
+                config = { ...config, ...saved };
+                
+                document.getElementById('toyLength').value = config.length;
+                document.getElementById('lengthSlider').value = config.length;
+                document.getElementById('toyDiameter').value = config.diameter;
+                document.getElementById('diameterSlider').value = config.diameter;
+                document.getElementById('totalCount').value = config.totalCount;
+                document.getElementById('experience').value = config.experience;
+                document.getElementById('useLube').checked = config.useLube;
+                document.getElementById('showMotivation').checked = config.showMotivation;
+                
+                toggleLube();
+                toggleMotivation();
+            }
+        }
+        
+        function saveSettings() {
+            config.length = parseFloat(document.getElementById('toyLength').value);
+            config.diameter = parseFloat(document.getElementById('toyDiameter').value);
+            config.totalCount = parseInt(document.getElementById('totalCount').value);
+            config.experience = document.getElementById('experience').value;
+            
+            StorageManager.saveCurrentSettings(config);
+        }
+        
+        function saveToHistory() {
+            const settingsSnapshot = {
+                length: config.length,
+                diameter: config.diameter,
+                totalCount: config.totalCount,
+                experience: config.experience,
+                useLube: config.useLube,
+                showMotivation: config.showMotivation
+            };
+            
+            StorageManager.addToHistory(settingsSnapshot);
+            displaySettingsHistory();
+            showLog('💾 当前设置已保存到历史记录', 'success');
+        }
+        
+        function displaySettingsHistory() {
+            const historyList = document.getElementById('historyList');
+            const historySection = document.getElementById('settingsHistory');
+            const settingsHistory = StorageManager.getSettingsHistory();
+            
+            if (settingsHistory.length === 0) {
+                historySection.classList.add('hidden');
+                return;
+            }
+            
+            historySection.classList.remove('hidden');
+            historyList.innerHTML = '';
+            
+            settingsHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                
+                const date = new Date(item.timestamp);
+                const timeStr = date.toLocaleString('zh-CN', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                div.innerHTML = `
+                    <div>
+                        <div>${item.length}cm × ${item.diameter}cm | ${item.totalCount}次 | ${getExpText(item.experience)}</div>
+                        <div>
+                            ${item.useLube ? '💧' : '❌'} 
+                            ${item.showMotivation ? '💬' : '🔇'}
+                        </div>
+                        <div class="history-timestamp">${timeStr}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn-mini btn-restore" onclick="restoreSettings(${item.id})">恢复</button>
+                        <button class="btn-mini btn-delete" onclick="deleteHistoryItem(${item.id})">删除</button>
+                    </div>
+                `;
+                
+                historyList.appendChild(div);
+            });
+        }
+        
+        function restoreSettings(id) {
+            const settingsHistory = StorageManager.getSettingsHistory();
+            const item = settingsHistory.find(s => s.id === id);
+            
+            if (item) {
+                config = { ...config, ...item };
+                
+                document.getElementById('toyLength').value = config.length;
+                document.getElementById('lengthSlider').value = config.length;
+                document.getElementById('toyDiameter').value = config.diameter;
+                document.getElementById('diameterSlider').value = config.diameter;
+                document.getElementById('totalCount').value = config.totalCount;
+                document.getElementById('experience').value = config.experience;
+                document.getElementById('useLube').checked = config.useLube;
+                document.getElementById('showMotivation').checked = config.showMotivation;
+                
+                toggleLube();
+                toggleMotivation();
+                
+                saveSettings();
+                showLog('🔄 设置已恢复', 'success');
+            }
+        }
+        
+        function deleteHistoryItem(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                StorageManager.deleteHistoryItem(id);
+                displaySettingsHistory();
+                showLog('🗑️ 记录已删除', 'info');
+            }
+        }
+        
+        function clearAllHistory() {
+            if (confirm('确定要清空所有历史记录吗？此操作不可恢复。')) {
+                StorageManager.clearHistory();
+                displaySettingsHistory();
+                showLog('🗑️ 所有历史记录已清空', 'info');
+            }
+        }
+        
+        function loadSessionHistory() {
+            history = StorageManager.loadSessionHistory();
+            if (history.length > 0) {
+                updateHistoryChart();
+            }
+        }
+        
+        function saveSessionHistory() {
+            StorageManager.saveSessionHistory(history);
+        }
+        
+        function getExpText(exp) {
+            const texts = {
+                beginner: '初学',
+                intermediate: '中级',
+                advanced: '高级',
+                expert: '专家'
+            };
+            return texts[exp] || exp;
+        }
+        
         document.getElementById('lengthSlider').addEventListener('input', (e) => {
             document.getElementById('toyLength').value = e.target.value;
+            saveSettings();
         });
         
         document.getElementById('toyLength').addEventListener('input', (e) => {
@@ -589,21 +1558,55 @@
         
         document.getElementById('diameterSlider').addEventListener('input', (e) => {
             document.getElementById('toyDiameter').value = e.target.value;
+            saveSettings();
         });
         
         document.getElementById('toyDiameter').addEventListener('input', (e) => {
             document.getElementById('diameterSlider').value = e.target.value;
         });
         
-        // Calculate Parameters
+        function toggleLube() {
+            config.useLube = document.getElementById('useLube').checked;
+            const status = document.getElementById('lubeStatus');
+            const section = document.getElementById('lubeSection');
+            
+            if (config.useLube) {
+                status.textContent = '✅ 已使用润滑剂 - 摩擦力降低30%';
+                status.classList.add('enabled');
+                section.classList.add('active');
+            } else {
+                status.textContent = '未使用润滑剂';
+                status.classList.remove('enabled');
+                section.classList.remove('active');
+            }
+            
+            saveSettings();
+        }
+        
+        function toggleMotivation() {
+            config.showMotivation = document.getElementById('showMotivation').checked;
+            const status = document.getElementById('motivationStatus');
+            const section = document.getElementById('tipsSection');
+            
+            if (config.showMotivation) {
+                status.textContent = '已开启 - 会显示鼓励提示';
+                status.classList.add('enabled');
+                section.classList.add('active');
+            } else {
+                status.textContent = '已关闭';
+                status.classList.remove('enabled');
+                section.classList.remove('active');
+            }
+            
+            saveSettings();
+        }
+        
         function calculateParams() {
             config.length = parseFloat(document.getElementById('toyLength').value);
             config.diameter = parseFloat(document.getElementById('toyDiameter').value);
-            config.material = document.getElementById('material').value;
             config.totalCount = parseInt(document.getElementById('totalCount').value);
             config.experience = document.getElementById('experience').value;
             
-            // Validation
             if (config.length < 1 || config.length > 150) {
                 showLog('❌ 长度必须在 1-150cm 之间', 'info');
                 return;
@@ -614,40 +1617,55 @@
                 return;
             }
             
-            // Ensure even number
             if (config.totalCount % 2 !== 0) {
                 config.totalCount++;
                 document.getElementById('totalCount').value = config.totalCount;
             }
             
-            // Advanced Calculation Algorithm
-            const volumeFactor = (config.length * Math.PI * Math.pow(config.diameter / 2, 2)) / 100;
-            const materialCoef = MATERIAL_COEF[config.material];
             const expMultiplier = EXP_MULTIPLIER[config.experience];
             
-            // Base delay calculation (in seconds)
-            const baseDelay = (config.length / 30) + (config.diameter / 3) + 1.2;
-            config.actionDelay = baseDelay * materialCoef * expMultiplier;
+            let baseDelay = (config.length / 30) + (config.diameter / 3) + 1.2;
+            baseDelay *= expMultiplier;
+            config.originalDelay = baseDelay;
             
-            // Safety Score (0-100)
+            if (config.useLube) {
+                config.actionDelay = baseDelay * 0.70;
+                showLog('💧 润滑剂效果: 速度提升 30%', 'success');
+            } else {
+                config.actionDelay = baseDelay;
+            }
+            
             let safetyScore = 100;
-            if (config.length > 100) safetyScore -= 20;
-            if (config.diameter > 6) safetyScore -= 25;
-            if (config.material === 'metal' || config.material === 'glass') safetyScore -= 15;
-            if (config.experience === 'beginner' && config.diameter > 4) safetyScore -= 10;
-            config.safetyScore = Math.max(0, safetyScore);
             
-            // Display Results
+            if (config.length > 100) safetyScore -= 20;
+            else if (config.length > 50) safetyScore -= 10;
+            
+            if (config.diameter > 6) safetyScore -= 25;
+            else if (config.diameter > 4) safetyScore -= 15;
+            else if (config.diameter > 3) safetyScore -= 5;
+            
+            if (config.experience === 'beginner' && config.diameter > 4) safetyScore -= 10;
+            
+            if (config.useLube) {
+                safetyScore += 20;
+            } else {
+                safetyScore -= 25;
+            }
+            
+            config.safetyScore = Math.max(0, Math.min(100, safetyScore));
+            
             displayCalculationResults();
             displaySafetyAlert();
+            saveToHistory();
             
             document.getElementById('startBtn').disabled = false;
-            showLog(`✅ 参数计算完成 - 频率: ${config.actionDelay.toFixed(2)}秒/次`, 'success');
+            showLog(`✅ 计算完成 - 频率: ${config.actionDelay.toFixed(2)}秒/次`, 'success');
         }
         
         function displayCalculationResults() {
             const totalTime = (config.totalCount * config.actionDelay / 60).toFixed(1);
-            const html = `
+            
+            let html = `
                 <div class="calculation-result">
                     <h3 style="color: #319795; margin-bottom: 15px;">📋 计算结果</h3>
                     <div class="result-item">
@@ -668,38 +1686,56 @@
                     </div>
                 </div>
             `;
+            
             document.getElementById('calculationResult').innerHTML = html;
             document.getElementById('calculationResult').classList.remove('hidden');
         }
         
         function getSafetyColor() {
             if (config.safetyScore >= 80) return '#48bb78';
-            if (config.safetyScore >= 50) return '#ed8936';
+            if (config.safetyScore >= 60) return '#ecc94b';
+            if (config.safetyScore >= 40) return '#ed8936';
             return '#f56565';
         }
         
-        function displaySafetyAlert() {
-            if (config.safetyScore < 60) {
-                const html = `
-                    <div class="safety-alert">
-                        <span class="safety-icon">⚠️</span>
-                        <div>
-                            <strong>安全提醒:</strong> 
-                            当前配置安全评分较低，请注意使用润滑剂，缓慢进行，如有不适立即停止。
-                        </div>
-                    </div>
-                `;
-                document.getElementById('safetyAlert').innerHTML = html;
-                document.getElementById('safetyAlert').classList.remove('hidden');
-            } else {
-                document.getElementById('safetyAlert').classList.add('hidden');
-            }
+        function getSafetyLevel() {
+            if (config.safetyScore >= 80) return 'high';
+            if (config.safetyScore >= 50) return 'medium';
+            return 'low';
         }
         
-        // Start Session
+        function displaySafetyAlert() {
+            const level = getSafetyLevel();
+            let icon = '✅';
+            let title = '安全等级: 优秀';
+            let message = '当前配置非常安全。';
+            
+            if (level === 'medium') {
+                icon = '⚠️';
+                title = '安全等级: 中等';
+                message = '建议使用润滑剂，缓慢进行。';
+            } else if (level === 'low') {
+                icon = '🚨';
+                title = '安全等级: 较低';
+                message = '强烈建议使用润滑剂！请极度缓慢进行。';
+            }
+            
+            const html = `
+                <div class="safety-alert ${level}">
+                    <span class="safety-icon">${icon}</span>
+                    <div>
+                        <strong>${title}</strong><br>
+                        ${message}
+                    </div>
+                </div>
+            `;
+            document.getElementById('safetyAlert').innerHTML = html;
+            document.getElementById('safetyAlert').classList.remove('hidden');
+        }
+        
         async function startSession() {
             if (config.actionDelay === 0) {
-                showLog('❌ 请先计算参数', 'info');
+                showLog('❌ 请先进行智能计算', 'info');
                 return;
             }
             
@@ -712,14 +1748,16 @@
                 pauseTime: 0,
                 totalPauseTime: 0,
                 intervalId: null,
-                timerInterval: null
+                timerInterval: null,
+                motivationShown: 0
             };
             
             document.getElementById('startBtn').disabled = true;
             document.getElementById('controlButtons').classList.remove('hidden');
+            document.getElementById('healthReport').classList.add('hidden');
             
             clearLog();
-            showLog('🚀 会话开始！准备享受愉悦时光...', 'success');
+            showLog('🚀 会话开始！', 'success');
             
             startTimer();
             runSession();
@@ -736,9 +1774,16 @@
                 
                 if (session.currentCycle % 2 === 1) {
                     session.insertions++;
-                    showLog(`♥ ➤➤➤ 第 ${session.insertions} 次插入 (${config.length}cm 深度) - 享受温柔的快感...`, 'insert');
+                    const lubeText = config.useLube ? ' [润滑顺畅]' : '';
+                    showLog(`♥ ➤➤➤ 第 ${session.insertions} 次插入${lubeText}`, 'insert');
+                    
+                    if (config.showMotivation && session.insertions % 3 === 0) {
+                        const randomMsg = MOTIVATION_MESSAGES[Math.floor(Math.random() * MOTIVATION_MESSAGES.length)];
+                        await sleep(1000);
+                        showLog(randomMsg, 'motivation');
+                    }
                 } else {
-                    showLog(`♥ ⟵⟵⟵ 完全拔出 - 准备下一次愉悦体验`, 'withdraw');
+                    showLog(`♥ ⟵⟵⟵ 完全拔出`, 'withdraw');
                 }
                 
                 updateStats();
@@ -781,20 +1826,59 @@
             const duration = Math.floor((performance.now() - session.startTime - session.totalPauseTime) / 1000);
             
             showCelebration();
-            showLog(`🎉 恭喜！会话完成！`, 'success');
+            showLog(`🎉 会话完成！`, 'success');
             showLog(`📊 总计 ${session.insertions} 次插入，用时 ${formatTime(duration)}`, 'success');
             
-            // Save to history
             history.push({
                 date: new Date().toLocaleString('zh-CN'),
                 insertions: session.insertions,
-                duration: duration
+                duration: duration,
+                usedLube: config.useLube
             });
             
+            saveSessionHistory();
             updateHistoryChart();
+            displayHealthReport();
             
             document.getElementById('controlButtons').classList.add('hidden');
             document.getElementById('startBtn').disabled = false;
+        }
+        
+        function displayHealthReport() {
+            const html = `
+                <div class="health-report">
+                    <h3>🏥 会话后健康检查</h3>
+                    
+                    <div class="health-item">
+                        <strong>肛门观察：</strong>
+                        ${config.useLube ? '使用了润滑剂，应该较为湿润。' : '⚠️ 未使用润滑剂，需仔细检查。'}
+                    </div>
+                    
+                    <div class="health-item">
+                        <strong>出血检查：</strong>
+                        少量血丝属于正常。如出血量较多请立即停止并咨询医生。
+                    </div>
+                    
+                    <div class="health-item">
+                        <strong>肠液分泌：</strong>
+                        适量肠液分泌是正常的生理反应。
+                    </div>
+                    
+                    <div class="care-tips">
+                        <h4>💡 护理与清洁建议</h4>
+                        <ul>
+                            <li>用温水轻柔清洗肛门周围</li>
+                            <li>避免使用刺激性清洁剂</li>
+                            <li>玩具使用后立即清洗消毒</li>
+                            <li>建议休息24-48小时</li>
+                            <li>如有持续疼痛请咨询医生</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('healthReport').innerHTML = html;
+            document.getElementById('healthReport').classList.remove('hidden');
         }
         
         function showCelebration() {
@@ -830,6 +1914,8 @@
             const chartContainer = document.getElementById('historyChart');
             chartContainer.innerHTML = '';
             
+            if (history.length === 0) return;
+            
             const maxInsertions = Math.max(...history.map(h => h.insertions));
             const recentHistory = history.slice(-10);
             
@@ -838,7 +1924,14 @@
                 bar.className = 'chart-bar';
                 const height = (h.insertions / maxInsertions) * 100;
                 bar.style.height = height + '%';
-                bar.title = `${h.date}\n${h.insertions} 次插入\n${formatTime(h.duration)}`;
+                
+                if (h.usedLube) {
+                    bar.style.background = 'linear-gradient(to top, #48bb78, #38a169)';
+                } else {
+                    bar.style.background = 'linear-gradient(to top, #fc8181, #f56565)';
+                }
+                
+                bar.title = `${h.date}\n${h.insertions} 次\n${formatTime(h.duration)}\n${h.usedLube ? '✅ 润滑' : '❌ 无润滑'}`;
                 chartContainer.appendChild(bar);
             });
         }
@@ -850,7 +1943,8 @@
                 insert: '💗',
                 withdraw: '💙',
                 info: 'ℹ️',
-                success: '✅'
+                success: '✅',
+                motivation: '💬'
             };
             
             entry.className = `log-entry log-${type}`;
