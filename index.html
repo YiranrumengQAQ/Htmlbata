@@ -37,7 +37,93 @@
             -webkit-touch-callout: none;
         }
         
-        /* 虚拟光标 */
+        /* 下载按钮样式 */
+        .download-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.95), rgba(56, 161, 105, 0.95));
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            font-size: 1.3em;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .download-btn.show {
+            display: flex;
+            animation: downloadBtnAppear 0.4s ease forwards;
+        }
+        
+        @keyframes downloadBtnAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.95), rgba(34, 139, 87, 0.95));
+        }
+        
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .download-btn.downloading {
+            animation: downloadPulse 1s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes downloadPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* 重试提示动画 */
+        @keyframes retry-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .image-loading.retrying {
+            animation: retry-pulse 1s infinite;
+            color: #ed8936;
+        }
+        
+        .retry-info {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(237, 137, 54, 0.9);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 10;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
         #gamepadCursor {
             position: fixed;
             width: 30px;
@@ -68,7 +154,6 @@
             border-radius: 50%;
         }
         
-        /* 手柄连接提示 */
         .gamepad-toast {
             position: fixed;
             top: 20px;
@@ -98,7 +183,6 @@
             }
         }
         
-        /* 风景界面 */
         #landscapeView {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -307,7 +391,6 @@
             display: block;
         }
         
-        /* 功能界面 */
         #appView {
             display: none;
         }
@@ -943,7 +1026,6 @@
             animation: spin 1s linear infinite;
         }
         
-        /* 响应式设计 - 平板 */
         @media (max-width: 1024px) {
             .app-container {
                 grid-template-columns: 1fr;
@@ -963,7 +1045,6 @@
             }
         }
         
-        /* 响应式设计 - 手机 */
         @media (max-width: 768px) {
             body.app-mode {
                 padding: 10px;
@@ -1042,9 +1123,16 @@
                 height: 40px;
                 border-width: 4px;
             }
+            
+            .download-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+                top: 10px;
+                right: 10px;
+            }
         }
         
-        /* 响应式设计 - 小手机 */
         @media (max-width: 480px) {
             .landscape-title {
                 font-size: 1.5em;
@@ -1071,21 +1159,13 @@
     </style>
 </head>
 <body>
-    <!-- 虚拟光标 -->
     <div id="gamepadCursor"></div>
-    
-    <!-- 手柄连接提示 -->
     <div class="gamepad-toast" id="gamepadToast"></div>
-    
-    <!-- 石头掉落弹窗 -->
     <div class="stone-modal" id="stoneModal">
         <div class="stone-drop">🪨</div>
     </div>
-    
-    <!-- 隐藏的石头按钮 -->
     <div class="hidden-stone" id="hiddenStone">🪨</div>
     
-    <!-- 风景界面 -->
     <div id="landscapeView">
         <div class="landscape-header">
             <h1 class="landscape-title">🌄 美景随享</h1>
@@ -1106,7 +1186,6 @@
         </div>
     </div>
 
-    <!-- 功能界面 -->
     <div id="appView">
         <button class="exit-btn" onclick="exitApp()">← 返回风景</button>
         
@@ -1266,7 +1345,6 @@
     </div>
 
     <script>
-        // 禁止复制
         document.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('copy', (e) => e.preventDefault());
         document.addEventListener('cut', (e) => e.preventDefault());
@@ -1275,6 +1353,208 @@
                 e.preventDefault();
             }
         });
+        
+        // ========== 图片加载管理器（带自动重试和下载功能） ==========
+        const ImageLoadManager = {
+            maxRetries: 3,
+            retryDelay: 2000,
+            retryingImages: new Map(),
+            
+            createImageCardWithRetry(id, container) {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.dataset.imageId = id;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-wrapper';
+                
+                const loading = document.createElement('div');
+                loading.className = 'image-loading spinner';
+                loading.textContent = '⏳';
+                wrapper.appendChild(loading);
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.innerHTML = '⬇️';
+                downloadBtn.title = '下载图片';
+                downloadBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.downloadImage(img, id);
+                };
+                wrapper.appendChild(downloadBtn);
+                
+                const img = document.createElement('img');
+                img.src = `https://picsum.photos/id/${id}/400/300`;
+                img.alt = '风景照片';
+                img.style.display = 'none';
+                
+                img.onload = () => {
+                    loading.style.display = 'none';
+                    img.style.display = 'block';
+                    this.retryingImages.delete(id);
+                    
+                    setTimeout(() => {
+                        downloadBtn.classList.add('show');
+                    }, 300);
+                };
+                
+                img.onerror = () => {
+                    this.handleImageError(img, loading, id, 1, downloadBtn);
+                };
+                
+                wrapper.appendChild(img);
+                card.appendChild(wrapper);
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.innerHTML = `
+                    <div class="image-author">Image #${id}</div>
+                    <div class="image-dimensions">400 × 300 px</div>
+                `;
+                card.appendChild(info);
+                
+                container.appendChild(card);
+            },
+            
+            handleImageError(img, loading, originalId, attemptNumber, downloadBtn) {
+                downloadBtn.classList.remove('show');
+                
+                if (attemptNumber > this.maxRetries) {
+                    loading.textContent = '❌';
+                    loading.classList.remove('spinner', 'retrying');
+                    this.retryingImages.delete(originalId);
+                    
+                    setTimeout(() => {
+                        const newId = Math.floor(Math.random() * 1000);
+                        this.retryWithNewId(img, loading, newId, downloadBtn);
+                    }, 5000);
+                    return;
+                }
+                
+                loading.classList.remove('spinner');
+                loading.classList.add('retrying');
+                loading.textContent = '🔄';
+                
+                const wrapper = img.parentElement;
+                let retryInfo = wrapper.querySelector('.retry-info');
+                if (!retryInfo) {
+                    retryInfo = document.createElement('div');
+                    retryInfo.className = 'retry-info';
+                    wrapper.appendChild(retryInfo);
+                }
+                retryInfo.textContent = `重试中 ${attemptNumber}/${this.maxRetries}`;
+                
+                this.retryingImages.set(originalId, attemptNumber);
+                
+                setTimeout(() => {
+                    const newId = Math.floor(Math.random() * 1000);
+                    img.src = `https://picsum.photos/id/${newId}/400/300?t=${Date.now()}`;
+                    
+                    img.onerror = () => {
+                        this.handleImageError(img, loading, originalId, attemptNumber + 1, downloadBtn);
+                    };
+                    
+                    img.onload = () => {
+                        loading.style.display = 'none';
+                        img.style.display = 'block';
+                        if (retryInfo) {
+                            retryInfo.remove();
+                        }
+                        this.retryingImages.delete(originalId);
+                        
+                        setTimeout(() => {
+                            downloadBtn.classList.add('show');
+                        }, 300);
+                        
+                        const card = img.closest('.image-card');
+                        const author = card.querySelector('.image-author');
+                        if (author) {
+                            author.textContent = `Image #${newId}`;
+                        }
+                        card.dataset.imageId = newId;
+                    };
+                }, this.retryDelay);
+            },
+            
+            retryWithNewId(img, loading, newId, downloadBtn) {
+                loading.classList.add('spinner');
+                loading.classList.remove('retrying');
+                loading.textContent = '⏳';
+                img.style.display = 'none';
+                downloadBtn.classList.remove('show');
+                
+                const wrapper = img.parentElement;
+                const retryInfo = wrapper.querySelector('.retry-info');
+                if (retryInfo) {
+                    retryInfo.textContent = '重新加载...';
+                }
+                
+                img.src = `https://picsum.photos/id/${newId}/400/300?t=${Date.now()}`;
+                
+                img.onload = () => {
+                    loading.style.display = 'none';
+                    img.style.display = 'block';
+                    if (retryInfo) {
+                        retryInfo.remove();
+                    }
+                    
+                    setTimeout(() => {
+                        downloadBtn.classList.add('show');
+                    }, 300);
+                    
+                    const card = img.closest('.image-card');
+                    const author = card.querySelector('.image-author');
+                    if (author) {
+                        author.textContent = `Image #${newId}`;
+                    }
+                    card.dataset.imageId = newId;
+                };
+                
+                img.onerror = () => {
+                    this.handleImageError(img, loading, newId, 1, downloadBtn);
+                };
+            },
+            
+            async downloadImage(img, imageId) {
+                const downloadBtn = img.parentElement.querySelector('.download-btn');
+                
+                downloadBtn.classList.add('downloading');
+                downloadBtn.innerHTML = '⏳';
+                
+                try {
+                    const response = await fetch(img.src);
+                    const blob = await response.blob();
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `landscape-${imageId}-${Date.now()}.jpg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        
+                        downloadBtn.classList.remove('downloading');
+                        downloadBtn.innerHTML = '✅';
+                        
+                        setTimeout(() => {
+                            downloadBtn.innerHTML = '⬇️';
+                        }, 2000);
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('下载失败:', error);
+                    downloadBtn.classList.remove('downloading');
+                    downloadBtn.innerHTML = '❌';
+                    
+                    setTimeout(() => {
+                        downloadBtn.innerHTML = '⬇️';
+                    }, 2000);
+                }
+            }
+        };
         
         // ========== 手柄控制系统 ==========
         const GamepadController = {
@@ -1356,7 +1636,6 @@
                 
                 const gp = gamepads[0];
                 
-                // 左摇杆 - 控制光标
                 const leftX = this.applyDeadzone(gp.axes[0]);
                 const leftY = this.applyDeadzone(gp.axes[1]);
                 
@@ -1374,13 +1653,11 @@
                     this.updateHoverElement();
                 }
                 
-                // 右摇杆 - 上下翻页
                 const rightY = this.applyDeadzone(gp.axes[3]);
                 if (Math.abs(rightY) > 0) {
                     window.scrollBy(0, rightY * this.scrollSpeed);
                 }
                 
-                // 按钮处理
                 this.handleButtons(gp);
             },
             
@@ -1391,14 +1668,12 @@
             updateHoverElement() {
                 const element = document.elementFromPoint(this.cursorX, this.cursorY);
                 
-                // 移除所有悬停效果
                 document.querySelectorAll('.gamepad-hover').forEach(el => {
                     el.classList.remove('gamepad-hover');
                 });
                 
-                // 添加悬停效果
                 if (element) {
-                    if (element.matches('button, a, input, select, .image-card, .btn-mini')) {
+                    if (element.matches('button, a, input, select, .image-card, .btn-mini, .download-btn')) {
                         element.classList.add('gamepad-hover');
                     }
                 }
@@ -1407,24 +1682,20 @@
             handleButtons(gp) {
                 const buttons = gp.buttons;
                 
-                // A键 (0) - 确认/点击
                 if (this.isButtonPressed(buttons[0], 0)) {
                     this.simulateClick();
                 }
                 
-                // B键 (1) - 退出隐藏界面
                 if (this.isButtonPressed(buttons[1], 1)) {
                     if (document.getElementById('appView').classList.contains('active')) {
                         exitApp();
                     }
                 }
                 
-                // X键 (2) - 刷新网页
                 if (this.isButtonPressed(buttons[2], 2)) {
                     location.reload();
                 }
                 
-                // RT (右扳机) (7) - 开始会话
                 if (this.isButtonPressed(buttons[7], 7)) {
                     if (document.getElementById('appView').classList.contains('active')) {
                         const startBtn = document.getElementById('startBtn');
@@ -1434,7 +1705,6 @@
                     }
                 }
                 
-                // RB (右肩键) (5) - 停止会话
                 if (this.isButtonPressed(buttons[5], 5)) {
                     if (document.getElementById('appView').classList.contains('active')) {
                         if (session.isRunning) {
@@ -1512,49 +1782,8 @@
             
             for (let i = 0; i < 12; i++) {
                 const randomId = Math.floor(Math.random() * 1000);
-                createImageCard(randomId, gallery);
+                ImageLoadManager.createImageCardWithRetry(randomId, gallery);
             }
-        }
-        
-        function createImageCard(id, container) {
-            const card = document.createElement('div');
-            card.className = 'image-card';
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = 'image-wrapper';
-            
-            const loading = document.createElement('div');
-            loading.className = 'image-loading spinner';
-            loading.textContent = '⏳';
-            wrapper.appendChild(loading);
-            
-            const img = document.createElement('img');
-            img.src = `https://picsum.photos/id/${id}/400/300`;
-            img.alt = '风景照片';
-            img.style.display = 'none';
-            
-            img.onload = function() {
-                loading.style.display = 'none';
-                img.style.display = 'block';
-            };
-            
-            img.onerror = function() {
-                loading.textContent = '❌';
-                loading.classList.remove('spinner');
-            };
-            
-            wrapper.appendChild(img);
-            card.appendChild(wrapper);
-            
-            const info = document.createElement('div');
-            info.className = 'image-info';
-            info.innerHTML = `
-                <div class="image-author">Image #${id}</div>
-                <div class="image-dimensions">400 × 300 px</div>
-            `;
-            card.appendChild(info);
-            
-            container.appendChild(card);
         }
         
         function refreshGallery() {
@@ -1586,7 +1815,7 @@
             GamepadController.init();
         });
         
-        // ========== 功能界面逻辑（保持完整代码） ==========
+        // ========== 功能界面完整代码 ==========
         const StorageManager = {
             KEYS: {
                 CURRENT_SETTINGS: 'pleasureAnalytics_currentSettings',
