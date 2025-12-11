@@ -1,492 +1,2554 @@
-# 🌄 美景随享 & ♥ Pleasure Analytics Pro
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-pink.svg)](https://opensource.org/licenses/MIT)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
-
-一个创新的双界面应用：表层是精美风景图片浏览器，深层是智能化的成人玩具使用分析工具。采用隐蔽式设计理念，提供专业的健康监测和数据记录功能。
-
-[在线演示](#) | [报告问题](https://github.com/yourusername/pleasure-analytics/issues) | [功能建议](https://github.com/yourusername/pleasure-analytics/issues/new)
-
----
-
-## ⚠️ 内容警告
-
-**本项目包含成人内容，仅供18岁以上成年人使用。**
-
-本应用旨在提供：
-- 健康教育和安全指导
-- 科学的使用数据分析
-- 隐私保护的个人记录
-- 专业的健康监测建议
-
-请确保您已达到所在地区的法定成年年龄，并理解该应用的用途。
-
----
-
-## ✨ 主要特性
-
-### 🌄 表层界面 - 美景随享
-
-- **精美图片画廊** - 展示来自 Lorem Picsum 的高质量风景照片
-- **瀑布流布局** - 响应式网格设计，完美适配各种屏幕
-- **一键刷新** - 每次刷新都有新的图片惊喜
-- **图片下载** - 支持快速下载喜欢的图片
-- **智能重试** - 自动重试加载失败的图片
-- **隐蔽入口** - 通过特殊操作进入功能界面
-
-### ♥ 深层界面 - Pleasure Analytics Pro
-
-#### 📊 智能计算系统
-- **参数化配置** - 长度、直径、使用次数等精确设置
-- **经验等级** - 初学者到专家级的智能适配
-- **润滑剂模式** - 自动调整参数以适应润滑状态
-- **安全评分** - 实时计算使用安全性评分
-- **智能建议** - 基于参数给出专业使用建议
-
-#### 🎯 实时监测功能
-- **精确计时** - 毫秒级精度的会话计时
-- **进度追踪** - 实时显示完成进度和剩余时间
-- **次数统计** - 准确记录插入和拔出次数
-- **动态反馈** - 实时日志记录每个动作
-
-#### 💾 数据管理
-- **自动保存** - 设置自动保存到本地存储
-- **历史记录** - 保存最近10次配置记录
-- **一键恢复** - 快速恢复历史设置
-- **会话历史** - 可视化图表展示历史数据
-- **数据导出** - 支持清空和管理历史数据
-
-#### 🥼 健康监测
-- **会话后报告** - 详细的健康检查清单
-- **护理建议** - 专业的清洁和护理指导
-- **风险提示** - 基于使用情况的安全警告
-- **休息建议** - 科学的恢复时间推荐
-
-#### 🎮 高级功能
-- **手柄支持** - 完整的游戏手柄控制
-- **暂停/继续** - 灵活的会话控制
-- **鼓励系统** - 可选的中途鼓励提示
-- **数据可视化** - 柱状图展示历史趋势
-
----
-
-## 🚀 快速开始
-
-### 在线使用
-
-1. 访问在线演示地址
-2. 浏览风景图片界面
-3. 点击页面底部 "rights" 中的 "r" 字母 10 次
-4. 等待石头图标出现
-5. 点击石头图标 10 次进入功能界面
-
-### 本地部署
-
-1. **克隆仓库**
-   ```bash
-   git clone https://github.com/yourusername/pleasure-analytics.git
-   cd pleasure-analytics
-   ```
-
-2. **打开应用**
-   
-   直接在浏览器中打开 `index.html` 文件即可。
-
-3. **或使用本地服务器**（推荐）
-   ```bash
-   # 使用 Python
-   python -m http.server 8000
-   
-   # 或使用 Node.js
-   npx http-server
-   
-   # 或使用 PHP
-   php -S localhost:8000
-   ```
-   
-   然后访问 `http://localhost:8000`
-
----
-
-## 📖 使用指南
-
-### 表层界面操作
-
-1. **浏览图片**
-   - 滚动查看风景图片
-   - 点击图片查看详情
-
-2. **下载图片**
-   - 悬停在图片上显示下载按钮
-   - 点击下载按钮保存图片
-
-3. **刷新图片**
-   - 点击右下角的刷新按钮
-   - 加载全新的图片集
-
-4. **进入功能界面**
-   - 点击底部 "rights" 中的 "r" 字母 10 次
-   - 等待石头表情 (🪨) 出现
-   - 点击石头 10 次进入
-
-### 功能界面操作
-
-#### 参数设置
-
-1. **基础配置**
-   - 玩具长度：1-150 cm
-   - 玩具直径：0.5-10 cm
-   - 使用次数：必须为偶数（自动调整）
-   - 使用经验：选择合适的经验等级
-
-2. **高级选项**
-   - 使用润滑剂：勾选后速度提升 30%
-   - 中途鼓励提示：启用励志消息
-
-3. **智能计算**
-   - 点击 "智能计算" 按钮
-   - 系统自动计算最佳参数
-   - 查看安全评分和建议
-
-#### 开始会话
-
-1. 完成参数配置和智能计算
-2. 点击 "开始会话" 按钮
-3. 观察实时统计数据
-4. 可以随时暂停或停止
-
-#### 会话控制
-
-- **暂停/继续**：保持当前进度
-- **停止**：立即终止会话
-- **完成**：自动生成健康报告
-
-#### 数据管理
-
-1. **查看历史**
-   - 设置记录：最近 10 次配置
-   - 会话历史：柱状图可视化
-
-2. **恢复设置**
-   - 点击历史记录的 "恢复" 按钮
-   - 自动填充保存的配置
-
-3. **删除记录**
-   - 单条删除：点击 "删除" 按钮
-   - 全部清空：点击 "清空所有记录"
-
----
-
-## 🎮 手柄控制
-
-### 支持的手柄
-
-- Xbox 系列手柄
-- PlayStation DualShock/DualSense
-- Nintendo Switch Pro 手柄
-- 通用 USB/蓝牙游戏手柄
-
-### 按键映射
-
-| 按键 | 功能 |
-|------|------|
-| 左摇杆 | 移动光标 |
-| 右摇杆 | 上下滚动页面 |
-| A / ×(Cross) | 点击/确认 |
-| B / ○(Circle) | 返回风景界面 |
-| X / □(Square) | 刷新页面 |
-| Start | 开始会话 |
-| RB/R1 | 停止会话 |
-
-### 使用方法
-
-1. 连接手柄到电脑
-2. 打开应用，手柄自动识别
-3. 屏幕显示手柄光标
-4. 使用摇杆和按键操作
-
----
-
-## 🛡️ 隐私与安全
-
-### 数据存储
-
-✅ **完全本地存储** - 所有数据保存在浏览器 localStorage  
-✅ **零服务器上传** - 无任何数据传输到服务器  
-✅ **用户控制** - 可随时清空所有记录  
-✅ **无追踪代码** - 不包含任何分析或追踪脚本  
-
-### 安全特性
-
-- **防复制保护**：禁用右键菜单和文本选择
-- **隐蔽设计**：双层界面保护隐私
-- **数据加密**：建议使用无痕浏览模式
-- **自动清理**：关闭浏览器后无痕迹（无痕模式）
-
-### 健康安全
-
-- **安全评分系统**：实时评估使用风险
-- **智能提醒**：根据参数给出警告
-- **健康指导**：会话后提供护理建议
-- **科学计算**：基于生理学的参数设计
-
----
-
-## 🔧 技术栈
-
-### 前端技术
-- **HTML5** - 语义化标签和现代 API
-- **CSS3** - 渐变、动画、Grid/Flexbox 布局
-- **JavaScript ES6+** - 原生 JavaScript，无依赖
-
-### 核心 API
-- **Gamepad API** - 游戏手柄支持
-- **LocalStorage API** - 本地数据持久化
-- **Performance API** - 高精度计时
-- **Fetch API** - 图片资源加载
-
-### 外部资源
-- **Lorem Picsum** - 图片 API 服务
-- **Google Fonts** - Poppins 字体
-
----
-
-## 🎨 界面预览
-
-### 风景浏览界面
-- 渐变紫色背景
-- 响应式网格布局
-- 优雅的卡片设计
-- 悬停动画效果
-
-### 功能界面
-- 粉紫渐变主题
-- 卡片式模块化设计
-- 实时数据可视化
-- 流畅的交互动画
-
----
-
-## 📝 开发说明
-
-### 项目结构
-
-```
-pleasure-analytics/
-│
-├── index.html          # 主应用文件（单文件架构）
-├── README.md           # 项目文档
-└── LICENSE             # MIT 开源协议
-```
-
-### 核心模块
-
-1. **ImageLoadManager** - 图片加载和重试管理
-2. **GamepadController** - 手柄输入处理
-3. **StorageManager** - 数据持久化管理
-4. **Session Manager** - 会话状态管理
-
-### 自定义配置
-
-修改 CSS 变量来自定义主题：
-
-```css
-:root {
-    --primary: #ff1493;              /* 主色调 */
-    --primary-light: #ff69b4;        /* 亮色调 */
-    --secondary: #667eea;            /* 次要色 */
-    --success: #48bb78;              /* 成功色 */
-    --warning: #ed8936;              /* 警告色 */
-    --danger: #f56565;               /* 危险色 */
-    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --shadow: 0 20px 60px rgba(0,0,0,0.15);
-    --radius: 20px;
-}
-```
-
-### 经验等级倍率
-
-```javascript
-const EXP_MULTIPLIER = {
-    beginner: 1.5,      // 初学者：速度降低 50%
-    intermediate: 1.0,   // 中级者：标准速度
-    advanced: 0.7,       // 高级者：速度提升 30%
-    expert: 0.5          // 专家：速度提升 50%
-};
-```
-
----
-
-## 🤝 贡献指南
-
-欢迎贡献代码、报告问题或提出建议！
-
-### 贡献流程
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-### 代码规范
-
-- 保持代码风格一致
-- 添加必要的注释（中文）
-- 测试新功能的兼容性
-- 更新相关文档
-- 尊重隐私和健康安全原则
-
----
-
-## 📋 待办事项
-
-### 功能增强
-- [ ] 添加数据导出功能（JSON/CSV）
-- [ ] 实现云端加密同步（可选）
-- [ ] 支持自定义鼓励消息
-- [ ] 添加多种主题选择
-- [ ] 实现语音控制功能
-- [ ] 添加振动反馈支持
-
-### 界面优化
-- [ ] PWA 支持（离线使用）
-- [ ] 暗黑模式切换
-- [ ] 更多动画效果
-- [ ] 手机端优化
-- [ ] 多语言支持（英语、日语等）
-
-### 数据分析
-- [ ] 更详细的统计图表
-- [ ] 趋势分析功能
-- [ ] 个性化建议系统
-- [ ] 健康评分算法优化
-
----
-
-## ⚠️ 注意事项
-
-### 浏览器兼容性
-
-- ✅ Chrome 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Edge 90+
-- ⚠️ 需要支持 Gamepad API 和 LocalStorage
-
-### 使用建议
-
-1. **隐私保护**
-   - 建议使用无痕/隐私浏览模式
-   - 不要在公共设备上使用
-   - 定期清除浏览历史
-
-2. **健康安全**
-   - 严格遵守应用的安全建议
-   - 新手务必从小参数开始
-   - 使用润滑剂以减少风险
-   - 感到不适立即停止
-   - 必要时咨询医疗专业人士
-
-3. **设备建议**
-   - 使用私人设备
-   - 保持设备清洁
-   - 使用专用的成人玩具
-   - 每次使用后彻底清洁消毒
-
-### 免责声明
-
-- 本应用仅供成年人使用
-- 提供的建议仅供参考，非医疗建议
-- 使用者需自行承担使用风险
-- 开发者不对任何健康问题负责
-- 请遵守所在地区的法律法规
-
----
-
-## 📄 开源协议
-
-本项目采用 [MIT License](LICENSE) 开源协议。
-
-```
-MIT License
-
-Copyright (c) 2025 Pleasure Analytics Pro
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## 🙏 致谢
-
-- **Lorem Picsum** - 提供高质量图片 API
-- **Google Fonts** - 提供 Poppins 字体
-- 所有为性健康教育做出贡献的专业人士
-- 支持开源社区的每一位开发者
-
----
-
-## 📞 联系方式
-
-- 作者: Your Name
-- 邮箱: your.email@example.com
-- GitHub: [@yourusername](https://github.com/yourusername)
-- 问题反馈: [Issues](https://github.com/yourusername/pleasure-analytics/issues)
-
-**隐私提示**：如需联系开发者讨论敏感功能，建议使用匿名邮箱。
-
----
-
-## 🌟 支持项目
-
-如果这个项目对你有帮助，请：
-
-- ⭐ 给项目一个 Star
-- 🔀 Fork 项目并改进
-- 🐛 报告 Bug 和问题
-- 💡 提出新功能建议
-- 📢 分享给需要的人（谨慎分享）
-
----
-
-## 🔞 年龄验证
-
-**再次提醒：本项目仅供18岁以上成年人使用。**
-
-通过使用本应用，您确认：
-- 您已年满18周岁或达到所在地区的法定成年年龄
-- 您了解本应用的成人内容性质
-- 您自愿使用本应用及其功能
-- 您同意自行承担使用风险
-
----
-
-<div align="center">
-
-**[⬆ 回到顶部](#-美景随享--pleasure-analytics-pro)**
-
-Made with ♥ and 🌈 for Adult Education & Health
-
-**请负责任地使用 | 尊重隐私 | 保护健康**
-
-</div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美景随享 - 精美风景图片集</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff1493;
+            --primary-light: #ff69b4;
+            --secondary: #667eea;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 20px 60px rgba(0,0,0,0.15);
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+            -webkit-touch-callout: none;
+        }
+        
+        /* 下载按钮样式 */
+        .download-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.95), rgba(56, 161, 105, 0.95));
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            font-size: 1.3em;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .download-btn.show {
+            display: flex;
+            animation: downloadBtnAppear 0.4s ease forwards;
+        }
+        
+        @keyframes downloadBtnAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.95), rgba(34, 139, 87, 0.95));
+        }
+        
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .download-btn.downloading {
+            animation: downloadPulse 1s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes downloadPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* 重试提示动画 */
+        @keyframes retry-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .image-loading.retrying {
+            animation: retry-pulse 1s infinite;
+            color: #ed8936;
+        }
+        
+        .retry-info {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(237, 137, 54, 0.9);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 10;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        #gamepadCursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.6));
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            display: none;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(118, 75, 162, 0.4);
+            transition: transform 0.05s ease;
+        }
+        
+        #gamepadCursor.active {
+            display: block;
+        }
+        
+        #gamepadCursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .gamepad-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 100000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .gamepad-toast.show {
+            display: block;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        #landscapeView {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .landscape-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .landscape-title {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .landscape-subtitle {
+            text-align: center;
+            color: #718096;
+            margin-top: 8px;
+            font-size: 1em;
+        }
+        
+        .landscape-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .image-card:hover, .image-card.gamepad-hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #cbd5e0;
+            font-size: 1.2em;
+        }
+        
+        .image-info {
+            padding: 20px;
+        }
+        
+        .image-author {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .image-dimensions {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .refresh-btn:hover, .refresh-btn.gamepad-hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        
+        .landscape-footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            text-align: center;
+            color: #718096;
+            margin-top: 60px;
+        }
+        
+        #secretTrigger {
+            cursor: default;
+        }
+        
+        .stone-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .stone-modal.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .stone-drop {
+            font-size: 8em;
+            animation: stoneDrop 1s ease-out;
+        }
+        
+        @keyframes stoneDrop {
+            0% {
+                transform: translateY(-500px) rotate(0deg);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(0) rotate(360deg);
+                opacity: 1;
+            }
+            70% {
+                transform: translateY(-50px) rotate(380deg);
+            }
+            80% {
+                transform: translateY(0) rotate(360deg);
+            }
+            90% {
+                transform: translateY(-20px) rotate(370deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        .hidden-stone {
+            position: fixed;
+            bottom: 120px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            font-size: 2.5em;
+            cursor: pointer;
+            z-index: 60;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .hidden-stone.visible {
+            display: block;
+        }
+        
+        #appView {
+            display: none;
+        }
+        
+        #appView.active {
+            display: block;
+        }
+        
+        body.app-mode {
+            background: var(--bg-gradient);
+            padding: 20px;
+            color: #2d3748;
+        }
+        
+        .exit-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #fc8181, #f56565);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .exit-btn:hover, .exit-btn.gamepad-hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.6);
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.2);
+        }
+        
+        .full-width { grid-column: 1 / -1; }
+        
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+        
+        .version {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        input[type="number"], select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        input[type="number"]:focus, select:focus, 
+        input[type="number"].gamepad-focus, select.gamepad-focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .input-unit {
+            position: absolute;
+            right: 15px;
+            color: #a0aec0;
+            font-size: 0.9em;
+            pointer-events: none;
+        }
+        
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #48bb78, #ecc94b, #f56565);
+            outline: none;
+            -webkit-appearance: none;
+            margin-top: 10px;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .toggle-section {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border: 2px solid #7dd3fc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .toggle-section.active {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: var(--success);
+        }
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+            appearance: none;
+            background: white;
+            border: 3px solid #cbd5e0;
+            border-radius: 6px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:hover,
+        .checkbox-wrapper input[type="checkbox"].gamepad-hover {
+            border-color: var(--primary-light);
+            transform: scale(1.1);
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, var(--success), #38a169);
+            border-color: var(--success);
+        }
+        
+        .checkbox-wrapper input[type="checkbox"]:checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+        
+        .toggle-icon {
+            font-size: 1.8em;
+        }
+        
+        .toggle-status {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+        }
+        
+        .toggle-status.enabled {
+            color: #065f46;
+            background: rgba(167, 243, 208, 0.5);
+        }
+        
+        .settings-history {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .settings-history h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .history-item {
+            background: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-timestamp {
+            color: #78350f;
+            font-size: 0.8em;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-mini {
+            padding: 4px 10px;
+            font-size: 0.75em;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .btn-restore {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #fca5a5, #f87171);
+            color: white;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+        }
+        
+        .btn-primary:hover:not(:disabled),
+        .btn-primary.gamepad-hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled),
+        .btn-secondary.gamepad-hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181, #f56565);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 105, 180, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer-progress 2s infinite;
+        }
+        
+        @keyframes shimmer-progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .log-container {
+            height: 400px;
+            overflow-y: auto;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .log-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .log-icon {
+            font-size: 1.2em;
+        }
+        
+        .log-insert {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            border-left: 4px solid #f56565;
+        }
+        
+        .log-withdraw {
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+            border-left: 4px solid #4299e1;
+        }
+        
+        .log-info {
+            background: linear-gradient(135deg, #feebc8, #fbd38d);
+            border-left: 4px solid #ed8936;
+        }
+        
+        .log-success {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            border-left: 4px solid #48bb78;
+        }
+        
+        .log-motivation {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-left: 4px solid #6366f1;
+        }
+        
+        .safety-alert {
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .safety-alert.high {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: var(--success);
+        }
+        
+        .safety-alert.medium {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: var(--warning);
+        }
+        
+        .safety-alert.low {
+            background: linear-gradient(135deg, #fed7d7, #fecaca);
+            border-color: var(--danger);
+        }
+        
+        .safety-icon {
+            font-size: 1.5em;
+        }
+        
+        .calculation-result {
+            background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+            border: 2px solid #4fd1c5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(79, 209, 197, 0.3);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary-light), var(--primary));
+            border-radius: 4px 4px 0 0;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+        
+        .health-report {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 3px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            animation: slideDown 0.5s ease;
+        }
+        
+        .health-report h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .health-item {
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .health-item strong {
+            color: #92400e;
+        }
+        
+        .care-tips {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .care-tips h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+        
+        .care-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .care-tips li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .care-tips li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .hidden { display: none !important; }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5em;
+            animation: celebrate 1s ease-out;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            .landscape-title {
+                font-size: 2em;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body.app-mode {
+                padding: 10px;
+            }
+            
+            .app-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 1.8em;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .landscape-title {
+                font-size: 1.8em;
+            }
+            
+            .landscape-container {
+                padding: 20px 10px;
+            }
+            
+            .refresh-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.5em;
+            }
+            
+            .hidden-stone {
+                bottom: 90px;
+                right: 20px;
+                font-size: 2em;
+            }
+            
+            .exit-btn {
+                top: 10px;
+                right: 10px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 2em;
+            }
+            
+            .log-container {
+                height: 300px;
+                font-size: 0.8em;
+            }
+            
+            .gamepad-toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+            
+            #gamepadCursor {
+                width: 40px;
+                height: 40px;
+                border-width: 4px;
+            }
+            
+            .download-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+                top: 10px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .landscape-title {
+                font-size: 1.5em;
+            }
+            
+            .logo {
+                font-size: 1.5em;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+            
+            .form-group label {
+                font-size: 0.9em;
+            }
+            
+            input[type="number"], select {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gamepadCursor"></div>
+    <div class="gamepad-toast" id="gamepadToast"></div>
+    <div class="stone-modal" id="stoneModal">
+        <div class="stone-drop">🪨</div>
+    </div>
+    <div class="hidden-stone" id="hiddenStone">🪨</div>
+    
+    <div id="landscapeView">
+        <div class="landscape-header">
+            <h1 class="landscape-title">🌄 美景随享</h1>
+            <p class="landscape-subtitle">发现世界各地的精美风景照片</p>
+        </div>
+        
+        <div class="landscape-container">
+            <div class="gallery-grid" id="gallery"></div>
+        </div>
+        
+        <button class="refresh-btn" onclick="refreshGallery()" title="刷新图片">
+            🔄
+        </button>
+        
+        <div class="landscape-footer">
+            <p>图片来源: Lorem Picsum | 每次刷新都有新惊喜</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">© 2025 美景随享. All <span id="secretTrigger">r</span>ights reserved.</p>
+        </div>
+    </div>
+
+    <div id="appView">
+        <button class="exit-btn" onclick="exitApp()">← 返回风景</button>
+        
+        <div class="app-container">
+            <div class="card full-width">
+                <header>
+                    <div class="logo">♥ PLEASURE ANALYTICS PRO ♥</div>
+                    <div class="version">Version 5.0 - 智能计算 | 设置记忆 | 健康监测</div>
+                </header>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ 参数设置</h2>
+                
+                <div class="toggle-section" id="lubeSection">
+                    <div class="toggle-row">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="useLube" onchange="toggleLube()">
+                            <div class="checkbox-label">
+                                <span class="toggle-icon">💧</span>
+                                <span>使用润滑剂</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="toggle-status" id="lubeStatus">未使用润滑剂</div>
+                </div>
+                
+                <div class="toggle-section" id="tipsSection">
+                    <div class="toggle-row">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="showMotivation" checked onchange="toggleMotivation()">
+                            <div class="checkbox-label">
+                                <span class="toggle-icon">💬</span>
+                                <span>中途鼓励提示</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="toggle-status enabled" id="motivationStatus">已开启</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>玩具长度 (cm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="toyLength" min="1" max="150" step="0.1" value="15" onchange="saveSettings()">
+                        <span class="input-unit">cm</span>
+                    </div>
+                    <input type="range" class="range-slider" id="lengthSlider" min="1" max="150" step="0.1" value="15">
+                </div>
+                
+                <div class="form-group">
+                    <label>玩具直径 (cm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="toyDiameter" min="0.5" max="10" step="0.1" value="3" onchange="saveSettings()">
+                        <span class="input-unit">cm</span>
+                    </div>
+                    <input type="range" class="range-slider" id="diameterSlider" min="0.5" max="10" step="0.1" value="3">
+                </div>
+                
+                <div class="form-group">
+                    <label>使用次数</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="totalCount" min="2" max="100" step="2" value="10" onchange="saveSettings()">
+                        <span class="input-unit">次</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>使用经验</label>
+                    <select id="experience" onchange="saveSettings()">
+                        <option value="beginner">初学者</option>
+                        <option value="intermediate" selected>中级者</option>
+                        <option value="advanced">高级者</option>
+                        <option value="expert">专家级</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="calculateParams()">
+                        🧮 智能计算
+                    </button>
+                    <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled>
+                        ▶️ 开始会话
+                    </button>
+                </div>
+                
+                <div id="calculationResult" class="hidden"></div>
+                <div id="safetyAlert" class="hidden"></div>
+                
+                <div class="settings-history hidden" id="settingsHistory">
+                    <h4>📋 最近设置记录</h4>
+                    <div id="historyList"></div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="btn-mini" style="background: #64748b; color: white;" onclick="clearAllHistory()">
+                            清空所有记录
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">📊 实时统计</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-label">运行时间</div>
+                        <div class="stat-value" id="timer">00:00:00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">完成进度</div>
+                        <div class="stat-value" id="progress">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">插入次数</div>
+                        <div class="stat-value" id="insertCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">剩余时间</div>
+                        <div class="stat-value" id="remaining">--:--</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                </div>
+                
+                <div class="btn-group hidden" id="controlButtons">
+                    <button class="btn btn-secondary" onclick="pauseSession()">
+                        ⏸️ <span id="pauseText">暂停</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="stopSession()">
+                        ⏹️ 停止
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 1em; color: #4a5568; margin-bottom: 10px;">会话历史</h3>
+                    <div class="chart-container" id="historyChart">
+                        <div style="text-align: center; width: 100%; color: #a0aec0;">暂无数据</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <h2 style="margin-bottom: 15px; color: var(--primary);">📝 活动日志</h2>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry log-info">
+                        <span class="log-icon">ℹ️</span>
+                        <span>系统就绪 - 您的设置会自动保存</span>
+                    </div>
+                </div>
+                
+                <div id="healthReport" class="hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('cut', (e) => e.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) {
+                e.preventDefault();
+            }
+        });
+        
+        // ========== 图片加载管理器（带自动重试和下载功能） ==========
+        const ImageLoadManager = {
+            maxRetries: 3,
+            retryDelay: 2000,
+            retryingImages: new Map(),
+            
+            createImageCardWithRetry(id, container) {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.dataset.imageId = id;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-wrapper';
+                
+                const loading = document.createElement('div');
+                loading.className = 'image-loading spinner';
+                loading.textContent = '⏳';
+                wrapper.appendChild(loading);
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.innerHTML = '⬇️';
+                downloadBtn.title = '下载图片';
+                downloadBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.downloadImage(img, id);
+                };
+                wrapper.appendChild(downloadBtn);
+                
+                const img = document.createElement('img');
+                img.src = `https://picsum.photos/id/${id}/400/300`;
+                img.alt = '风景照片';
+                img.style.display = 'none';
+                
+                img.onload = () => {
+                    loading.style.display = 'none';
+                    img.style.display = 'block';
+                    this.retryingImages.delete(id);
+                    
+                    setTimeout(() => {
+                        downloadBtn.classList.add('show');
+                    }, 300);
+                };
+                
+                img.onerror = () => {
+                    this.handleImageError(img, loading, id, 1, downloadBtn);
+                };
+                
+                wrapper.appendChild(img);
+                card.appendChild(wrapper);
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.innerHTML = `
+                    <div class="image-author">Image #${id}</div>
+                    <div class="image-dimensions">400 × 300 px</div>
+                `;
+                card.appendChild(info);
+                
+                container.appendChild(card);
+            },
+            
+            handleImageError(img, loading, originalId, attemptNumber, downloadBtn) {
+                downloadBtn.classList.remove('show');
+                
+                if (attemptNumber > this.maxRetries) {
+                    loading.textContent = '❌';
+                    loading.classList.remove('spinner', 'retrying');
+                    this.retryingImages.delete(originalId);
+                    
+                    setTimeout(() => {
+                        const newId = Math.floor(Math.random() * 1000);
+                        this.retryWithNewId(img, loading, newId, downloadBtn);
+                    }, 5000);
+                    return;
+                }
+                
+                loading.classList.remove('spinner');
+                loading.classList.add('retrying');
+                loading.textContent = '🔄';
+                
+                const wrapper = img.parentElement;
+                let retryInfo = wrapper.querySelector('.retry-info');
+                if (!retryInfo) {
+                    retryInfo = document.createElement('div');
+                    retryInfo.className = 'retry-info';
+                    wrapper.appendChild(retryInfo);
+                }
+                retryInfo.textContent = `重试中 ${attemptNumber}/${this.maxRetries}`;
+                
+                this.retryingImages.set(originalId, attemptNumber);
+                
+                setTimeout(() => {
+                    const newId = Math.floor(Math.random() * 1000);
+                    img.src = `https://picsum.photos/id/${newId}/400/300?t=${Date.now()}`;
+                    
+                    img.onerror = () => {
+                        this.handleImageError(img, loading, originalId, attemptNumber + 1, downloadBtn);
+                    };
+                    
+                    img.onload = () => {
+                        loading.style.display = 'none';
+                        img.style.display = 'block';
+                        if (retryInfo) {
+                            retryInfo.remove();
+                        }
+                        this.retryingImages.delete(originalId);
+                        
+                        setTimeout(() => {
+                            downloadBtn.classList.add('show');
+                        }, 300);
+                        
+                        const card = img.closest('.image-card');
+                        const author = card.querySelector('.image-author');
+                        if (author) {
+                            author.textContent = `Image #${newId}`;
+                        }
+                        card.dataset.imageId = newId;
+                    };
+                }, this.retryDelay);
+            },
+            
+            retryWithNewId(img, loading, newId, downloadBtn) {
+                loading.classList.add('spinner');
+                loading.classList.remove('retrying');
+                loading.textContent = '⏳';
+                img.style.display = 'none';
+                downloadBtn.classList.remove('show');
+                
+                const wrapper = img.parentElement;
+                const retryInfo = wrapper.querySelector('.retry-info');
+                if (retryInfo) {
+                    retryInfo.textContent = '重新加载...';
+                }
+                
+                img.src = `https://picsum.photos/id/${newId}/400/300?t=${Date.now()}`;
+                
+                img.onload = () => {
+                    loading.style.display = 'none';
+                    img.style.display = 'block';
+                    if (retryInfo) {
+                        retryInfo.remove();
+                    }
+                    
+                    setTimeout(() => {
+                        downloadBtn.classList.add('show');
+                    }, 300);
+                    
+                    const card = img.closest('.image-card');
+                    const author = card.querySelector('.image-author');
+                    if (author) {
+                        author.textContent = `Image #${newId}`;
+                    }
+                    card.dataset.imageId = newId;
+                };
+                
+                img.onerror = () => {
+                    this.handleImageError(img, loading, newId, 1, downloadBtn);
+                };
+            },
+            
+            async downloadImage(img, imageId) {
+                const downloadBtn = img.parentElement.querySelector('.download-btn');
+                
+                downloadBtn.classList.add('downloading');
+                downloadBtn.innerHTML = '⏳';
+                
+                try {
+                    const response = await fetch(img.src);
+                    const blob = await response.blob();
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `landscape-${imageId}-${Date.now()}.jpg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        
+                        downloadBtn.classList.remove('downloading');
+                        downloadBtn.innerHTML = '✅';
+                        
+                        setTimeout(() => {
+                            downloadBtn.innerHTML = '⬇️';
+                        }, 2000);
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('下载失败:', error);
+                    downloadBtn.classList.remove('downloading');
+                    downloadBtn.innerHTML = '❌';
+                    
+                    setTimeout(() => {
+                        downloadBtn.innerHTML = '⬇️';
+                    }, 2000);
+                }
+            }
+        };
+        
+        // ========== 手柄控制系统 ==========
+        const GamepadController = {
+            connected: false,
+            gamepad: null,
+            cursorX: window.innerWidth / 2,
+            cursorY: window.innerHeight / 2,
+            lastButtons: [],
+            scrollSpeed: 20,
+            cursorSpeed: 8,
+            deadzone: 0.15,
+            updateInterval: null,
+            
+            init() {
+                window.addEventListener('gamepadconnected', (e) => this.onConnect(e));
+                window.addEventListener('gamepaddisconnected', (e) => this.onDisconnect(e));
+                this.checkGamepads();
+            },
+            
+            checkGamepads() {
+                const gamepads = navigator.getGamepads();
+                if (gamepads && gamepads[0]) {
+                    if (!this.connected) {
+                        this.onConnect({ gamepad: gamepads[0] });
+                    }
+                }
+            },
+            
+            onConnect(e) {
+                this.connected = true;
+                this.gamepad = e.gamepad;
+                this.showToast(`🎮 手柄已连接: ${e.gamepad.id}`);
+                this.showCursor();
+                this.startUpdate();
+            },
+            
+            onDisconnect(e) {
+                this.connected = false;
+                this.showToast('❌ 手柄已断开');
+                this.hideCursor();
+                this.stopUpdate();
+            },
+            
+            showToast(message) {
+                const toast = document.getElementById('gamepadToast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            },
+            
+            showCursor() {
+                const cursor = document.getElementById('gamepadCursor');
+                cursor.classList.add('active');
+                cursor.style.left = this.cursorX + 'px';
+                cursor.style.top = this.cursorY + 'px';
+            },
+            
+            hideCursor() {
+                document.getElementById('gamepadCursor').classList.remove('active');
+            },
+            
+            startUpdate() {
+                if (this.updateInterval) return;
+                this.updateInterval = setInterval(() => this.update(), 16);
+            },
+            
+            stopUpdate() {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                    this.updateInterval = null;
+                }
+            },
+            
+            update() {
+                const gamepads = navigator.getGamepads();
+                if (!gamepads || !gamepads[0]) return;
+                
+                const gp = gamepads[0];
+                
+                const leftX = this.applyDeadzone(gp.axes[0]);
+                const leftY = this.applyDeadzone(gp.axes[1]);
+                
+                if (leftX !== 0 || leftY !== 0) {
+                    this.cursorX += leftX * this.cursorSpeed;
+                    this.cursorY += leftY * this.cursorSpeed;
+                    
+                    this.cursorX = Math.max(0, Math.min(window.innerWidth, this.cursorX));
+                    this.cursorY = Math.max(0, Math.min(window.innerHeight, this.cursorY));
+                    
+                    const cursor = document.getElementById('gamepadCursor');
+                    cursor.style.left = this.cursorX + 'px';
+                    cursor.style.top = this.cursorY + 'px';
+                    
+                    this.updateHoverElement();
+                }
+                
+                const rightY = this.applyDeadzone(gp.axes[3]);
+                if (Math.abs(rightY) > 0) {
+                    window.scrollBy(0, rightY * this.scrollSpeed);
+                }
+                
+                this.handleButtons(gp);
+            },
+            
+            applyDeadzone(value) {
+                return Math.abs(value) < this.deadzone ? 0 : value;
+            },
+            
+            updateHoverElement() {
+                const element = document.elementFromPoint(this.cursorX, this.cursorY);
+                
+                document.querySelectorAll('.gamepad-hover').forEach(el => {
+                    el.classList.remove('gamepad-hover');
+                });
+                
+                if (element) {
+                    if (element.matches('button, a, input, select, .image-card, .btn-mini, .download-btn')) {
+                        element.classList.add('gamepad-hover');
+                    }
+                }
+            },
+            
+            handleButtons(gp) {
+                const buttons = gp.buttons;
+                
+                if (this.isButtonPressed(buttons[0], 0)) {
+                    this.simulateClick();
+                }
+                
+                if (this.isButtonPressed(buttons[1], 1)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        exitApp();
+                    }
+                }
+                
+                if (this.isButtonPressed(buttons[2], 2)) {
+                    location.reload();
+                }
+                
+                if (this.isButtonPressed(buttons[7], 7)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        const startBtn = document.getElementById('startBtn');
+                        if (!startBtn.disabled) {
+                            startSession();
+                        }
+                    }
+                }
+                
+                if (this.isButtonPressed(buttons[5], 5)) {
+                    if (document.getElementById('appView').classList.contains('active')) {
+                        if (session.isRunning) {
+                            stopSession();
+                        }
+                    }
+                }
+                
+                this.lastButtons = buttons.map(b => b.pressed);
+            },
+            
+            isButtonPressed(button, index) {
+                const pressed = button.pressed;
+                const wasPressed = this.lastButtons[index] || false;
+                return pressed && !wasPressed;
+            },
+            
+            simulateClick() {
+                const element = document.elementFromPoint(this.cursorX, this.cursorY);
+                if (element) {
+                    element.click();
+                }
+            }
+        };
+        
+        // ========== 秘密触发机制 ==========
+        let triggerClickCount = 0;
+        let stoneClickCount = 0;
+        let stoneVisible = false;
+        
+        document.getElementById('secretTrigger').addEventListener('click', function(e) {
+            e.stopPropagation();
+            triggerClickCount++;
+            
+            if (triggerClickCount >= 10) {
+                showStoneModal();
+                triggerClickCount = 0;
+            }
+        });
+        
+        function showStoneModal() {
+            const modal = document.getElementById('stoneModal');
+            modal.classList.add('active');
+            
+            setTimeout(() => {
+                modal.classList.remove('active');
+                showHiddenStone();
+            }, 2000);
+        }
+        
+        function showHiddenStone() {
+            const stone = document.getElementById('hiddenStone');
+            stone.classList.add('visible');
+            stoneVisible = true;
+        }
+        
+        document.getElementById('hiddenStone').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!stoneVisible) return;
+            
+            stoneClickCount++;
+            
+            if (stoneClickCount >= 10) {
+                enterApp();
+                stoneClickCount = 0;
+                this.classList.remove('visible');
+                stoneVisible = false;
+            }
+        });
+        
+        // ========== 风景界面逻辑 ==========
+        function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            for (let i = 0; i < 12; i++) {
+                const randomId = Math.floor(Math.random() * 1000);
+                ImageLoadManager.createImageCardWithRetry(randomId, gallery);
+            }
+        }
+        
+        function refreshGallery() {
+            loadGallery();
+        }
+        
+        function enterApp() {
+            document.getElementById('landscapeView').style.display = 'none';
+            document.getElementById('appView').classList.add('active');
+            document.body.classList.add('app-mode');
+            loadSettings();
+            loadSessionHistory();
+            displaySettingsHistory();
+        }
+        
+        function exitApp() {
+            document.getElementById('landscapeView').style.display = 'block';
+            document.getElementById('appView').classList.remove('active');
+            document.body.classList.remove('app-mode');
+            
+            triggerClickCount = 0;
+            stoneClickCount = 0;
+            document.getElementById('hiddenStone').classList.remove('visible');
+            stoneVisible = false;
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+            GamepadController.init();
+        });
+        
+        // ========== 功能界面完整代码 ==========
+        const StorageManager = {
+            KEYS: {
+                CURRENT_SETTINGS: 'pleasureAnalytics_currentSettings',
+                SETTINGS_HISTORY: 'pleasureAnalytics_settingsHistory',
+                SESSION_HISTORY: 'pleasureAnalytics_sessionHistory'
+            },
+            
+            isAvailable() {
+                try {
+                    const test = '__storage_test__';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            saveCurrentSettings(settings) {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.setItem(this.KEYS.CURRENT_SETTINGS, JSON.stringify(settings));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            loadCurrentSettings() {
+                if (!this.isAvailable()) return null;
+                try {
+                    const data = localStorage.getItem(this.KEYS.CURRENT_SETTINGS);
+                    return data ? JSON.parse(data) : null;
+                } catch(e) {
+                    return null;
+                }
+            },
+            
+            addToHistory(settings) {
+                if (!this.isAvailable()) return false;
+                try {
+                    let history = this.getSettingsHistory();
+                    const newEntry = {
+                        ...settings,
+                        timestamp: new Date().toISOString(),
+                        id: Date.now()
+                    };
+                    
+                    history.unshift(newEntry);
+                    
+                    if (history.length > 10) {
+                        history = history.slice(0, 10);
+                    }
+                    
+                    localStorage.setItem(this.KEYS.SETTINGS_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            getSettingsHistory() {
+                if (!this.isAvailable()) return [];
+                try {
+                    const data = localStorage.getItem(this.KEYS.SETTINGS_HISTORY);
+                    return data ? JSON.parse(data) : [];
+                } catch(e) {
+                    return [];
+                }
+            },
+            
+            deleteHistoryItem(id) {
+                if (!this.isAvailable()) return false;
+                try {
+                    let history = this.getSettingsHistory();
+                    history = history.filter(item => item.id !== id);
+                    localStorage.setItem(this.KEYS.SETTINGS_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            clearHistory() {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.removeItem(this.KEYS.SETTINGS_HISTORY);
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            saveSessionHistory(history) {
+                if (!this.isAvailable()) return false;
+                try {
+                    localStorage.setItem(this.KEYS.SESSION_HISTORY, JSON.stringify(history));
+                    return true;
+                } catch(e) {
+                    return false;
+                }
+            },
+            
+            loadSessionHistory() {
+                if (!this.isAvailable()) return [];
+                try {
+                    const data = localStorage.getItem(this.KEYS.SESSION_HISTORY);
+                    return data ? JSON.parse(data) : [];
+                } catch(e) {
+                    return [];
+                }
+            }
+        };
+        
+        let config = {
+            length: 15,
+            diameter: 3,
+            useLube: false,
+            showMotivation: true,
+            totalCount: 10,
+            experience: 'intermediate',
+            actionDelay: 0,
+            safetyScore: 100,
+            originalDelay: 0
+        };
+        
+        let session = {
+            isRunning: false,
+            isPaused: false,
+            currentCycle: 0,
+            insertions: 0,
+            startTime: 0,
+            pauseTime: 0,
+            totalPauseTime: 0,
+            intervalId: null,
+            timerInterval: null,
+            motivationShown: 0
+        };
+        
+        let history = [];
+        
+        const EXP_MULTIPLIER = {
+            beginner: 1.5,
+            intermediate: 1.0,
+            advanced: 0.7,
+            expert: 0.5
+        };
+        
+        const MOTIVATION_MESSAGES = [
+            '💪 做得很好！继续保持温柔的节奏',
+            '🌟 你正在享受美好的时光，放松身心',
+            '✨ 注意呼吸，让身体自然放松',
+            '💖 感受每一次愉悦，享受当下',
+            '🎯 节奏很棒！继续保持这个状态',
+            '🌈 你做得非常好，身体正在适应',
+            '💫 放松肌肉，让一切自然流动',
+            '🦋 温柔而充满耐心，这很完美',
+            '🌸 你正在照顾好自己的身体',
+            '⭐ 继续保持，你做得很棒！'
+        ];
+        
+        function loadSettings() {
+            const saved = StorageManager.loadCurrentSettings();
+            if (saved) {
+                config = { ...config, ...saved };
+                
+                document.getElementById('toyLength').value = config.length;
+                document.getElementById('lengthSlider').value = config.length;
+                document.getElementById('toyDiameter').value = config.diameter;
+                document.getElementById('diameterSlider').value = config.diameter;
+                document.getElementById('totalCount').value = config.totalCount;
+                document.getElementById('experience').value = config.experience;
+                document.getElementById('useLube').checked = config.useLube;
+                document.getElementById('showMotivation').checked = config.showMotivation;
+                
+                toggleLube();
+                toggleMotivation();
+            }
+        }
+        
+        function saveSettings() {
+            config.length = parseFloat(document.getElementById('toyLength').value);
+            config.diameter = parseFloat(document.getElementById('toyDiameter').value);
+            config.totalCount = parseInt(document.getElementById('totalCount').value);
+            config.experience = document.getElementById('experience').value;
+            
+            StorageManager.saveCurrentSettings(config);
+        }
+        
+        function saveToHistory() {
+            const settingsSnapshot = {
+                length: config.length,
+                diameter: config.diameter,
+                totalCount: config.totalCount,
+                experience: config.experience,
+                useLube: config.useLube,
+                showMotivation: config.showMotivation
+            };
+            
+            StorageManager.addToHistory(settingsSnapshot);
+            displaySettingsHistory();
+            showLog('💾 当前设置已保存到历史记录', 'success');
+        }
+        
+        function displaySettingsHistory() {
+            const historyList = document.getElementById('historyList');
+            const historySection = document.getElementById('settingsHistory');
+            const settingsHistory = StorageManager.getSettingsHistory();
+            
+            if (settingsHistory.length === 0) {
+                historySection.classList.add('hidden');
+                return;
+            }
+            
+            historySection.classList.remove('hidden');
+            historyList.innerHTML = '';
+            
+            settingsHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                
+                const date = new Date(item.timestamp);
+                const timeStr = date.toLocaleString('zh-CN', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                div.innerHTML = `
+                    <div>
+                        <div>${item.length}cm × ${item.diameter}cm | ${item.totalCount}次 | ${getExpText(item.experience)}</div>
+                        <div>
+                            ${item.useLube ? '💧' : '❌'} 
+                            ${item.showMotivation ? '💬' : '🔇'}
+                        </div>
+                        <div class="history-timestamp">${timeStr}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn-mini btn-restore" onclick="restoreSettings(${item.id})">恢复</button>
+                        <button class="btn-mini btn-delete" onclick="deleteHistoryItem(${item.id})">删除</button>
+                    </div>
+                `;
+                
+                historyList.appendChild(div);
+            });
+        }
+        
+        function restoreSettings(id) {
+            const settingsHistory = StorageManager.getSettingsHistory();
+            const item = settingsHistory.find(s => s.id === id);
+            
+            if (item) {
+                config = { ...config, ...item };
+                
+                document.getElementById('toyLength').value = config.length;
+                document.getElementById('lengthSlider').value = config.length;
+                document.getElementById('toyDiameter').value = config.diameter;
+                document.getElementById('diameterSlider').value = config.diameter;
+                document.getElementById('totalCount').value = config.totalCount;
+                document.getElementById('experience').value = config.experience;
+                document.getElementById('useLube').checked = config.useLube;
+                document.getElementById('showMotivation').checked = config.showMotivation;
+                
+                toggleLube();
+                toggleMotivation();
+                
+                saveSettings();
+                showLog('🔄 设置已恢复', 'success');
+            }
+        }
+        
+        function deleteHistoryItem(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                StorageManager.deleteHistoryItem(id);
+                displaySettingsHistory();
+                showLog('🗑️ 记录已删除', 'info');
+            }
+        }
+        
+        function clearAllHistory() {
+            if (confirm('确定要清空所有历史记录吗？此操作不可恢复。')) {
+                StorageManager.clearHistory();
+                displaySettingsHistory();
+                showLog('🗑️ 所有历史记录已清空', 'info');
+            }
+        }
+        
+        function loadSessionHistory() {
+            history = StorageManager.loadSessionHistory();
+            if (history.length > 0) {
+                updateHistoryChart();
+            }
+        }
+        
+        function saveSessionHistory() {
+            StorageManager.saveSessionHistory(history);
+        }
+        
+        function getExpText(exp) {
+            const texts = {
+                beginner: '初学',
+                intermediate: '中级',
+                advanced: '高级',
+                expert: '专家'
+            };
+            return texts[exp] || exp;
+        }
+        
+        document.getElementById('lengthSlider').addEventListener('input', (e) => {
+            document.getElementById('toyLength').value = e.target.value;
+            saveSettings();
+        });
+        
+        document.getElementById('toyLength').addEventListener('input', (e) => {
+            document.getElementById('lengthSlider').value = e.target.value;
+        });
+        
+        document.getElementById('diameterSlider').addEventListener('input', (e) => {
+            document.getElementById('toyDiameter').value = e.target.value;
+            saveSettings();
+        });
+        
+        document.getElementById('toyDiameter').addEventListener('input', (e) => {
+            document.getElementById('diameterSlider').value = e.target.value;
+        });
+        
+        function toggleLube() {
+            config.useLube = document.getElementById('useLube').checked;
+            const status = document.getElementById('lubeStatus');
+            const section = document.getElementById('lubeSection');
+            
+            if (config.useLube) {
+                status.textContent = '✅ 已使用润滑剂 - 摩擦力降低30%';
+                status.classList.add('enabled');
+                section.classList.add('active');
+            } else {
+                status.textContent = '未使用润滑剂';
+                status.classList.remove('enabled');
+                section.classList.remove('active');
+            }
+            
+            saveSettings();
+        }
+        
+        function toggleMotivation() {
+            config.showMotivation = document.getElementById('showMotivation').checked;
+            const status = document.getElementById('motivationStatus');
+            const section = document.getElementById('tipsSection');
+            
+            if (config.showMotivation) {
+                status.textContent = '已开启 - 会显示鼓励提示';
+                status.classList.add('enabled');
+                section.classList.add('active');
+            } else {
+                status.textContent = '已关闭';
+                status.classList.remove('enabled');
+                section.classList.remove('active');
+            }
+            
+            saveSettings();
+        }
+        
+        function calculateParams() {
+            config.length = parseFloat(document.getElementById('toyLength').value);
+            config.diameter = parseFloat(document.getElementById('toyDiameter').value);
+            config.totalCount = parseInt(document.getElementById('totalCount').value);
+            config.experience = document.getElementById('experience').value;
+            
+            if (config.length < 1 || config.length > 150) {
+                showLog('❌ 长度必须在 1-150cm 之间', 'info');
+                return;
+            }
+            
+            if (config.diameter < 0.5 || config.diameter > 10) {
+                showLog('❌ 直径必须在 0.5-10cm 之间', 'info');
+                return;
+            }
+            
+            if (config.totalCount % 2 !== 0) {
+                config.totalCount++;
+                document.getElementById('totalCount').value = config.totalCount;
+            }
+            
+            const expMultiplier = EXP_MULTIPLIER[config.experience];
+            
+            let baseDelay = (config.length / 30) + (config.diameter / 3) + 1.2;
+            baseDelay *= expMultiplier;
+            config.originalDelay = baseDelay;
+            
+            if (config.useLube) {
+                config.actionDelay = baseDelay * 0.70;
+                showLog('💧 润滑剂效果: 速度提升 30%', 'success');
+            } else {
+                config.actionDelay = baseDelay;
+            }
+            
+            let safetyScore = 100;
+            
+            if (config.length > 100) safetyScore -= 20;
+            else if (config.length > 50) safetyScore -= 10;
+            
+            if (config.diameter > 6) safetyScore -= 25;
+            else if (config.diameter > 4) safetyScore -= 15;
+            else if (config.diameter > 3) safetyScore -= 5;
+            
+            if (config.experience === 'beginner' && config.diameter > 4) safetyScore -= 10;
+            
+            if (config.useLube) {
+                safetyScore += 20;
+            } else {
+                safetyScore -= 25;
+            }
+            
+            config.safetyScore = Math.max(0, Math.min(100, safetyScore));
+            
+            displayCalculationResults();
+            displaySafetyAlert();
+            saveToHistory();
+            
+            document.getElementById('startBtn').disabled = false;
+            showLog(`✅ 计算完成 - 频率: ${config.actionDelay.toFixed(2)}秒/次`, 'success');
+        }
+        
+        function displayCalculationResults() {
+            const totalTime = (config.totalCount * config.actionDelay / 60).toFixed(1);
+            
+            let html = `
+                <div class="calculation-result">
+                    <h3 style="color: #319795; margin-bottom: 15px;">📋 计算结果</h3>
+                    <div class="result-item">
+                        <span>动作频率:</span>
+                        <span class="result-value">${config.actionDelay.toFixed(2)} 秒/次</span>
+                    </div>
+                    <div class="result-item">
+                        <span>预计总时长:</span>
+                        <span class="result-value">${totalTime} 分钟</span>
+                    </div>
+                    <div class="result-item">
+                        <span>插入次数:</span>
+                        <span class="result-value">${config.totalCount / 2} 次</span>
+                    </div>
+                    <div class="result-item">
+                        <span>安全评分:</span>
+                        <span class="result-value" style="color: ${getSafetyColor()}">${config.safetyScore}/100</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('calculationResult').innerHTML = html;
+            document.getElementById('calculationResult').classList.remove('hidden');
+        }
+        
+        function getSafetyColor() {
+            if (config.safetyScore >= 80) return '#48bb78';
+            if (config.safetyScore >= 60) return '#ecc94b';
+            if (config.safetyScore >= 40) return '#ed8936';
+            return '#f56565';
+        }
+        
+        function getSafetyLevel() {
+            if (config.safetyScore >= 80) return 'high';
+            if (config.safetyScore >= 50) return 'medium';
+            return 'low';
+        }
+        
+        function displaySafetyAlert() {
+            const level = getSafetyLevel();
+            let icon = '✅';
+            let title = '安全等级: 优秀';
+            let message = '当前配置非常安全。';
+            
+            if (level === 'medium') {
+                icon = '⚠️';
+                title = '安全等级: 中等';
+                message = '建议使用润滑剂，缓慢进行。';
+            } else if (level === 'low') {
+                icon = '🚨';
+                title = '安全等级: 较低';
+                message = '强烈建议使用润滑剂！请极度缓慢进行。';
+            }
+            
+            const html = `
+                <div class="safety-alert ${level}">
+                    <span class="safety-icon">${icon}</span>
+                    <div>
+                        <strong>${title}</strong><br>
+                        ${message}
+                    </div>
+                </div>
+            `;
+            document.getElementById('safetyAlert').innerHTML = html;
+            document.getElementById('safetyAlert').classList.remove('hidden');
+        }
+        
+        async function startSession() {
+            if (config.actionDelay === 0) {
+                showLog('❌ 请先进行智能计算', 'info');
+                return;
+            }
+            
+            session = {
+                isRunning: true,
+                isPaused: false,
+                currentCycle: 0,
+                insertions: 0,
+                startTime: performance.now(),
+                pauseTime: 0,
+                totalPauseTime: 0,
+                intervalId: null,
+                timerInterval: null,
+                motivationShown: 0
+            };
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('controlButtons').classList.remove('hidden');
+            document.getElementById('healthReport').classList.add('hidden');
+            
+            clearLog();
+            showLog('🚀 会话开始！', 'success');
+            
+            startTimer();
+            runSession();
+        }
+        
+        async function runSession() {
+            while (session.currentCycle < config.totalCount && session.isRunning) {
+                if (session.isPaused) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    continue;
+                }
+                
+                session.currentCycle++;
+                
+                if (session.currentCycle % 2 === 1) {
+                    session.insertions++;
+                    const lubeText = config.useLube ? ' [润滑顺畅]' : '';
+                    showLog(`♥ ➤➤➤ 第 ${session.insertions} 次插入${lubeText}`, 'insert');
+                    
+                    if (config.showMotivation && session.insertions % 3 === 0) {
+                        const randomMsg = MOTIVATION_MESSAGES[Math.floor(Math.random() * MOTIVATION_MESSAGES.length)];
+                        await sleep(1000);
+                        showLog(randomMsg, 'motivation');
+                    }
+                } else {
+                    showLog(`♥ ⟵⟵⟵ 完全拔出`, 'withdraw');
+                }
+                
+                updateStats();
+                await sleep(config.actionDelay * 1000);
+            }
+            
+            if (session.isRunning) {
+                completeSession();
+            }
+        }
+        
+        function pauseSession() {
+            session.isPaused = !session.isPaused;
+            const pauseBtn = document.getElementById('pauseText');
+            
+            if (session.isPaused) {
+                session.pauseTime = performance.now();
+                pauseBtn.textContent = '继续';
+                showLog('⏸️ 会话已暂停', 'info');
+            } else {
+                session.totalPauseTime += performance.now() - session.pauseTime;
+                pauseBtn.textContent = '暂停';
+                showLog('▶️ 会话继续...', 'info');
+            }
+        }
+        
+        function stopSession() {
+            session.isRunning = false;
+            clearInterval(session.timerInterval);
+            document.getElementById('controlButtons').classList.add('hidden');
+            document.getElementById('startBtn').disabled = false;
+            showLog('⏹️ 会话已停止', 'info');
+            updateStats();
+        }
+        
+        function completeSession() {
+            session.isRunning = false;
+            clearInterval(session.timerInterval);
+            
+            const duration = Math.floor((performance.now() - session.startTime - session.totalPauseTime) / 1000);
+            
+            showCelebration();
+            showLog(`🎉 会话完成！`, 'success');
+            showLog(`📊 总计 ${session.insertions} 次插入，用时 ${formatTime(duration)}`, 'success');
+            
+            history.push({
+                date: new Date().toLocaleString('zh-CN'),
+                insertions: session.insertions,
+                duration: duration,
+                usedLube: config.useLube
+            });
+            
+            saveSessionHistory();
+            updateHistoryChart();
+            displayHealthReport();
+            
+            document.getElementById('controlButtons').classList.add('hidden');
+            document.getElementById('startBtn').disabled = false;
+        }
+        
+        function displayHealthReport() {
+            const html = `
+                <div class="health-report">
+                    <h3>🏥 会话后健康检查</h3>
+                    
+                    <div class="health-item">
+                        <strong>肛门观察：</strong>
+                        ${config.useLube ? '使用了润滑剂，应该较为湿润。' : '⚠️ 未使用润滑剂，需仔细检查。'}
+                    </div>
+                    
+                    <div class="health-item">
+                        <strong>出血检查：</strong>
+                        少量血丝属于正常。如出血量较多请立即停止并咨询医生。
+                    </div>
+                    
+                    <div class="health-item">
+                        <strong>肠液分泌：</strong>
+                        适量肠液分泌是正常的生理反应。
+                    </div>
+                    
+                    <div class="care-tips">
+                        <h4>💡 护理与清洁建议</h4>
+                        <ul>
+                            <li>用温水轻柔清洗肛门周围</li>
+                            <li>避免使用刺激性清洁剂</li>
+                            <li>玩具使用后立即清洗消毒</li>
+                            <li>建议休息24-48小时</li>
+                            <li>如有持续疼痛请咨询医生</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('healthReport').innerHTML = html;
+            document.getElementById('healthReport').classList.remove('hidden');
+        }
+        
+        function showCelebration() {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = '🎉';
+            document.body.appendChild(celebration);
+            setTimeout(() => celebration.remove(), 1000);
+        }
+        
+        function startTimer() {
+            session.timerInterval = setInterval(() => {
+                if (!session.isPaused && session.isRunning) {
+                    const elapsed = Math.floor((performance.now() - session.startTime - session.totalPauseTime) / 1000);
+                    document.getElementById('timer').textContent = formatTime(elapsed);
+                }
+            }, 1000);
+        }
+        
+        function updateStats() {
+            const progressPercent = (session.currentCycle / config.totalCount * 100).toFixed(1);
+            document.getElementById('progress').textContent = progressPercent + '%';
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('insertCount').textContent = session.insertions;
+            
+            const remaining = (config.totalCount - session.currentCycle) * config.actionDelay;
+            const mins = Math.floor(remaining / 60);
+            const secs = Math.floor(remaining % 60);
+            document.getElementById('remaining').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function updateHistoryChart() {
+            const chartContainer = document.getElementById('historyChart');
+            chartContainer.innerHTML = '';
+            
+            if (history.length === 0) return;
+            
+            const maxInsertions = Math.max(...history.map(h => h.insertions));
+            const recentHistory = history.slice(-10);
+            
+            recentHistory.forEach((h, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                const height = (h.insertions / maxInsertions) * 100;
+                bar.style.height = height + '%';
+                
+                if (h.usedLube) {
+                    bar.style.background = 'linear-gradient(to top, #48bb78, #38a169)';
+                } else {
+                    bar.style.background = 'linear-gradient(to top, #fc8181, #f56565)';
+                }
+                
+                bar.title = `${h.date}\n${h.insertions} 次\n${formatTime(h.duration)}\n${h.usedLube ? '✅ 润滑' : '❌ 无润滑'}`;
+                chartContainer.appendChild(bar);
+            });
+        }
+        
+        function showLog(message, type = 'info') {
+            const log = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            const icons = {
+                insert: '💗',
+                withdraw: '💙',
+                info: 'ℹ️',
+                success: '✅',
+                motivation: '💬'
+            };
+            
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="log-icon">${icons[type] || 'ℹ️'}</span>
+                <span>${new Date().toLocaleTimeString('zh-CN')} - ${message}</span>
+            `;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+        }
+        
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
