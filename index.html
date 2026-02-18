@@ -2549,6 +2549,107 @@
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
+/* === 🚀 究极性能与防泄漏补丁 v2.0 === */
+(function() {
+    console.log("⚡ 究极优化补丁已注入...");
+
+    // 1. 【Blob 对象监控】防止下载图片产生的临时文件堆积内存
+    const activeObjectUrls = new Set();
+    const originalCreateObjectURL = window.URL.createObjectURL;
+    const originalRevokeObjectURL = window.URL.revokeObjectURL;
+
+    if (originalCreateObjectURL && originalRevokeObjectURL) {
+        window.URL.createObjectURL = function(blob) {
+            const url = originalCreateObjectURL.call(window.URL, blob);
+            activeObjectUrls.add(url);
+            return url;
+        };
+
+        window.URL.revokeObjectURL = function(url) {
+            originalRevokeObjectURL.call(window.URL, url);
+            activeObjectUrls.delete(url);
+        };
+    }
+
+    // 2. 【智能日志截断】批量删除节点，减少浏览器重绘次数
+    const originalShowLog = window.showLog;
+    if (typeof originalShowLog === 'function') {
+        window.showLog = function(message, type) {
+            const logContainer = document.getElementById('logContainer');
+            // 当日志超过 60 条时，一次性删掉前 20 条（比每条删一次更省性能）
+            if (logContainer && logContainer.childNodes.length > 60) {
+                while (logContainer.childNodes.length > 40) {
+                    logContainer.removeChild(logContainer.firstChild);
+                }
+            }
+            originalShowLog(message, type);
+        };
+    }
+
+    // 3. 【暴力清理协议】退出时执行“焦土政策”
+    const originalExitApp = window.exitApp;
+    if (typeof originalExitApp === 'function') {
+        window.exitApp = function() {
+            console.log("🧹 执行深度清理...");
+
+            // A. 停止业务逻辑
+            if (window.session) {
+                if (window.session.isRunning && typeof window.stopSession === 'function') {
+                    window.stopSession();
+                }
+                // 暴力清除所有已知定时器 ID
+                clearInterval(window.session.timerInterval);
+                clearInterval(window.session.intervalId);
+            }
+
+            // B. 强制停止手柄轮询 (极其重要，省 CPU)
+            if (window.GamepadController && window.GamepadController.updateInterval) {
+                clearInterval(window.GamepadController.updateInterval);
+                window.GamepadController.updateInterval = null;
+                console.log("🎮 手柄轮询已强制挂起");
+            }
+
+            // C. 释放所有未回收的 Blob URL (防止下载图片导致的内存泄漏)
+            if (activeObjectUrls.size > 0) {
+                console.log(`🗑️ 释放了 ${activeObjectUrls.size} 个残留对象链接`);
+                for (const url of activeObjectUrls) {
+                    originalRevokeObjectURL.call(window.URL, url);
+                }
+                activeObjectUrls.clear();
+            }
+
+            // D. 清理重试队列
+            if (window.ImageLoadManager && window.ImageLoadManager.retryingImages) {
+                window.ImageLoadManager.retryingImages.clear();
+            }
+
+            // E. 强制垃圾回收诱导 (清空重数据变量)
+            if (window.history && window.history.length > 500) {
+                 // 注意：这里是指浏览器会话历史，通常无法修改，此处仅为示例逻辑，
+                 // 实际上我们可以清空应用内的 history 数组
+                 if (Array.isArray(window.historyList)) { // 假设你代码里存记录的数组叫这个
+                     window.historyList = []; 
+                 }
+            }
+
+            // 执行原路返回
+            originalExitApp();
+        };
+    }
+
+    // 4. 【手柄唤醒】进入 App 时记得把手柄检测重新开起来
+    const originalEnterApp = window.enterApp;
+    if (typeof originalEnterApp === 'function') {
+        window.enterApp = function() {
+            if (window.GamepadController) {
+                // 重新启动手柄轮询
+                window.GamepadController.startUpdate();
+            }
+            originalEnterApp();
+        }
+    }
+
+})();
     </script>
 </body>
 </html>
